@@ -12,8 +12,8 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 public class EchoServer {
 
 	public static void main(String[] args) throws Exception {
-		EventLoopGroup bossGroup = new NioEventLoopGroup(1);  // 클라이언트 연결
-		EventLoopGroup workerGroup = new NioEventLoopGroup(); // 데이터 입출력 
+		EventLoopGroup bossGroup = new NioEventLoopGroup(1);  // 클라이언트 연결 (인수 1은 쓰레드 수)
+		EventLoopGroup workerGroup = new NioEventLoopGroup(); // 데이터 입출력 (인수가 없으면 cpu 코어 수에 따른 스레드 수 설정)
 		
 		try {
 			ServerBootstrap server = new ServerBootstrap();
