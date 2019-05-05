@@ -6,3 +6,4 @@
 .settings/*
 lib/*
 /bin/
+/out
