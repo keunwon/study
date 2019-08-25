@@ -32,8 +32,6 @@ public class FilteringApples {
                 return 150 > apple.getWeight();
             }
         });
-
-        List<Apple> result =
     }
 
 
