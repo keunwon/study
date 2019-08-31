@@ -82,3 +82,75 @@ Optional<Dish> dish = menu.stream()
                           .filter(Dish::isVegetarian)
                           .findAny();
 ```
+
+## 첫 번째 요소 찾기: findFirst
+```java
+List<Integer> someNumbers = Arrays.asList(1, 2, 3, 4, 5);
+Optional<Integer> firstSquareDivisibleByThree = someNumbers.stream()
+                                                           .map(x -> x * x)
+                                                           .filter(x -> x % 3 == 0)
+                                                           .findFirst();
+```
+
+## 리듀싱 연산
+- 결과가 나올 때까지 스트림의 모든 요소를 반복적으로 처리해야 한다. 이런 질의를 리듀싱 연산이라고 한다.
+
+## 숫자형 스트림
+```java
+int calories = menu.stream()                     // Stream<Dish>
+                   .mapToInt(Dish::getCalories)  // IntStream
+                   .sum();
+```
+
+## 객체 스트림으로 복원
+```java
+IntStream intStream = menu.stream().mapToInt(Dish::getCalories);
+Stream<Integer> stream = intStream.boxed();
+```
+
+## 기본값: OptionalInt
+```java
+OptionalInt maxCalories = Dish.menu.stream()
+                                    .mapToInt(Dish::getCalories)
+                                    .max();
+```
+
+## 숫자 범위: rangeClosed, range
+```java
+IntStream eventNumbers = IntStream.rangeClosed(1, 100) // 1 ~ 100
+                                  .filter(n -> n % 2 == 0);
+System.out.println(eventNumbers.count()); // 50
+
+IntStream eventNumbers2 = IntStream.range(1, 100) // 2 ~ 99
+                                   .filter(n -> n % 2 == 0);
+System.out.println(eventNumbers2.count()); // 49
+```
+
+## 무한 스트림 만들기
+
+- iterate: 연속적으로 계산
+```java
+Stream.iterate(0, n -> n + 2)
+      .limit(10)
+      .forEach(System.out::println);
+```
+
+- generate: 매번 새로운 값 생성
+```java
+Stream.generate(Math::random)
+      .limit(5)
+      .forEach(System.out::println);
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
