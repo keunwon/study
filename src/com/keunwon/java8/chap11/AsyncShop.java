@@ -4,26 +4,34 @@ import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
-import static com.keunwon.java8.chap11.Utils.delay;
-import static com.keunwon.java8.chap11.Utils.format;
+import static com.keunwon.java8.chap11.Util.delay;
+import static com.keunwon.java8.chap11.Util.format;
+
 
 public class AsyncShop {
 
-    private String name;
-    private Random random;
+    private final String name;
+    private final Random random;
 
-    public AsyncShop(String name, Random random) {
+    public AsyncShop(String name) {
         this.name = name;
-        this.random = random;
+        random = new Random(name.charAt(0) * name.charAt(1) * name.charAt(2));
     }
 
     public Future<Double> getPrice(String product) {
+/*
         CompletableFuture<Double> futurePrice = new CompletableFuture<>();
-        new Thread(() -> {
-            double price = calculatePrice(product);
-            futurePrice.complete(price);
+        new Thread( () -> {
+                    try {
+                        double price = calculatePrice(product);
+                        futurePrice.complete(price);
+                    } catch (Exception ex) {
+                        futurePrice.completeExceptionally(ex);
+                    }
         }).start();
         return futurePrice;
+*/
+        return CompletableFuture.supplyAsync(() -> calculatePrice(product));
     }
 
     private double calculatePrice(String product) {
