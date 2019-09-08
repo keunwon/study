@@ -1,4 +1,4 @@
-package com.keunwon.object.cahp01;
+package com.keunwon.object.cahp01.after;
 
 public class Theater {
     private TicketSeller ticketSeller;

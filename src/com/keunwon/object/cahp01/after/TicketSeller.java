@@ -1,4 +1,4 @@
-package com.keunwon.object.cahp01;
+package com.keunwon.object.cahp01.after;
 
 public class TicketSeller {
     private TicketOffice ticketOffice;
