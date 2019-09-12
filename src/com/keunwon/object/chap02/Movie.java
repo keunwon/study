@@ -1,14 +1,25 @@
 package com.keunwon.object.chap02;
 
-public class Movie {
-    private Money money;
+import java.time.Duration;
 
-    public Movie(Money money) {
-        this.money = money;
+public class Movie {
+    private String title;
+    private Duration runningTime;
+    private Money fee;
+    private DiscountPolicy discountPolicy;
+
+    public Movie(String title, Duration runningTime, Money fee, DiscountPolicy discountPolicy) {
+        this.title = title;
+        this.runningTime = runningTime;
+        this.fee = fee;
+        this.discountPolicy = discountPolicy;
     }
 
-
     public Money getFee() {
-        return money;
+        return fee;
+    }
+
+    public Money calculateMovieFee(Screening screening) {
+        return fee.minus()
     }
 }

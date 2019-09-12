@@ -3,13 +3,13 @@ package com.keunwon.object.chap02;
 public class Reservation {
     private Customer customer;
     private Screening screening;
-    private Money money;
+    private Money fee;
     private int audienceCount;
 
-    public Reservation(Customer customer, Screening screening, Money money, int audienceCount) {
+    public Reservation(Customer customer, Screening screening, Money fee, int audienceCount) {
         this.customer = customer;
         this.screening = screening;
-        this.money = money;
+        this.fee = fee;
         this.audienceCount = audienceCount;
     }
 }
