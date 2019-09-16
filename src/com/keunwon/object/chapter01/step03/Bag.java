@@ -1,9 +1,9 @@
-package com.keunwon.object.cahp01.after;
+package com.keunwon.object.chapter01.step03;
 
 public class Bag {
     private Long amount;
-    private Invitation invitation;
     private Ticket ticket;
+    private Invitation invitation;
 
     public Long hold(Ticket ticket) {
         if (hasInvitation()) {
@@ -25,6 +25,6 @@ public class Bag {
     }
 
     private void minusAmount(Long amount) {
-        this.amount = amount;
+        this.amount -= amount;
     }
 }

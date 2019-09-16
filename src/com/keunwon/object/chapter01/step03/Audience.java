@@ -1,4 +1,4 @@
-package com.keunwon.object.cahp01.before;
+package com.keunwon.object.chapter01.step03;
 
 public class Audience {
     private Bag bag;
@@ -7,7 +7,7 @@ public class Audience {
         this.bag = bag;
     }
 
-    public Bag getBag() {
-        return bag;
+    public Long buy(Ticket ticket) {
+        return bag.hold(ticket);
     }
 }

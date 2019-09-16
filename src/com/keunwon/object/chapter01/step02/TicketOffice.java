@@ -1,4 +1,4 @@
-package com.keunwon.object.cahp01.before;
+package com.keunwon.object.chapter01.step02;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,12 +17,7 @@ public class TicketOffice {
         return tickets.remove(0);
     }
 
-    public void minusAmount(Long amount) {
-        this.amount -= amount;
-    }
-
     public void plusAmount(Long amount) {
         this.amount += amount;
     }
-
 }

@@ -1,4 +1,4 @@
-package com.keunwon.object.cahp01.after;
+package com.keunwon.object.chapter01.step03;
 
 public class Theater {
     private TicketSeller ticketSeller;
@@ -11,3 +11,4 @@ public class Theater {
         ticketSeller.sellTo(audience);
     }
 }
+
