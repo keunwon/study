@@ -1,4 +1,6 @@
-package com.keunwon.object.chap02;
+package com.keunwon.object.chapter02.step01;
+
+import com.keunwon.object.chapter02.Money;
 
 import java.time.LocalDateTime;
 
@@ -13,15 +15,15 @@ public class Screening {
         this.whenScreened = whenScreened;
     }
 
-    public LocalDateTime getStartTime() {
+    public LocalDateTime startTime() {
         return whenScreened;
     }
 
-    public boolean isSequence(int sequence) {
+    public  boolean isSequence(int sequence) {
         return this.sequence == sequence;
     }
 
-    public Money getMoveiFee() {
+    public Money getMovieFee() {
         return movie.getFee();
     }
 
@@ -29,7 +31,7 @@ public class Screening {
         return new Reservation(customer, this, calculateFee(audienceCount), audienceCount);
     }
 
-    public Money calculateFee(int audienceCount) {
+    private Object calculateFee(int audienceCount) {
         return movie.calculateMovieFee(this).times(audienceCount);
     }
 }

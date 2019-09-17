@@ -1,4 +1,6 @@
-package com.keunwon.object.chap02;
+package com.keunwon.object.chapter02.step01;
+
+import com.keunwon.object.chapter02.Money;
 
 public class Reservation {
     private Customer customer;
@@ -12,4 +14,5 @@ public class Reservation {
         this.fee = fee;
         this.audienceCount = audienceCount;
     }
+
 }
