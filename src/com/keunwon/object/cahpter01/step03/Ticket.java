@@ -1,4 +1,4 @@
-package com.keunwon.object.chapter01.step02;
+package com.keunwon.object.cahpter01.step03;
 
 public class Ticket {
     private Long fee;

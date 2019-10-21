@@ -1,15 +1,15 @@
-package com.keunwon.object.chapter01.step01;
+package com.keunwon.object.cahpter01.step01;
 
 public class Bag {
     private Long amount;
     private Invitation invitation;
     private Ticket ticket;
 
-    public Bag(Long amount) {
+    public Bag(long amount) {
         this(null, amount);
     }
 
-    public Bag(Invitation invitation, Long amount) {
+    public Bag(Invitation invitation, long amount) {
         this.invitation = invitation;
         this.amount = amount;
     }

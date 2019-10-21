@@ -1,4 +1,4 @@
-package com.keunwon.object.chapter01.step01;
+package com.keunwon.object.cahpter01.step03;
 
 public class TicketSeller {
     private TicketOffice ticketOffice;
@@ -7,7 +7,7 @@ public class TicketSeller {
         this.ticketOffice = ticketOffice;
     }
 
-    public TicketOffice getTicketOffice() {
-        return ticketOffice;
+    public void sellTo(Audience audience) {
+        ticketOffice.plusAmount(audience.buy(ticketOffice.getTicket()));
     }
 }

@@ -1,4 +1,4 @@
-package com.keunwon.object.chapter01.step02;
+package com.keunwon.object.cahpter01.step02;
 
 public class Audience {
     private Bag bag;
@@ -12,8 +12,8 @@ public class Audience {
             bag.setTicket(ticket);
             return 0L;
         } else {
-            bag.setTicket(ticket);
             bag.minusAmount(ticket.getFee());
+            bag.plusAmount(ticket.getFee());
             return ticket.getFee();
         }
     }

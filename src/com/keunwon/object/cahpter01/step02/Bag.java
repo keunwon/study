@@ -1,4 +1,4 @@
-package com.keunwon.object.chapter01.step02;
+package com.keunwon.object.cahpter01.step02;
 
 public class Bag {
     private Long amount;

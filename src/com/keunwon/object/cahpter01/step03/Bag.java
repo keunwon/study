@@ -1,9 +1,9 @@
-package com.keunwon.object.chapter01.step03;
+package com.keunwon.object.cahpter01.step03;
 
 public class Bag {
     private Long amount;
-    private Ticket ticket;
     private Invitation invitation;
+    private Ticket ticket;
 
     public Long hold(Ticket ticket) {
         if (hasInvitation()) {
