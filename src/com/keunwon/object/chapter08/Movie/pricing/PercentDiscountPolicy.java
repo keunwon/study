@@ -5,16 +5,16 @@ import com.keunwon.object.chapter08.Movie.DiscountCondition;
 import com.keunwon.object.chapter08.Movie.DiscountPolicy;
 import com.keunwon.object.chapter08.Movie.Screening;
 
-public class AmountDiscountCondition extends DiscountPolicy {
-    private Money discountMoney;
+public class PercentDiscountPolicy extends DiscountPolicy {
+    private double percent;
 
-    public AmountDiscountCondition(Money discountMoney, DiscountCondition ... conditions) {
+    public PercentDiscountPolicy(double percent, DiscountCondition ... conditions) {
         super(conditions);
-        this.discountMoney = discountMoney;
+        this.percent = percent;
     }
 
     @Override
     protected Money getDiscountAmount(Screening screening) {
-        return discountMoney;
+        return screening.getMovieFee().times(percent);
     }
 }

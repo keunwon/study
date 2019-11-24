@@ -4,7 +4,7 @@ import com.keunwon.object.chapter08.Money.Money;
 import com.keunwon.object.chapter08.Movie.DiscountPolicy;
 import com.keunwon.object.chapter08.Movie.Screening;
 
-public class NoneDiscountCondition extends DiscountPolicy  {
+public class NoneDiscountPolicy extends DiscountPolicy  {
 
     @Override
     protected Money getDiscountAmount(Screening screening) {
