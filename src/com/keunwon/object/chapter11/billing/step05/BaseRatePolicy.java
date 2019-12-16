@@ -1,6 +1,6 @@
-package com.keunwon.object.chapter11.billing.step05;
+package com.keunwon.object.chapter14.step01;
 
-import com.keunwon.object.chapter11.money.Money;
+import com.keunwon.object.chapter14.money.Money;
 
 public abstract class BaseRatePolicy implements RatePolicy {
 
