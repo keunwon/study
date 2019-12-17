@@ -2,7 +2,7 @@ package com.keunwon.object.chapter14;
 
 import java.time.*;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class DateTimeInterval {
@@ -48,7 +48,7 @@ public class DateTimeInterval {
             return split(days());
         }
 
-        return Arrays.asList(this);
+        return Collections.singletonList(this);
     }
 
     private int days() {
