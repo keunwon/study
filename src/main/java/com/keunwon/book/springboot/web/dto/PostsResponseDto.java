@@ -12,7 +12,7 @@ public class PostsResponseDto {
 
     public PostsResponseDto(Posts posts) {
         this.id = posts.getId();
-        this.title = posts.getTittle();
+        this.title = posts.getTitle();
         this.content = posts.getContent();
         this.author = posts.getAuthor();
     }

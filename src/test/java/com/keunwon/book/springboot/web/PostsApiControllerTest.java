@@ -62,7 +62,7 @@ public class PostsApiControllerTest {
         assertThat(responseEntity.getBody()).isGreaterThan(0L);
 
         List<Posts> all = postsRepository.findAll();
-        assertThat(all.get(0).getTittle()).isEqualTo(title);
+        assertThat(all.get(0).getTitle()).isEqualTo(title);
         assertThat(all.get(0).getContent()).isEqualTo(contnet);
     }
 
@@ -70,7 +70,7 @@ public class PostsApiControllerTest {
     public void Posts_수정된다() throws Exception {
         // given
         Posts savePosts = postsRepository.save(Posts.builder()
-                .tittle("title")
+                .title("title")
                 .content("content")
                 .author("author")
                 .build());
@@ -84,7 +84,7 @@ public class PostsApiControllerTest {
                     .content(expectedContent)
                     .build();
 
-        String url = "http://localhost:" + port + "/api/v1/posts" + updateId;
+        String url = "http://localhost:" + port + "/api/v1/posts/" + updateId;
         HttpEntity<PostsUpdateRequestDto> requestEntity = new HttpEntity<>(requestDto);
 
         // when
@@ -95,7 +95,7 @@ public class PostsApiControllerTest {
         assertThat(responseEntity.getBody()).isGreaterThan(0L);
 
         List<Posts> all = postsRepository.findAll();
-        assertThat(all.get(0).getTittle()).isEqualTo(expectedTitle);
+        assertThat(all.get(0).getTitle()).isEqualTo(expectedTitle);
         assertThat(all.get(0).getContent()).isEqualTo(expectedContent);
     }
 }

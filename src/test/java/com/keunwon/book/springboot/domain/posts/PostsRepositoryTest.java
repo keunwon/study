@@ -30,7 +30,7 @@ public class PostsRepositoryTest {
         String content = "테스트 본문";
 
         postsRepository.save(Posts.builder()
-                .tittle(title)
+                .title(title)
                 .content(content)
                 .author("test@gmail.com")
                 .build());
@@ -40,7 +40,7 @@ public class PostsRepositoryTest {
 
         // then
         Posts posts = postsList.get(0);
-        assertThat(posts.getTittle()).isEqualTo(title);
+        assertThat(posts.getTitle()).isEqualTo(title);
         assertThat(posts.getContent()).isEqualTo(content);
     }
 }
