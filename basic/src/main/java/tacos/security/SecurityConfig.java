@@ -16,16 +16,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .csrf().disable()
-                .authorizeRequests()
-                    .antMatchers("/design", "/orders").hasRole("USER")
-                    .antMatchers("/", "/**").permitAll()
+                .headers().frameOptions().disable()
+                .and()
+                    .authorizeRequests()
+                        .antMatchers("/design", "/orders").hasRole("USER")
+                        .antMatchers("/", "/**", "/h2**").permitAll()
                 .and()
                     .formLogin()
                         .loginPage("/login")
-                        .loginProcessingUrl("/authenticate")
-                        .usernameParameter("user")
-                        .passwordParameter("pwd")
-                        .defaultSuccessUrl("/design", true)
                 .and()
                     .logout()
                         .logoutSuccessUrl("/");

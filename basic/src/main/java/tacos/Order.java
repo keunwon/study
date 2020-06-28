@@ -6,13 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Date;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToMany;
-import javax.persistence.PrePersist;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.Pattern;
@@ -20,6 +14,7 @@ import javax.validation.constraints.NotBlank;
 import org.hibernate.validator.constraints.CreditCardNumber;
 
 import lombok.Data;
+import tacos.web.User;
 
 @Data
 @Entity
@@ -34,6 +29,8 @@ public class Order implements Serializable  {
 
     private Date placedAt;
 
+    @ManyToOne
+    private User user;
 
     @NotBlank(message="Name is required")
     private String deliveryName;
@@ -50,7 +47,7 @@ public class Order implements Serializable  {
     @NotBlank(message="Zip code is required")
     private String deliveryZip;
 
-    @CreditCardNumber(message="Not a valid credit card number")
+    @NotBlank(message="Not a valid credit card number")
     private String ccNumber;
 
     @Pattern(regexp="^(0[1-9]|1[0-2])([\\/])([1-9][0-9])$",

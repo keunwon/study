@@ -1,7 +1,7 @@
 package tacos.security;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,7 +13,6 @@ import tacos.data.UserRepository;
 @RequestMapping("/register")
 public class RegistrationController {
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
 
     @GetMapping
     public String registerForm() {
@@ -22,7 +21,7 @@ public class RegistrationController {
 
     @PostMapping
     public String processRegistration(RegistrationForm form) {
-        userRepository.save(form.toUser(passwordEncoder));
+        userRepository.save(form.toUser(new BCryptPasswordEncoder()));
         return "redirect:/login";
     }
 }
