@@ -5,7 +5,3 @@ spring:
   h2:
     console:
       enabled: true
-
-taco:
-  orders:
-    pageSize: 10
