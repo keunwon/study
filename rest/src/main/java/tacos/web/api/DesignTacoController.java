@@ -5,9 +5,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.hateoas.CollectionModel;
-import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.Link;
-import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -30,16 +27,13 @@ public class DesignTacoController {
 
 
     @GetMapping("/recent")
-    public CollectionModel<EntityModel<Taco>> recentTacos() {
+    public CollectionModel<TacoResource> recentTacos() {
         Pageable page = PageRequest.of(0, 12, Sort.by("createAt").descending());
-
         List<Taco> tacos = tacoRepository.findAll(page).getContent();
-        CollectionModel<EntityModel<Taco>> recentModel = CollectionModel.wrap(tacos);
 
-        recentModel.add(
-            linkTo(methodOn(DesignTacoController.class).recentTacos())
-            .withRel("recents"));
-        return recentModel;
+        CollectionModel<TacoResource> tacoResources = new TacoResourceAssembler().toCollectionModel(tacos);
+        tacoResources.add(linkTo(methodOn(DesignTacoController.class).recentTacos()).withRel("recents"));
+        return tacoResources;
     }
 
     @GetMapping("/{id}")

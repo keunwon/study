@@ -9,7 +9,10 @@ public class TacoResourceAssembler extends RepresentationModelAssemblerSupport<T
         super(DesignTacoController.class, TacoResource.class);
     }
 
-    
+    @Override
+    protected TacoResource instantiateModel(Taco entity) {
+        return new TacoResource(entity);
+    }
 
     @Override
     public TacoResource toModel(Taco entity) {
