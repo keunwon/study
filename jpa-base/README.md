@@ -15,7 +15,7 @@
 - SQL을 추상화한 객체 지향 쿼리 언어 제공 (SQL에 의존 X)
 - JPQL은 엔티티 객체를 대상으로 쿼리, SQL은 데이터베이스 테이블을 대상으로 쿼리
 
-## 영속성 컨텍스트 (entityManger)
+## 영속성 컨텍스트
 - Entity를 영구 저장하는 환경
 - Entity 생명주기
     - 비영속
@@ -25,7 +25,7 @@
 - 1차 캐시
     - db 조회 시 먼저 영속성 컨텍스트의 1차 캐시에서 존재 확인
     - 존재하면 반환, 존재하지 않으면 db 조회
-    - transaction 종료 시 제거
+    - 동일한 transaction 사용
 - 영속 Entity 동일성 보장 (== 비교)
 - 쓰기 지연
     - 영속성 컨텍스트에는 **쓰기지연 SQL 저장소** 존재
@@ -35,3 +35,25 @@
 - 플러시
     - 영속성 컨텍스트의 변경내용을 db에 반영
     - 영속성 컨텍스트를 비우지는 않음
+
+## Entity 매핑
+- @Entity
+    - JPA 관리하는 클래스
+    - 기본 생성자 필수 (public or protected)
+- @Column
+    - name: 테이블 컬럼과 매핑
+    - insertable, updateable: 등록, 변경 가능 여부
+    - nullable(DDL): null 허용 여부 (DDL 생성 시 not null 제약 조건 추가)
+    - unique(DDL): 한 컬럼에 간단히 유니크 제약 조건 사용 (@Table의 uniqueConstraints 사용하는게 좋음)
+    - columnDefinition(DDL): 컬럼 정보를 직접 세팅 ex) varchar(100) not null
+    - length(DDL): 문자열 길이 제한, String 타입에만 사용
+- @Enumerated
+    - ORDINAL: 순서 ex) 0, 1, 2 .. 
+    - STRING: 이름
+
+## 기본키 매핑
+- @Id (직접 생성)
+- @GeneratedValue (자동 생성)
+    - AUTO: DB방언에 따라 자동
+    - IDENTITY: 데이터 베이스에 위임 ex) Mysql의 auto_increment
+    - SEQUENCE: 시퀀스 사용
