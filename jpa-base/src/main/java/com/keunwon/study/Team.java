@@ -1,5 +1,6 @@
 package com.keunwon.study;
 
+import com.keunwon.study.domain.Member;
 import lombok.Getter;
 import lombok.Setter;
 

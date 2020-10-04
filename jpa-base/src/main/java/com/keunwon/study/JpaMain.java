@@ -1,5 +1,9 @@
 package com.keunwon.study;
 
+import com.keunwon.study.domain.Member;
+import com.keunwon.study.domain.Order;
+import com.keunwon.study.domain.OrderItem;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
@@ -15,19 +19,8 @@ public class JpaMain {
         tx.begin();
 
         try {
-            Team team = new Team();
-            team.setName("TeamA");
-            em.persist(team);
-
-            Member member = new Member();
-            member.setUsername("member1");
-            member.setTeam(team);
-            em.persist(member);
-
-            Member findMember = em.find(Member.class, member.getId());
-            Team findTeam = findMember.getTeam();
-
-            System.out.println("findTeam = " + findTeam.getName());
+            Order order = new Order();
+            order.addOrderItem(new OrderItem());
 
             tx.commit();
         } catch (Exception e) {
