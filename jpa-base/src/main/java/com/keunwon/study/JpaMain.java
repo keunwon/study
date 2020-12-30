@@ -1,6 +1,5 @@
 package com.keunwon.study;
 
-import com.keunwon.study.domain.Member;
 import com.keunwon.study.domain.Order;
 import com.keunwon.study.domain.OrderItem;
 
