@@ -1,7 +1,9 @@
 package com.keunwon.jpashop.domain;
 
 import com.keunwon.jpashop.domain.item.Item;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
@@ -9,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter @Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 public class Category {
 
