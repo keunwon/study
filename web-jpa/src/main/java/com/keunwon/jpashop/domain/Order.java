@@ -32,7 +32,7 @@ public class Order {
     @JoinColumn(name = "delivery_id")
     private Delivery delivery;
 
-    private LocalDateTime orderDateTime;
+    private LocalDateTime orderDate;
 
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
@@ -45,7 +45,7 @@ public class Order {
         order.setDelivery(delivery);
         Arrays.stream(orderItems).forEach(order::addOrderItem);
         order.setStatus(OrderStatus.ORDER);
-        order.setOrderDateTime(LocalDateTime.now());
+        order.setOrderDate(LocalDateTime.now());
 
         return order;
     }

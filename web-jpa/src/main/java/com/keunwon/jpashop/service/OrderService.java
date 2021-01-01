@@ -8,9 +8,15 @@ import com.keunwon.jpashop.domain.item.Item;
 import com.keunwon.jpashop.repository.ItemRepository;
 import com.keunwon.jpashop.repository.MemberRepository;
 import com.keunwon.jpashop.repository.OrderRepository;
+import com.keunwon.jpashop.repository.OrderSearch;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -20,6 +26,7 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final MemberRepository memberRepository;
     private final ItemRepository itemRepository;
+
 
     @Transactional
     public Long order(Long memberId, Long itemId, int count) {
@@ -42,5 +49,8 @@ public class OrderService {
         order.cancel();
     }
 
-    //public List<Order> findOrders(OrderSearch orderSearch) {}
+
+    public List<Order> findOrders(OrderSearch orderSearch) {
+        return orderRepository.findAll(orderSearch);
+    }
 }
