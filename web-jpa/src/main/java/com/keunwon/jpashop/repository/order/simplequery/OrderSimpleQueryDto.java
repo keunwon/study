@@ -1,7 +1,6 @@
-package com.keunwon.jpashop.repository;
+package com.keunwon.jpashop.repository.order.simplequery;
 
 import com.keunwon.jpashop.domain.Address;
-import com.keunwon.jpashop.domain.Order;
 import com.keunwon.jpashop.domain.OrderStatus;
 import lombok.Data;
 
