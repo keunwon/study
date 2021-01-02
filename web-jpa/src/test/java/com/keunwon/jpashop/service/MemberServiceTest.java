@@ -1,7 +1,7 @@
 package com.keunwon.jpashop.service;
 
 import com.keunwon.jpashop.domain.Member;
-import com.keunwon.jpashop.repository.MemberRepository;
+import com.keunwon.jpashop.repository.MemberRepositoryOld;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +18,7 @@ import static org.junit.Assert.fail;
 public class MemberServiceTest {
 
     @Autowired private MemberService memberService;
-    @Autowired private MemberRepository memberRepository;
+    @Autowired private MemberRepositoryOld memberRepositoryOld;
 
     @Test
     public void 회원가입() throws Exception {
@@ -30,7 +30,7 @@ public class MemberServiceTest {
         Long savedId = memberService.join(member);
 
         //then
-        assertEquals(member, memberRepository.findOne(savedId));
+        assertEquals(member, memberRepositoryOld.findOne(savedId));
     }
 
     @Test(expected = IllegalAccessException.class)
