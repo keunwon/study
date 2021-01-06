@@ -3,6 +3,7 @@ package com.keunwon.datajpa.controller;
 import com.keunwon.datajpa.entity.Member;
 import com.keunwon.datajpa.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.PostConstruct;
+import java.util.stream.IntStream;
 
 @RequiredArgsConstructor
 @RestController
@@ -33,8 +35,9 @@ public class MemberController {
         return memberRepository.findAll(pageable);
     }
 
-    @PostConstruct
+    //@PostConstruct
     public void init() {
-        memberRepository.save(new Member("member1"));
+        IntStream.rangeClosed(1, 5)
+                .forEach(value -> memberRepository.save(new Member("member" + value, 10)));
     }
 }
