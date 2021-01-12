@@ -4,7 +4,7 @@ import lombok.*;
 
 import javax.persistence.*;
 
-@ToString(of = {"id", "username", "username"})
+@ToString(of = {"id", "username", "age"})
 @Getter @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
