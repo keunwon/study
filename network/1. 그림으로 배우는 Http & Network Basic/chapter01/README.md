@@ -1,6 +1,6 @@
 # 웹과 네트워크의 기본에 대해 알아보자
 
-## TCP/IP
+## TCP/IP 통신
 - 애플리케이션 계층
     - 사용자에게 제공되는 애플리케이션에서 사용
         - FTP, DNS, SSH, HTTP 등
@@ -23,8 +23,32 @@
 이렇게 정보를 감싸는 것을 캡슐화라고 부른다.
 
 ## IP (Internet Protocol)
-IP의 역할은 패킷을 상대방에게 전달하는 것이다.
+IP의 역할은 패킷을 상대방에게 전달하는 것이다. 하지만 IP만으로 상대방에게 전달 할수 없다.  
+그 중에서도 [MAC](#MACMedia-Access-Control-Address) 주소가 가장 중요하다.  
 
+### MAC(Media Access Control Address)
+48bit 주소를 사용합니다. 각 네트워크 카드에 할당된 고유주소이다.  
+IP주소와 다르게 MAC주소는 변경 할 수 없다. (네트워크 카드를 변경하지 않는 조건에)
+
+## ARP (Address Resolution Protocol)
+IP 주소를 바탕으로 MAC주소를 조사를 한다.  
+
+####  ARP 동작순서
+1. IP 프로토콜이 ARP 프로콜에게 ARP Request 메시지를 생성 요청한다.  
+    - ARP Request 메시지에는 송신 측 IP, Port, 수신 측 IP 정보가 들어가있다.  
+2. 생성한 메시지를 인접한 네트워크 장비 (LAN, 스위치, 라우터 등..)에 모두 전송한다. (브로드캐스트 방식)
+3. 수신 측 IP를 사용하고 있는 네트워크 장비에서 ARP Reply 메시지를 보낸다. (자신의 MAC주소를 포함)
+4. 송신 측에서는 수신 측 MAC주소를 획득
+5. 수신 측 MAC주소를 기준으로 데이터 전송 (패킷 전송)
+
+## TCP (Transfer Control Protocol)
+- 트랜스포트 계층에서 사용
+- 신뢰성 있는 바이트 스트림을 제공
+- 3Way-Handshacking을 사용하여 신뢰성을 보증
+- TCP 세그먼트로 단위로 나누어서 관리
+
+## DNS(Domain Name System)
+IP 주소와는 별도로 호스트 이름과 도메인 이름을 사용 할 수 있다. (naver.com, google.com 등)
 
 ## TCP 헤더 구조
 ![tcp헤더](./img/tcp헤더.webp)  
@@ -64,6 +88,15 @@ IP의 역할은 패킷을 상대방에게 전달하는 것이다.
 > ISN (Initial sequence number): 초기 sequence number이다. 0부터 시작하지 않고 난수를 생성한다.  
 난수를 생성하는 이유는 IP 스푸핑 방지, 유실 세그먼트 처리 때문이다.  
 유실 세그먼트 처리라는것은 유실된 세그먼트와 신규 세그먼트에 sequence number가 동일하면 이전에 유실된 segment가 지금 수신됬다고 서버가 판단할 수 있으므로 ISN를 사용한다.
+
+
+## URI와 URL
+### URL (Uniform Resource Locator)
+- 웹 페이지를 표시하기 위해서 입력하는 주소
+
+### URI (Uniform Resource Identifiers)
+- 리소스 식별자
+
 
 ### 자료주소
 TCP 헤더: https://networklessons.com/cisco/ccie-routing-switching-written/tcp-header
