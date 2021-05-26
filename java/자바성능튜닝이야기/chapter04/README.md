@@ -13,13 +13,13 @@
 - TreeSet: red-black 트리에 데이터를 저장 (데이터를 저장하면서 자동을 정렬을 한다)
 - LinkedHashSet: 저장된 순서에 따라서 해쉬 테이블에 저장
 ### [속도 비교] Set 데이터 추가
-![set_데이터추가](./img/set_추가.png)
+![set_데이터추가](./img/set_add.png)
 속도: HashSet > LinkedHashSet > TreeSet
 ### [속도 비교] Set 데이터 읽기
-![set_기본읽기](./img/set_기본읽기.png)
+![set_기본읽기](./img/set_get.png)
 속도: LinkedHashSet > HashSet > TreeSet
 ### [속도 비교] Set 데이터 존재여부 확인
-![set_데이터확인](./img/set_데이터확인.png)
+![set_데이터확인](./img/set_contains.png)
 속도: Linked
 
 ## List
