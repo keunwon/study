@@ -21,7 +21,7 @@ test {
 }
 
 jmh {
-    includes = ['MapGet.*']
+    includes = ['Reflection.*']
     iterations = 3
     fork = 1
     warmup = '1ms'
