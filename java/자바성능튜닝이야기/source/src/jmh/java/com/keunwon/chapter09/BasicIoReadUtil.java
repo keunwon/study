@@ -57,7 +57,7 @@ public class BasicIoReadUtil {
 
         try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
             String data;
-            while ((data=br.readLine()) != null) {
+            while ((data = br.readLine()) != null) {
                 list.add(data);
             }
         }
