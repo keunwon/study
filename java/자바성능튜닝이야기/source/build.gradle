@@ -11,6 +11,10 @@ repositories {
 }
 
 dependencies {
+
+    implementation 'javax.servlet:javax.servlet-api:3.1.0'
+    implementation 'javax.servlet.jsp:javax.servlet.jsp-api:2.3.1'
+
     jmh 'commons-io:commons-io:2.4'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
