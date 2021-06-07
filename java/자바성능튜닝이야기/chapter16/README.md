@@ -14,18 +14,19 @@ JIT 컴파일러는 자바 애플레이션이 수행되는 상황을 보고 동�
 - JIT 컴파일러는 Client/Server 버전으로 나누어져 있음
 - 자바는 소스코드를 바이트코드로 된 class라는 파일로 변환한다
 
-## JRockit의 JIT 컴파일 및 최적화 절차
+> JIT으로 컴파일 된 코든느 코드 캐시라고 하는 JVM 프로세스 영역에 저장
 
 ## JVM 시작 절차
 1. java 명령어 줄에 옵션 파싱
-2. 자바 힙 크기 할당, JIT 컴파일러 타입 지정
+2. 자바 힙 크기 할당, JIT 컴파일러 타입 지정 (지정하지 않은 경우 현재 시스템의 상황에 맞게 자동 선정)
 3. CLASSPATH와 LD_LIBRARY_PATH 같은 환경 변수를 지정
-4. 자바 Main 클래스 실행, 지정되지 않았으면 manifest 파일에서 Main 클래스 확인
-5. HotSpot VM 생성
-6. HotSpot VM 생성 초기화, Main 클래스가 로딩된 런처에서는 main() 메서드의 속정 정보를 읽음
+4. 자바 Main 클래스 확인, 지정되지 않았으면 manifest 파일에서 Main 클래스 확인
+5. HotSpot VM 생성 (JNI_CreateJavaVM)
+6. HotSpot VM 초기화, Main 클래스가 로딩된 런처에서는 main() 메서드의 속정 정보를 읽음
 7. HotSpot VM에 있는 main() 메서드 수행 (이때 자바 실행 시 Main 클래스 뒤에 있는 값들이 전달)
 
 ## JVM 종료 절차
+OS의 kill -9와 같은 명령어로 JVM을 종료하면 아래와 같은 절차를 따르지 않는다.
 1. HotSpot VM이 작동중인 상황에서는 단 하나의 데몬이 아닌 스레드가 수행될 때까지 대기
 2. java.lang 패키지에 있는 Shutdown 클래스의 shutdown() 메서드가 수행
 3. HotSpot VM의 종료를 준비, HotSpot VM의 profiler, start smaple, watcher, garbage collector 스레드 종료 이후 JVMTI 비활성처리 Singal 스레드 종료
