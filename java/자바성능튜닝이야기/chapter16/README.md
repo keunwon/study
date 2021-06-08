@@ -44,3 +44,4 @@ OS의 kill -9와 같은 명령어로 JVM을 종료하면 아래와 같은 절차
 3. 해당 클래스를 생성 (java.lang 패키지의 Class 클래스의 객체를 생성)
 4. 링크 작업 수행 (static 필드를 생성 및 초기화, 메서드 테이블을 할당)
 5. 클래스의 초기화 진행되며, 클래스의 static 블록과 static 필드가 가장 먼저 초기화 (부모 클래스의 초기화가 먼저 이루어짐)
+요약: loading -> linking -> Initializing
