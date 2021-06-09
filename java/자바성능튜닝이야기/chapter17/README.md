@@ -46,6 +46,25 @@
 - 마이너 GC: Young 영역에서 발생하는 GC
 - 메이저 GC: Old, Perm 영역에서 발생하는 GC
 
+## GC 방식
+### Serial Collector (시리얼 컬렉터)
+- Young, Old 영역이 시리얼(연속)하게 처리되며 하나의 CPU를 사용
+- Stop-the-World 라고 표한
+- 클라이언트 종류의 장비에서 많이 사용 (대기시간이 길어도 상관없는 시스템)
+- Old 영역의 GC 발생 시 Mark-sweep-compact 알고리즘 사용
+### Parallel Collecotr (병렬 컬렉터)
+- throunghput collector로 알려져 있음
+- CPU가 대기상태로 남아있는 것을 최소화함
+- Young 영역에서 병렬로 처리함 (많은 CPU 사용, GC의 부하를 줄임)
+- Old 영역의 GC 발생 시 Mark-sweep-compact 알고리즘 사용
+### Parallel Compacting Collector (병령 컴팩팅 컬렉터)
+- Parallel Collector와 다르게 Old영역의 GC에서 다른 알고리즘을 사용
+### Concurrent Mark-Sweep (CMS) Collector (cms 컬렉터)
+- low-latency collector로 알렺있음
+- 힙 메모리 영역의 크기가 클때 적합함
+- Young영역의 GC는 Parallel Collector와 동일
+- 2개 이상의 프로세스를 사용하는 서버에 적당
+
 ## 자료 이미지 주소
 - https://www.geeksforgeeks.org/jvm-works-jvm-architecture/
 - https://www.betsol.com/blog/java-memory-management-for-java-virtual-machine-jvm/
