@@ -92,6 +92,7 @@
 - Size가 큰 Long Lived Object가 있는 경우 적합
 - CMS Collector는 Suspend Time을 분산하여 응답시간 개선
 - Young Area에는 Parallel Copy 알고리즘, Old Area는 Concurrent Mark-Sweep 알고리즘 사용
+- [Floating Garbage](#floating-garbage) 문제가 있음
 ### Old Area의 Concurrent Mark-Sweep 알고르즘
 - Initial Mark Phase 단계
     - Single Thread 사용
@@ -108,12 +109,49 @@
     - 최종 Live Object를 제외하고 모든 Object를 지움
     - Sweep 작업만 하고 Compaction 작업은 수행하지 않음
     - Compaction 작업은 Heep의 Suspend를 전제로 반복된 Sweep은 단편화를 유발 ([Free List](#free-list)를 사용하여 단편화를 줄이는 노력을 함)
-### Parallel Compaction Collector
+### Parallel Compaction 알고리즘: Old Area
 - Old Area에 새로운 알고리즘 사용 (Mark and Compact -> Parallel Compacting),  
 Old Area의 Collection 시간을 감소시켜 효율이 증가
 - Multi CPU에서 유리
-
+### Parallel Compaction 알고리즘
+- Mark Phause 단계: 살아있는 객체를 식별하는 단계
+- Summary phase 단계: 이전에 GC를 수행하여 컴팩션된 영역에 살아있는 객체으 위치를 조사
+- Compact Phase 단계: 컴팩션을 수행하는 단계로 수행 이후에는 컴팩션된 영역과 비어있는 영역으로 나누어짐
+### Garbage First Collector
+- 
+#### 기본적인 GC 메커니즘
+- Young Area의 Region들의 Object를 Survivor Region으로 Copy
+- Promotion의 대상 Object는 Old Generation으로 Copy
+- 기존 Young Generation Region은 Garbage로 간주해 Region 단위로 할당을 해지
+- Young Area GC가 끝나면 바로 Old Area GC를 시작함
+    - Heep 전체에 대한 GC는 아니며 Region단위임
+    - GC로 인한 Suspend 현상도 해당 Region을 사용하는 Thread에 국한
+> G1 Collector가 Region 내에 Reference를 관리하는 방법은 Remember set을 이용함(Heep의 5%미만 공간을 각 Region의 참조정보를 저장하는 Remember set으로 할당), Remember set은 Region 외부에서 들어오는 참조 정보를 가지고 있어 Marking 장업 시 trace 일량을 줄여줘 GC효율을 높임
+#### GC 작업 단계
+G1 Garbage Collection은 4단계, 세부적으로 6단계이다
+1. Young GC
+    - Minor GC와 동일한 개념
+    - Suspend Time이 존재, Multi-Thread 작업
+    - Live Object는 Age에 맞게 Survivor Region, Old Region으로 Copy되며 기존 공간은 해지
+    - 이후 새로운 Object가 할당되는 Young Region은 Survivor Region과 그 근처 비어있는 Region이 됨
+2. Concurrent Mark phase (Mark -> Remark): Old Area GC 시작
+    - Marking 단계
+        - Single-Thread, 전체적으로 Concurrent
+        - 이전에 변경된 정보를 바탕으로 Initial Mark를 빠르게 수행
+    - Remarking 단계
+        - Suspend 발생, 전체 Thread가 동시 작업
+        - 각 Region마다 Reachable Object의 Density를 계산, Garbage Region은 다음 단계로 안넘아가고 바로 해지
+3. Old Region reclaim phase (Remark -> Evacuation)
+    - Remark 단계
+        - Concurrent 작업, Multi-Thread 방식
+        - GC를 위해 Live Object의 비율이 낮은 몇 개의 Region을 골라냄
+    - Evacuation Phase 단계
+4. Compaction Phase
+    - Concurrent 작업을 수행
+    - 많은 Region을 균등하게 조금씩 사영하게 되는 부작용을 방지
 ### Free List
 - Young Area에서 승격된 Object와 크기가 비슷한 Old Area의 Free Space를 Free List에서 탐색
 - 승격되는 Object Size를 계속 통계화하여 Free Memory 블록들을 붙이거나 쪼개서 적적할 Size로 Chunk에 Object를 할당  
 (이러한 작업은 Young Area에 부담을 줌, Free List에서 적절한 Chunk 크기를 찾아 Allocation 해야하기 때문에 시간도 오래 걸림)
+### Floating Garbage
+- Garbage면서 수거되지 않고 붕 뚠 Garbage
