@@ -1,11 +1,7 @@
 package com.keunwon.codingtest.chapter2;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static java.util.Collections.singletonList;
 
@@ -44,9 +40,6 @@ public class QuickSort {
         int temp;
 
         while (left < right) {
-            //while (arr[left] < pivot) { left++; }
-            //while (pivot < arr[right] && left < right) { right--; }
-
             while (pivot < arr[right]) { right--; }
             while (left < right && arr[left] <= pivot) { left++; }
 
