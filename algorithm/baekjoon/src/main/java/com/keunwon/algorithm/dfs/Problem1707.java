@@ -39,16 +39,16 @@ public class Problem1707 {
     static int glacierNum() {
         boolean[][] visited = new boolean[row][column];
         
-        int cnt = 0;
+        int depth = 0;
         for (int i = 0; i < row; i++) {
             for (int j = 0; j < column; j++) {
                 if (map[i][j] != 0 && !visited[i][j]) {
                     dfs(i, j, visited);
-                    cnt++;
+                    depth++;
                 }
             }
         }
-        return cnt;
+        return depth;
     }
 
     static void dfs(int r, int c, boolean[][] visited) {
