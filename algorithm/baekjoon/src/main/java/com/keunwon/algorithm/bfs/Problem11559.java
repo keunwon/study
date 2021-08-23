@@ -3,51 +3,76 @@ package com.keunwon.algorithm.bfs;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 
 public class Problem11559 {
     static final char[][] map = new char[12][6];
     static boolean[][] visited;
 
+    static List<Position> list = new ArrayList<>();
     static final int[][] moves = { {-1, 0}, {1, 0}, {0, -1}, {0, 1} };
 
     public static void main(String[] args) throws IOException {
         input();
 
-        boolean isMove;
         int count = 0;
+        boolean isMove = false;
         while (true) {
             visited = new boolean[12][6];
             isMove = false;
 
             for (int i = 0; i < 12; i++) {
                 for (int j = 0; j < 6; j++) {
-                    if (map[i][j] != '.') {
-                        if (!visited[i][j] && bfs(i, j)) {
+                    if (map[i][j] != '.' && !visited[i][j]) {
+                        list = new ArrayList<>();
+                        bfs(i, j);
+
+                        if (list.size() >= 4) {
                             isMove = true;
+
+                            for (Position p : list) {
+                                map[p.x][p.y] = '.';
+                            }
                         }
                     }
                 }
             }
 
-            if (isMove) {
-                moveColor();
-                count++;
-            } else {
-                break;
-            }
+            if (!isMove) { break; }
+
+            movePuyos();
+            count++;
         }
 
         System.out.println(count);
     }
 
-    static boolean bfs(int x, int y) {
+    static void movePuyos() {
+        for (int i = 0; i < 6; i++) {
+            for (int j = 11; j > 0; j--) {
+                if (map[j][i] == '.') {
+
+                    for (int k = j - 1; k >= 0; k--) {
+                        if (map[k][i] != '.') {
+                            map[j][i] = map[k][i];
+                            map[k][i] = '.';
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    static void bfs(int x, int y) {
         Queue<Position> queue = new LinkedList<>();
         char color = map[x][y];
-        int count = 1;
 
         queue.add(new Position(x, y));
+        list.add(new Position(x, y));
         visited[x][y] = true;
 
         while (!queue.isEmpty()) {
@@ -59,35 +84,11 @@ public class Problem11559 {
 
                 if (validMap(nx, ny) && isGo(nx, ny, color)) {
                     queue.add(new Position(nx, ny));
+                    list.add(new Position(nx, ny));
                     visited[nx][ny] = true;
-                    count++;
                 }
             }
         }
-        return count >= 4;
-    }
-
-    static void moveColor() {
-//        for (int i = 0; i < 12; i++) {
-//            for (int j = 0; j < 6; j++) {
-//                if (visited[i][j]) {
-//                    move(i, j);
-//                }
-//            }
-//        }
-
-        for (int i = 0; i < ; i++) {
-            
-        }
-    }
-
-    static void move(int x, int y) {
-        if (map[x][y] == '.') { return; }
-
-        if (!validMap(x - 1, y)) { return; }
-
-        map[x][y] = map[x - 1][y];
-        move(x - 1, y);
     }
 
     static boolean isGo(int x, int y, char color) {
