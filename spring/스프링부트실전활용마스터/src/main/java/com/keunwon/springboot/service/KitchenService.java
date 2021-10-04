@@ -11,14 +11,12 @@ import java.util.Random;
 
 @Service
 public class KitchenService {
-
     private Random picker = new Random();
 
     private List<Dish> menu = Arrays.asList(
             new Dish("Sesame chicken"),
             new Dish("Lo mein noodles, plain"),
-            new Dish("Sweet & sour beef")
-    );
+            new Dish("Sweet & sour beef"));
 
     public Flux<Dish> getDishes() {
         return Flux.<Dish> generate(sink -> sink.next(randomDish()))
