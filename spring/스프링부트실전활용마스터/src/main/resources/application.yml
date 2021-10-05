@@ -10,4 +10,5 @@ server:
   port: 8080
 logging:
   level:
+    web: debug
     org.springframework.data: trace
