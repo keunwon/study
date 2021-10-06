@@ -59,7 +59,7 @@ public class InventoryService {
                         .orElseGet(() -> {
                             return itemRepository.findById(itemId)
                                     .log("fetchedItem")
-                                    .map(item -> new CartItem(item))
+                                    .map(CartItem::new)
                                     .log("cartItem")
                                     .map(cartItem -> {
                                         cart.getCartItems().add(cartItem);
