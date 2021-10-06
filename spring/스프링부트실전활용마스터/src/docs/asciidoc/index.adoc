@@ -1,0 +1,6 @@
+= index == get index
+include::{snippets}/findAll/curl-request.adoc[]
+
+include::{snippets}/findAll/http-request.adoc[]
+
+include::{snippets}/findAll/http-response.adoc[]

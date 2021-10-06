@@ -2,6 +2,7 @@ plugins {
     id 'org.springframework.boot' version '2.4.11'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'java'
+    id 'org.asciidoctor.convert' version '1.5.8'
 }
 
 group = 'com.keunwon'
@@ -17,6 +18,10 @@ configurations {
 
 repositories {
     mavenCentral()
+}
+
+ext {
+    snippetsDir = file('build/generated-snippets')
 }
 
 dependencies {
@@ -36,19 +41,47 @@ dependencies {
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'io.projectreactor:reactor-test'
-    //testImplementation 'io.projectreactor.tools:blockhound-junit-platform:1.0.6.RELEASE'
+
+    asciidoctor 'org.springframework.restdocs:spring-restdocs-asciidoctor'
+    testImplementation 'org.springframework.restdocs:spring-restdocs-webtestclient'
+
+    implementation 'org.springframework.boot:spring-boot-starter-amqp'
+    implementation 'org.testcontainers:testcontainers-bom:1.16.0'
+    testImplementation "org.testcontainers:rabbitmq:1.16.0"
+    testImplementation "org.testcontainers:junit-jupiter:1.16.0"
 }
 
 test {
+    outputs.dir snippetsDir
     useJUnitPlatform()
+}
+
+asciidoctor {
+    inputs.dir snippetsDir
+    dependsOn test
 }
 
 bootJar {
     layered {
         enabled = true
     }
+    dependsOn asciidoctor
+    from ("${asciidoctor.outputDir}/html5") {
+        into 'static/docs'
+    }
 }
 
 bootBuildImage {
     imageName = 'hacking-with-spring-master:latest'
+}
+
+task copyDocument(type: Copy) {
+    dependsOn asciidoctor
+
+    from('build/asciidoc/html5/') {
+        into 'src/main/resources/static/docs'
+    }
+}
+
+build {
 }

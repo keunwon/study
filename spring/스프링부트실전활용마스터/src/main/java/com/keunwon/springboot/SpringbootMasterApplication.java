@@ -10,7 +10,6 @@ import org.springframework.boot.actuate.trace.http.InMemoryHttpTraceRepository;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.convert.converter.Converter;
-import org.springframework.data.mongodb.core.convert.DbRefResolver;
 import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
 import org.springframework.data.mongodb.core.convert.MongoCustomConversions;
 import org.springframework.data.mongodb.core.convert.NoOpDbRefResolver;
@@ -18,7 +17,6 @@ import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
 import org.thymeleaf.TemplateEngine;
 import reactor.blockhound.BlockHound;
 
-import javax.print.Doc;
 import java.net.URI;
 import java.util.Collections;
 import java.util.Map;
@@ -41,7 +39,7 @@ public class SpringbootMasterApplication {
         return new InMemoryHttpTraceRepository();
     }
 
-    @Bean
+    //@Bean
     public HttpTraceRepository SpringDataHttpTraceRepository(HttpTraceWrapperRepository repository) {
         return new SpringDataHttpTraceRepository(repository);
     }
@@ -71,7 +69,7 @@ public class SpringbootMasterApplication {
                 }
             };
 
-    @Bean
+    //@Bean
     public MappingMongoConverter mappingMongoConverter(MongoMappingContext context) {
         MappingMongoConverter mappingMongoConverter = new MappingMongoConverter(NoOpDbRefResolver.INSTANCE, context);
 
