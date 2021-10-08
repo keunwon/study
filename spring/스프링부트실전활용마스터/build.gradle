@@ -32,7 +32,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.mongodb:mongodb-driver-sync'
     implementation 'de.flapdoodle.embed:de.flapdoodle.embed.mongo'
+    implementation 'org.springframework.boot:spring-boot-starter-amqp'
     implementation 'io.projectreactor.tools:blockhound:1.0.6.RELEASE'
+    implementation 'org.springframework.boot:spring-boot-starter-rsocket'
 
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
@@ -45,10 +47,15 @@ dependencies {
     asciidoctor 'org.springframework.restdocs:spring-restdocs-asciidoctor'
     testImplementation 'org.springframework.restdocs:spring-restdocs-webtestclient'
 
-    implementation 'org.springframework.boot:spring-boot-starter-amqp'
-    implementation 'org.testcontainers:testcontainers-bom:1.16.0'
-    testImplementation "org.testcontainers:rabbitmq:1.16.0"
-    testImplementation "org.testcontainers:junit-jupiter:1.16.0"
+    testImplementation "org.testcontainers:rabbitmq"
+    testImplementation "org.testcontainers:testcontainers"
+    testImplementation "org.testcontainers:junit-jupiter"
+}
+
+dependencyManagement {
+    imports {
+        mavenBom 'org.testcontainers:testcontainers-bom:1.16.0'
+    }
 }
 
 test {
@@ -81,7 +88,4 @@ task copyDocument(type: Copy) {
     from('build/asciidoc/html5/') {
         into 'src/main/resources/static/docs'
     }
-}
-
-build {
 }

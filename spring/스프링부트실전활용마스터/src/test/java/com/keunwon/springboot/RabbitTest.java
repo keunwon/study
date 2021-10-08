@@ -26,10 +26,10 @@ public class RabbitTest {
     static RabbitMQContainer container = new RabbitMQContainer("rabbitmq:3.7.25-management-alpine");
 
     @Autowired
-    private WebTestClient webTestClient;
+    WebTestClient webTestClient;
 
     @Autowired
-    private ItemRepository itemRepository;
+    ItemRepository itemRepository;
 
     @DynamicPropertySource
     static void configure(DynamicPropertyRegistry registry) {
@@ -44,8 +44,6 @@ public class RabbitTest {
                 .exchange()
                 .expectStatus().isCreated()
                 .expectBody();
-
-        Thread.sleep(1500L);
 
         webTestClient.post().uri("/items")
                 .bodyValue(new Item("Smurf TV tray", "nothing important", 29.99))

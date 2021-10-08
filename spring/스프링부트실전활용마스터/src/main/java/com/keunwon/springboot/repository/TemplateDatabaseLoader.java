@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class TemplateDatabaseLoader {
 
-    @Bean
+    //@Bean
     public CommandLineRunner initialize(MongoOperations mongo) {
         return args -> {
             mongo.save(new Item("Alf alarm clock", "kids clock", 19.99));
