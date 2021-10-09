@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.stream.Collectors;
+
 import static org.springframework.data.mongodb.core.query.Criteria.byExample;
 import static org.springframework.data.mongodb.core.query.Criteria.where;
 import static org.springframework.data.mongodb.core.query.Query.query;
@@ -125,5 +127,22 @@ public class InventoryService {
         return fluentMongoOperations.query(Item.class)
                 .matching(query(byExample(Example.of(item, matcher))))
                 .all();
+    }
+
+    public Mono<Cart> removeOneFromCart(String cartId, String itemId) {
+        return cartRepository.findById(cartId)
+                .defaultIfEmpty(new Cart(cartId))
+                .flatMap(cart -> cart.getCartItems().stream()
+                        .filter(cartItem -> cartItem.getItem().getId().equals(itemId))
+                        .findAny()
+                        .map(cartItem -> {
+                            cartItem.decrement();
+                            return Mono.just(cart);
+                        })
+                        .orElse(Mono.empty()))
+                .map(cart -> new Cart(cart.getId(), cart.getCartItems().stream()
+                        .filter(cartItem -> cartItem.getQuantity() > 0)
+                        .collect(Collectors.toList())))
+                .flatMap(cartRepository::save);
     }
 }

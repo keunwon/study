@@ -17,6 +17,10 @@ public class CartItem {
         quantity++;
     }
 
+    public void decrement() {
+        this.quantity--;
+    }
+
     public Item getItem() {
         return item;
     }
