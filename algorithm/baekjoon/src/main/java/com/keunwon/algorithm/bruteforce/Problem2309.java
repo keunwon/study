@@ -1,4 +1,4 @@
-package com.keunwon.algorithm.bluteforce;
+package com.keunwon.algorithm.bruteforce;
 
 import java.io.IOException;
 import java.util.Arrays;
