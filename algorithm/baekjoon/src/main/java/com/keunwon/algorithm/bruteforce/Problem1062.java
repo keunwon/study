@@ -11,15 +11,16 @@ public class Problem1062 {
     private static int N, K;
     private static String[] words;
 
-    private static int max = Integer.MIN_VALUE;
+    private static int max = 0;
     private static int mask;
 
     public static void main(String[] args) throws IOException {
         input();
-        dfs(0, 0);
+        dfs(0, mask, 0);
+        System.out.println(max);
     }
 
-    private static void dfs(int x, int depth) {
+    private static void dfs(int index, int mask, int depth) {
         if (K - 5 == depth) {
             int count = 0;
 
@@ -40,9 +41,9 @@ public class Problem1062 {
             return;
         }
 
-        for (int i = x; i <= 26; i++) {
+        for (int i = index; i <= 26; i++) {
             if ((mask & (1 << i)) == 0) {
-                dfs(i + 1, depth + 1);
+                dfs(i + 1, mask | (1 << i), depth + 1);
             }
         }
     }
@@ -52,7 +53,6 @@ public class Problem1062 {
         N = Integer.parseInt(st.nextToken());
         K = Integer.parseInt(st.nextToken());
         words = new String[N];
-        mask = 0;
 
         for (int i = 0; i < N; i++) {
             String word = br.readLine().replaceAll("[antic]", "");
