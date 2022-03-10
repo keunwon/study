@@ -1,4 +1,6 @@
 rootProject.name = 'the-red-tdd'
 include 'console-app'
 include 'console-app-model'
+include 'variance'
+include 'text-refiner'
 
