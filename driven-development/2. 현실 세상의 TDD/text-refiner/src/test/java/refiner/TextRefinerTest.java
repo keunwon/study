@@ -63,6 +63,15 @@ class TextRefinerTest {
         assertEquals(expected, actual);
     }
 
+    @DisplayName("단어 앞에 공백이 포함")
+    @ParameterizedTest
+    @CsvSource(value = {"hello world, hello world"}, ignoreLeadingAndTrailingWhitespace = false)
+    void case05(String expected, String source) {
+        final var actual = TextRefiner.refinerText(source);
+
+        assertEquals(expected, actual);
+    }
+
     private static Stream<Arguments> ofMasking() {
         return Stream.of(
                 Arguments.of("hello mockist", List.of("mockist", "purist"), "hello *******"),

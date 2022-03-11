@@ -15,6 +15,7 @@ public class TextRefiner {
                 .map(TextRefiner::normalizeWhiteSpace)
                 .map(TextRefiner::compactWhiteSpace)
                 .map(x -> maskBannedWords(x, options))
+                .map(String::trim)
                 .findAny().get();
     }
 
