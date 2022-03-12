@@ -1,5 +1,6 @@
 package productimporter;
 
+import productimporter.starkindustries.StarkIndustriesProductArgumentResolver;
 import productimporter.suppliers.wayneeenterprises.WayneEnterprisesProductArgumentResolver;
 
 import java.util.Optional;
@@ -11,5 +12,7 @@ public interface DomainArgumentResolver {
     static Random random =  new Random();
 
     static CompositeArgumentResolver instance = new CompositeArgumentResolver(
+            new ProductArgumentResolver(),
+            new StarkIndustriesProductArgumentResolver(),
             new WayneEnterprisesProductArgumentResolver());
 }

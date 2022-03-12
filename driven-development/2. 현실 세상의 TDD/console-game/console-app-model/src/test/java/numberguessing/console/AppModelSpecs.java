@@ -1,11 +1,14 @@
 package numberguessing.console;
 
 import numberguessing.PositiveIntegerGeneratorStub;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.powermock.reflect.Whitebox;
 
+import java.util.List;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -338,5 +341,46 @@ class AppModelSpecs {
 
         final var actual = sut.isCompleted();
         assertTrue(actual);
+    }
+
+    //-DargLine=--add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.io=ALL-UNNAMED --add-opens java.base/java.util=ALL-UNNAMED
+    @Disabled
+    @Test
+    void print_correctly_appends_string_to_output_buffer() throws Exception {
+        var sut = new AppModel(new PositiveIntegerGeneratorStub(50));
+        var outputBuffer = (StringBuffer) Whitebox.getField(AppModel.class, "outputBuffer").get(sut);
+
+        outputBuffer.setLength(0);
+        Whitebox.invokeMethod(sut, "print", "foo");
+
+        var actual = outputBuffer.toString();
+        assertThat(actual).isEqualTo("foo");
+    }
+
+    @Disabled
+    @Test
+    void println_correctly_appends_string_and_line_separator_to_output_buffer() throws Exception {
+        var sut = new AppModel(new PositiveIntegerGeneratorStub(50));
+        var outputBuffer = (StringBuffer) Whitebox.getField(AppModel.class, "outputBuffer").get(sut);
+
+        outputBuffer.setLength(0);
+        Whitebox.invokeMethod(sut, "println", "foo");
+
+        var actual = outputBuffer.toString();
+        assertThat(actual).isEqualTo("foo" + System.lineSeparator());
+    }
+
+    @Disabled
+    @Test
+    void printLines_correctly_appends_lines() throws Exception {
+        var sut = new AppModel(new PositiveIntegerGeneratorStub(50));
+        var outputBuffer = (StringBuffer) Whitebox.getField(AppModel.class, "outputBuffer").get(sut);
+
+        outputBuffer.setLength(0);
+        Whitebox.invokeMethod(sut, "printLines", "foo", "bar", "baz");
+
+        var actual = outputBuffer.toString();
+
+        assertThat(actual).isEqualTo("foo" + NEW_LINE + "bar" + NEW_LINE + "baz");
     }
 }
