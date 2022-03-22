@@ -141,14 +141,129 @@ select * from departments where dept_no = "d""001";
     3. 2번에서 읽어들인 인덱스 키와 레코드 주소를 이용해 레코드가 저장된 페이지를 가져오고, 최종 레코드를 읽어옴
 - 인덱스 풀 스캔, 테이블 풀 스캔 작업은 인덱스 탐색(index seek) 과정이 거의 없지만 실제 인덱스나 테이블의 모든 레코드를 읽기 때문에 부하가 높음
 - 조인 작업에서 드라이빙 테이블을 읽을 때는 인덱스 탐색 작업을 단 한번만 수행하고, 그 이후부터는 스캔만 실행함
-#### JOIN 컬럼의 데이터 타입
+- 조인이 수행될 때 조인되는 양쪽 테이블의 컬럼에 모두 인덱스가 없을 때만 드리븐 테이블을 풀 스캔함
+- 드라이빙 테이블은 풀 테이블 스캔을 사용할 수 있어도 드리븐 테이블을 풀 테이블 스캔으로 접근하는 실행 계획은 옵티마이저가 만들어내지 않음
 #### OUTER JOIN의 주의사항
-#### OUTER JOIN과 COUNT(*)
-#### OUTER JOIN을 이용한 ANTI JOIN
+- OUTER 테이블의 컬럼이 WHERE 절에 명시하면 옵티마이저가 INNTER JOIN과 같은 방법으로 처리함
 #### INNER JOIN과 OUTER JOIN의 선택
+- OUTER JOIN, INNER JOIN은 실제 가져와야 하는 레코드가 같다면 쿼리의 성능 차이는 거의 없음
 #### FULL OUTER JOIN 구현
-#### 조인 순서로 인한 쿼리 실패
+- MYSQL에서는 FULL OUTER JOIN 기능을 제공하지 않음
+- UNION, UNION ALL을 사용함
+    - UNION 사용시 내부적인 임시 테이블을 사용하므로 쿼리가 느리게 처리됌
 #### JOIN과 FOREIGN KEY
+- FOREIGN KEY는 조인과 아무런 연관이 없음 (FOREIGN KEY는 무결성 보장용)
 #### 지연된 조인(Delayed Join)
-#### 조인 버퍼 사용으로 인한 정렬 흐트러짐
-
+- 지연된 조인: 조인이 하기 전에 GROUP BY, ORDER BY를 처리하는 방식
+- 조인의 개수를 줄여 임시 테이블의 크기를 작게 유지함
+### 4.7. GROUP BY
+#### GROUP BY ... ORDER BY NULL
+- MYSQL에서 GROUP BY가 불피요한 정렬 작업을 하지 않게 하려면 GROUP BY를 수행할 때 'ORDER BY  NULL' 사용해야 함
+#### GROUP BY .. WITH ROLLUP
+- 해당 그룹 마지막에 총 레코드 계수를 출력
+- ORDER BY와 함께 사용할 수 없음
+- LIMIT과 함께 사용되는 경우 결과가 조금 혼라스러움
+### 4.8. ORDER BY
+#### ORDER BY RAND()
+- 임의값으로 정렬을 수행
+#### 함수나 표현식을 이용한 정렬
+- 컬럼의 연산 결과를 이용해 정렬하는 것도 가능 (연산 결과에 의한 정렬은 인덱스를 사용할 수 없음)
+### 4.9. 서브 쿼리
+FROM 절에 사용되는 서브 쿼리나 WHERE 절의 IN (subquery) 구문도 그다시 효율적이지 않음
+#### 서브 쿼리의 제약 사항
+- 서브 쿼리는 대부분의 쿼리 무장에서 사용할 수 있지만 LIMIT, LOAD DATA INFILE의 파일명에는 사용할 수 없음
+- 서브 쿼리는 IN 연산자와 함께 사용할 때에는 효율적으로 처리되지 못함
+- IN 연산자 안에서 사용하는 서브 쿼리는 ORDER BY와 LIMIT를 동시에 사용할 수 없음
+- FROM 절에 사용하는 서브 쿼리는 상관 서브 쿼리 형태로 사용할 수 없음
+### 4.10. 집합 연산
+#### UNION
+- UNION은 중복을 제거하는 (DISTINCT)가 포함되어있어 임시 테이블의 모은 컬럼을 UNIQUE 인덱스를 생성함 (UNION ALL, UNION의 차이는 UNIQUE 인덱스를 생성했냐 안했냐에 차이만 있음. 임시 테이블은 둘다 만듬)
+#### LOCK IN SHARE MODE와 FOR UPDATE
+- LOCK IN SHARE: SELECT 레코드에 대해 읽기 잠금(Shared lock), 다른 세션에서 해당 레코드를 변경하지 못하게 (읽기는 가능)
+- FOR UPDATE: 쓰기 잠금(배타잠금 = Exclusive lock)을 설정, 다른 트랜잭션에서는 그 레코드를 읽기, 쓰기를 못함
+### 5. INSERT
+#### AUTO_INCREMENT 제약 및 특성
+- AUTO_INCREMENT: 하나의 테이블에서 순차적으로 자동 증가
+#### AUTO_INCREMENT 잠금
+- 동시에 AUTO_INCREMENT를 사용할 때 AutoIncrement 잠금이라는 테이블 단위의 잠금을 사용
+- AUTO_INCREMENT 값을 가져올때만 잠금이 걸렸다가 즉시 해제 (성능상의 문자가 될 때는 거의 없음)
+- 롤백시 AUTO_INCREMENT 값을 되돌리지 않음
+#### AUTO_INCREMENT 증가 값 가져오기
+- SELECT LAST_INSERT_ID() 사용
+#### REPLACE
+- 문법은 INSERT와 크게 다르지 않음
+- 저장하려는 데이터가 중복된 데이터이면 UPDATE 실행(기존에 있는 데이터 DELETE하고 수로운 레코드 INSERT), 중복되지 않으면 INSERT 수행
+- 이미 존재하는 중복된 레코드의 컬럼 값을 참조할 수 없음
+#### INSERT INTO ... ON DUPLICATE KEY UPDATE ...
+- 중복된 레코드를 DELETE하지 않고 UPDATE 함
+#### INSERT ... SELECT ...
+- 특정 테이블로부터 레코드를 읽어 그 결과를 INSERT함
+### 6. UPDATE
+#### 6.1. UPDATE ... ORDER BY ... LIMIT n
+- UPDATE 문장에 ORDER BY절과 LIMIT 절을 동시에 사용해 특정 값으로 정렬해서 그 중에서 상위 몇 건만 업데이트하는 것도 가능함
+- 마스터 슬레이어 구조에서 ORDER BY가 포함된 UPDATE 문장을 사용할 때는 주의가 필요
+- 마스터 슬레이어 구조에서 마스터 역할을 하는 MYSQL 서버에서는 LIMIT 절은 있지만 ORDER BY 절이 없는 UPDATE문은 사용하지 않는게 좋음
+#### 6.2. JOIN UPDATE
+- 두 개 이상의 테이블을 조인해 조인된 결과 레코드를 업데이트하는 쿼리를 JOIN UPDATE라고 함
+- JOIN UPDATE는 조인되는 모든 테이블에 대해 읽기 참조만 되는 테이블은 읽기 잠금, 컬럼이 변경되는 테이블은 쓰기 잠금이 걸림
+(실시간 웹 서비스와 같은 환경에서는 데드락을 유발할 가능성이 높아 많이 사용하지 않는 것이 좋음, 배치 or 통계용으로는 유용하게 사용할 수 있음)
+- JOIN UPDATE 시 GROUP BY, ORDER BY 절을 사용할 수 없음
+### 7. DELETE
+#### 7.1. DELETE ... ORDER BY ... LIMIT n
+- 마스터 슬레이브 MYSQL에서 다른 레코드를 삭제할 가능성에 대해서 주의가 필요함
+#### 7.2. JOIN DELETE
+- 여러 테입블을 조인해 레코드를 삭제
+### 8. 스키마 조작(DDL)
+#### 테이블 구조 조회
+- SHOW CREATE TABLE
+    - MYSQL 서버가 테이블의 메타 정보를 읽어서 이를 CREATE TABLE 명령으로 재작성해서 보여줌
+#### 테이블 구조 변경
+- 테이블 구조 변경시 ALTER TABLE 사용
+#### 테이블 이름 변경
+- RENAME TABLE 사용
+- RENAME TABLE 사용 시 네임 락(Name lock)을 이용하여 RENAME TABLE 명령에 있는 모든 테이블에 대해 잠금을 걸고 진행
+- InnoDB에서 *.FRM 파일 이름 변경 작업과 InnoDB 스토리지 엔진 내에서 관리되는 딕셔너리 정보의 변경이 필요
+    - 많이 데이터 변경 후 RENAME TABLE 명령을 실행하면 문제가 발생할 수 있음
+- 다른 데이터 베이스로 옮길때도 유용하게 사용 가능
+#### 테이블의 상태 조회
+- SHOW TABLE status like '<테이블 명>'\G
+#### 테이블 구조 복사
+- CREATE TABLE <신규 테이블 명> like <복사 대상 테이블 명>
+#### 테이블 삭제
+- 레코드가 많은 테이블을 삭제하는 작업은 부하가 큰 작업에 속함 (서비스 도중에 삭제 삭업은 수행하지 않는 것이 좋음)
+- 테이블 삭제시 LOCK_open 이라는 잠금을 획득해야함 
+### 8.3. 컬럼 변경
+#### 컬럼 추가
+- 컬럼 추가하는 작업은 테이블의 데이터를 새로운 테이블로 복사하는 형태로 처리 (레코드가 많으면 느려짐)
+#### 컬럼 삭제
+- 컬럼을 삭제하는 작업도 테이블의 데이터를 새로운 테이블로 복사하면서 컬럼을 제거하는 형태로 처리 (레코드가 많으면 느려짐)
+#### 컬럼명을 변경하는 경우
+- CHANGE COLUMN 사용
+- InnoD에서는 임세 테이블로 데이터를 복사하는 작업이 실행되기 때문에 레코드 건수에 따라 상당히 느리게 처리
+- ALTER TABLE <테이블 명> CHANGE COLUMN <변경 대상 컬럼 명> <변경 컬럼 명> <타입> <그 외 옵션>
+#### 컬럼명 이외의 타입이나 NULL 여부를 변경하는 경우
+- 컬럼의 타입이나 NULL 여부 등을 변경 할때 사용
+- MODIFY COLUMN 사용
+- 타입 변환이나 NULL 여부 변경은 테이블의 데이터를 복사하면서 구조를 변경하는 형태로 처리하기 때문에 레코드 건수에 따라 상당히 시간이 걸림
+### 8.4. 인덱스 변경
+#### 인덱스 조회
+- show index from <테이블 명>
+#### 인덱스 삭제
+- DROP INDEX 사용
+#### 컬럼 및 인덱스 변경을 모아서 실행
+- 하나로 모아서 실행하는 방법은 각 명령으로 나눠서 실행할 때보다 빠르게 실행 (가능하다면 스키마 변경은 테이블 단위로 모아서 실행)
+### 8.6. 프로세스 강제 종료
+- KILL 사용
+### 8.7. 시스템 변수 조회
+- SHOW GLOBAL VARIABLES
+- SHOW GLOBAL VARIABLES LIKE '%connections%'
+- SHOW SESSION VARIABLES LIKE '%timeout%'
+- SHOW VARIABLES LIKE '%timeout%'
+### 8.8. 경고나 에러 조회
+- SHOW WARNINGS
+- 에러 메시지가 표시되지 않는 경우 -> SHOW ERRORS
+### 8.9. 권한 조회
+- SHOW PRIVILEGES
+- 특정 사용자 권한 조회: SHOW GRANT FOR 'root'@'localhost'
+## 9. SQL 힌트
+## 10. 쿼리 성능 테스트
