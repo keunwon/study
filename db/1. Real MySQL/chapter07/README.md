@@ -181,39 +181,43 @@ FROM 절에 사용되는 서브 쿼리나 WHERE 절의 IN (subquery) 구문도 �
 #### LOCK IN SHARE MODE와 FOR UPDATE
 - LOCK IN SHARE: SELECT 레코드에 대해 읽기 잠금(Shared lock), 다른 세션에서 해당 레코드를 변경하지 못하게 (읽기는 가능)
 - FOR UPDATE: 쓰기 잠금(배타잠금 = Exclusive lock)을 설정, 다른 트랜잭션에서는 그 레코드를 읽기, 쓰기를 못함
-### 5. INSERT
-#### AUTO_INCREMENT 제약 및 특성
+
+## 5. INSERT
+### AUTO_INCREMENT 제약 및 특성
 - AUTO_INCREMENT: 하나의 테이블에서 순차적으로 자동 증가
-#### AUTO_INCREMENT 잠금
+### AUTO_INCREMENT 잠금
 - 동시에 AUTO_INCREMENT를 사용할 때 AutoIncrement 잠금이라는 테이블 단위의 잠금을 사용
 - AUTO_INCREMENT 값을 가져올때만 잠금이 걸렸다가 즉시 해제 (성능상의 문자가 될 때는 거의 없음)
 - 롤백시 AUTO_INCREMENT 값을 되돌리지 않음
-#### AUTO_INCREMENT 증가 값 가져오기
+### AUTO_INCREMENT 증가 값 가져오기
 - SELECT LAST_INSERT_ID() 사용
-#### REPLACE
+### REPLACE
 - 문법은 INSERT와 크게 다르지 않음
 - 저장하려는 데이터가 중복된 데이터이면 UPDATE 실행(기존에 있는 데이터 DELETE하고 수로운 레코드 INSERT), 중복되지 않으면 INSERT 수행
 - 이미 존재하는 중복된 레코드의 컬럼 값을 참조할 수 없음
-#### INSERT INTO ... ON DUPLICATE KEY UPDATE ...
+### INSERT INTO ... ON DUPLICATE KEY UPDATE ...
 - 중복된 레코드를 DELETE하지 않고 UPDATE 함
-#### INSERT ... SELECT ...
+### INSERT ... SELECT ...
 - 특정 테이블로부터 레코드를 읽어 그 결과를 INSERT함
-### 6. UPDATE
-#### 6.1. UPDATE ... ORDER BY ... LIMIT n
+
+## 6. UPDATE
+### 6.1. UPDATE ... ORDER BY ... LIMIT n
 - UPDATE 문장에 ORDER BY절과 LIMIT 절을 동시에 사용해 특정 값으로 정렬해서 그 중에서 상위 몇 건만 업데이트하는 것도 가능함
 - 마스터 슬레이어 구조에서 ORDER BY가 포함된 UPDATE 문장을 사용할 때는 주의가 필요
 - 마스터 슬레이어 구조에서 마스터 역할을 하는 MYSQL 서버에서는 LIMIT 절은 있지만 ORDER BY 절이 없는 UPDATE문은 사용하지 않는게 좋음
-#### 6.2. JOIN UPDATE
+### 6.2. JOIN UPDATE
 - 두 개 이상의 테이블을 조인해 조인된 결과 레코드를 업데이트하는 쿼리를 JOIN UPDATE라고 함
 - JOIN UPDATE는 조인되는 모든 테이블에 대해 읽기 참조만 되는 테이블은 읽기 잠금, 컬럼이 변경되는 테이블은 쓰기 잠금이 걸림
 (실시간 웹 서비스와 같은 환경에서는 데드락을 유발할 가능성이 높아 많이 사용하지 않는 것이 좋음, 배치 or 통계용으로는 유용하게 사용할 수 있음)
 - JOIN UPDATE 시 GROUP BY, ORDER BY 절을 사용할 수 없음
-### 7. DELETE
-#### 7.1. DELETE ... ORDER BY ... LIMIT n
+
+## 7. DELETE
+### 7.1. DELETE ... ORDER BY ... LIMIT n
 - 마스터 슬레이브 MYSQL에서 다른 레코드를 삭제할 가능성에 대해서 주의가 필요함
-#### 7.2. JOIN DELETE
+### 7.2. JOIN DELETE
 - 여러 테입블을 조인해 레코드를 삭제
-### 8. 스키마 조작(DDL)
+
+## 8. 스키마 조작(DDL)
 #### 테이블 구조 조회
 - SHOW CREATE TABLE
     - MYSQL 서버가 테이블의 메타 정보를 읽어서 이를 CREATE TABLE 명령으로 재작성해서 보여줌
@@ -265,5 +269,34 @@ FROM 절에 사용되는 서브 쿼리나 WHERE 절의 IN (subquery) 구문도 �
 ### 8.9. 권한 조회
 - SHOW PRIVILEGES
 - 특정 사용자 권한 조회: SHOW GRANT FOR 'root'@'localhost'
+
 ## 9. SQL 힌트
+MYSQL 옵티마이저에게 어떻게 데이터를 읽는 것이 최적인지 알려줌 (옵티마이저가 최적으로 데이터를 읽으려고 하지만 한계점을 가짐)
+### 9.2. STRAIGHT_JOIN
+- SELECT, UPDATE, DELETE 쿼리에서 여러 개의 테이블이 조인될 때 조인의 순서를 고정하는 역할을 함
+- STRAIGHT_JOIN 사용해야 할 때
+    - 임시 테이블(인라인 뷰 또는 파생된 테이블)과 일반 테이블의 조인
+        - 임시 테이블을 드라이빙 테이블로 선정하는 것이 좋음
+        - 인덱스 없는 경우에는 레코드 건수가 적은 쪽을 드라이빙으로 선택해서 먼저 읽게 하는 것이 좋음
+    - 임시 테이블끼리의 조인
+        - 임시 테이블은 인덱스가 없으므로 크기가 작은 테이블을 드라이빙으로 선택
+    - 일반 테이블끼리의 조인
+        - 양쪽에 조인 컬럼에 인덱스가 있거나 없으면 건수가 적은 테이블을 드라이빙으로 선택하는 것이 좋음
+        - 조인 컬럼에 인덱스가 없는 테이블을 드라이빙으로 선택
+### 9.3. USE INDEX / FORCE INDEX / IGNORE INDEX
+- 복잡한 인덱스에 대해 MYSQL 옵티마이저가 적절한 인덱스를 선택하지 못할 때는 USE INDEX or FORCE INDEX 힌트로 인덱스를 사용하도록 함
+### 9.4. SQL_CACHE / SQL_NO_CACHE
+- MYSQL은 SELECT 쿼리에 의해 만들어진 결과를 재사용하기 위해 쿼리 캐시에 선택적으로 저장
+- SQL_CACHE / SQL_NO_CACHE를 이용하여 캐시 사용 여부를 선택
+
 ## 10. 쿼리 성능 테스트
+### 10.1. 쿼리의 성능에 영향을 미치는 요소
+#### 운영체제의 캐시
+InnoDB 스토리 엔진은 일반적으로 파일 시스템의 캐시나 버퍼를 거치지 않는 Direct I/O를 사용하므로 운영체제의 캐시가 큰 영향을 미치지 않음
+#### MYSQL 서버의 버퍼 풀
+InnoDB의 버퍼 풀은 인덱스 페이지, 데이터 페이지까지 캐시, 쓰기 작업을 위한 버퍼링 작업까지 처리
+### 10.2. 쿼리의 성능 테스트
+
+### 10.3. 쿼리 프로파일링
+- 프로파일링을 통해서 쿼리가 처리되는 각 단계별 작업에 시간이 얼마나 걸렸는지 확인
+- 명령어: SET PROFILEING = 1
