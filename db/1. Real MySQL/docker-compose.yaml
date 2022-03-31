@@ -3,12 +3,14 @@ version: "3.6"
 services:
   db:
     image: mysql:5.7
+    hostname: mysql
     restart: always
     container_name: test-mysql
     ports:
       - "3306:3306"
     environment:
-      - TZ=Asia/Seoul
+      - TZ=${TZ}
+      - LC_ALL=${LC_ALL}
     command:
       - --character-set-server=utf8mb4
       - --collation-server=utf8mb4_unicode_ci
