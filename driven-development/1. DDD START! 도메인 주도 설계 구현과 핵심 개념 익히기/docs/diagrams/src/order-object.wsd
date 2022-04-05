@@ -1,0 +1,60 @@
+@startuml order_object
+
+scale 1
+class Orderer {
+    +name: string
+}
+
+class DeliveryStatus {
+}
+
+class Order {
+    +orderNumber: string
+    +totalAmounts: Moeny
+    +changeShipping(shipping:ShippingInfo)
+    +cancel()
+}
+
+class ShippingInfo {
+    +address: Address
+    +message: string
+}
+
+class PaymentInfo {
+}
+
+class Address {
+    +zipCode: string
+    +address1: string
+    +address2: string
+}
+
+class Receiver {
+    +name: string
+    +phone: string
+}
+
+class OrderLine {
+    +price:Money
+    +quantity: int
+    +amouts(): Money
+}
+
+class Product {
+    +name: string
+    +price: Money
+    +details: string
+}
+
+Orderer -- Order
+DeliveryStatus -- Order
+
+ShippingInfo -- Order
+PaymentInfo -- Order
+
+ShippingInfo -- Address
+ShippingInfo -- Receiver
+
+Order "1" *-- "1..*" OrderLine
+Product "1" *-- "0..1" OrderLine
+@enduml
