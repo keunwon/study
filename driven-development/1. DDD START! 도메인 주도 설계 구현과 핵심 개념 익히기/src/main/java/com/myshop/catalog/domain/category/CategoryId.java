@@ -1,0 +1,25 @@
+package com.myshop.catalog.domain.category;
+
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+
+import javax.persistence.Access;
+import javax.persistence.AccessType;
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
+
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@EqualsAndHashCode(of = "value")
+@Embeddable
+@Access(AccessType.FIELD)
+public class CategoryId {
+    @Column(name = "category_id")
+    private Long value;
+
+    public static CategoryId of(Long value) {
+        return new CategoryId(value);
+    }
+}
