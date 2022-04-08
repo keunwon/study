@@ -1,6 +1,7 @@
-package com.myshop.order.domain;
+package com.myshop.order.domain.model;
 
 import com.myshop.catalog.domain.product.Product;
+import com.myshop.order.domain.Money;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -1,6 +1,7 @@
-package com.myshop.order.domain;
+package com.myshop.order.domain.model;
 
 import com.myshop.infra.MoneyConverter;
+import com.myshop.order.domain.Money;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -22,6 +23,7 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.OrderColumn;
 import javax.persistence.Table;
+import javax.persistence.Version;
 import java.util.List;
 
 @Getter
@@ -34,6 +36,9 @@ import java.util.List;
 public class Order {
     @EmbeddedId
     private OrderNo id;
+
+    @Version
+    private long version;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "state")

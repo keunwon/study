@@ -1,4 +1,7 @@
-package com.myshop.order.domain;
+package com.myshop.order.domain.repository;
+
+import com.myshop.order.domain.model.Order;
+import com.myshop.order.domain.model.OrderNo;
 
 import java.util.List;
 

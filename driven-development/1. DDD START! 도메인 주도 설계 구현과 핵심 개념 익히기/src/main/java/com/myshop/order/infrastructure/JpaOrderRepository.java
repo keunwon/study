@@ -1,8 +1,8 @@
 package com.myshop.order.infrastructure;
 
-import com.myshop.order.domain.Order;
-import com.myshop.order.domain.OrderNo;
-import com.myshop.order.domain.OrderRepository;
+import com.myshop.order.domain.model.Order;
+import com.myshop.order.domain.model.OrderNo;
+import com.myshop.order.domain.repository.OrderRepository;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;

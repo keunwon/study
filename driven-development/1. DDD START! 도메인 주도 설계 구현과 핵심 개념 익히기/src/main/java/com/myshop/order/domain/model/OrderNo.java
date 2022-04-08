@@ -1,4 +1,4 @@
-package com.myshop.order.domain;
+package com.myshop.order.domain.model;
 
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -16,5 +16,5 @@ import java.io.Serializable;
 @Embeddable
 public class OrderNo implements Serializable {
     @Column(name = "order_number")
-    private String id;
+    private String number;
 }
