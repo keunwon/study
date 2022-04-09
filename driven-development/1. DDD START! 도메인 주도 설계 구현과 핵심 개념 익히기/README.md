@@ -174,7 +174,6 @@ DIP의 핵신은 고수준 모듈이 저수준 모듈에 의존하지 않도록 
 - 하위 도메인마다 같은 용어라도 의미가 다르고 같은 대상이라도 지칭하는 용어가 다를 수 있기 때문에 한 개의 모델로 모든 하위 도메인을 표현하려는 시도는 올바른 방법이 아니며 표현할 수 도 없음
 ### BOUNDED CONTEXT
 - BOUNDED CONTEXT는 모델의 경계를 결정하며 한 개의 BOUNDED CONTEXT는 논리적으로 한 개의 모델을 갖음
-- 
 ### BOUNDED CONTEXT의 구현
 ### BOUNDED CONTEXT 간 통합
 ### 

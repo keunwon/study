@@ -7,15 +7,15 @@
 </head>
 <body>
 
-<div th:replace="/fragments/layout :: header"></div>
+<div th:replace="fragments/layout :: header"></div>
 
 <div class="container">
     <div class="row">
-        <div class="col-md-4"><img th:src="${product.images[0].url}" src="" class="img-fluid"></div>
+        <div class="col-md-4"><img th:src="${product.images[0].getURL()}" src="" class="img-fluid"></div>
         <div class="col-md-8">
             <div class="card">
                 <div class="card-body">
-                    <h5 class="card-title" th:text="${product.name}">제품명</div>
+                    <h5 class="card-title" th:text="${product.name}">제품명</h5>
                     <p class="card-text">
                         가격 : <span th:text="${product.price}"></span>
                         <br>
@@ -28,7 +28,7 @@
     </div>
 </div>
 
-<div th:replace="/fragments/layout :: footer"></div>
+<div th:replace="fragments/layout :: footer"></div>
 
 <script sec:authorize="!isAuthenticated()" th:inline="javascript">
     function handleOrder() {

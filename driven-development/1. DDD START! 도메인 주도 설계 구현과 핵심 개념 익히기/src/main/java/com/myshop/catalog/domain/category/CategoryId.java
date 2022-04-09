@@ -9,13 +9,14 @@ import javax.persistence.Access;
 import javax.persistence.AccessType;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import java.io.Serializable;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @EqualsAndHashCode(of = "value")
 @Embeddable
 @Access(AccessType.FIELD)
-public class CategoryId {
+public class CategoryId implements Serializable {
     @Column(name = "category_id")
     private Long value;
 

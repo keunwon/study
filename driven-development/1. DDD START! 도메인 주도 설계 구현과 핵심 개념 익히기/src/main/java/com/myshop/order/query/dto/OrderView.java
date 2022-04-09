@@ -1,8 +1,8 @@
 package com.myshop.order.query.dto;
 
-import com.myshop.member.domain.MemberId;
-import com.myshop.order.domain.model.OrderNo;
-import com.myshop.order.domain.model.OrderState;
+import com.myshop.member.command.domain.model.MemberId;
+import com.myshop.order.command.domain.model.OrderNo;
+import com.myshop.order.command.domain.model.OrderState;
 import lombok.Getter;
 
 @Getter
