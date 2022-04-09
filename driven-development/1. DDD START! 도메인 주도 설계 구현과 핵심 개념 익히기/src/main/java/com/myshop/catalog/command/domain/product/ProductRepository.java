@@ -1,5 +1,7 @@
-package com.myshop.catalog.domain.product;
+package com.myshop.catalog.command.domain.product;
 
+import com.myshop.catalog.command.domain.product.model.Product;
+import com.myshop.catalog.command.domain.product.model.ProductId;
 import org.springframework.data.repository.Repository;
 
 import java.util.Optional;

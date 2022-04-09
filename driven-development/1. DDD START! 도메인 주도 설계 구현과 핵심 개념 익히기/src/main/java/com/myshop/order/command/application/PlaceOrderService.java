@@ -1,8 +1,8 @@
 package com.myshop.order.command.application;
 
-import com.myshop.catalog.domain.product.Product;
-import com.myshop.catalog.domain.product.ProductId;
-import com.myshop.catalog.domain.product.ProductRepository;
+import com.myshop.catalog.command.domain.product.model.Product;
+import com.myshop.catalog.command.domain.product.model.ProductId;
+import com.myshop.catalog.command.domain.product.ProductRepository;
 import com.myshop.common.ValidationError;
 import com.myshop.common.ValidationErrorException;
 import com.myshop.order.command.domain.model.OrderNo;

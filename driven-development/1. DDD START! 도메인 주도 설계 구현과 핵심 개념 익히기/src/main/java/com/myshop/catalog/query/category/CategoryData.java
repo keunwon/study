@@ -1,6 +1,6 @@
 package com.myshop.catalog.query.category;
 
-import com.myshop.catalog.domain.category.CategoryId;
+import com.myshop.catalog.command.domain.category.CategoryId;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

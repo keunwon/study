@@ -1,4 +1,4 @@
-package com.myshop.catalog.domain.product;
+package com.myshop.catalog.command.domain.product.model;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;

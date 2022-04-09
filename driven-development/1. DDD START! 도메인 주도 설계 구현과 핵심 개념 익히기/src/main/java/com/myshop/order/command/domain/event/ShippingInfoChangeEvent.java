@@ -4,6 +4,8 @@ import com.myshop.order.command.domain.model.OrderNo;
 import com.myshop.order.command.domain.model.ShippingInfo;
 import lombok.Getter;
 
+import java.beans.EventHandler;
+
 @Getter
 public class ShippingInfoChangeEvent {
     private final OrderNo number;

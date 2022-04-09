@@ -1,8 +1,8 @@
 package com.myshop.catalog.query.product;
 
-import com.myshop.catalog.domain.category.CategoryId;
-import com.myshop.catalog.domain.product.Image;
-import com.myshop.catalog.domain.product.ProductId;
+import com.myshop.catalog.command.domain.category.CategoryId;
+import com.myshop.catalog.command.domain.product.model.Image;
+import com.myshop.catalog.command.domain.product.model.ProductId;
 import com.myshop.common.jpa.converter.MoneyConverter;
 import com.myshop.common.model.Money;
 import lombok.AccessLevel;

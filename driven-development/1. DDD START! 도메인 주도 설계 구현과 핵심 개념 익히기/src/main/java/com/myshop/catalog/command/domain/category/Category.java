@@ -1,4 +1,4 @@
-package com.myshop.catalog.domain.category;
+package com.myshop.catalog.command.domain.category;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

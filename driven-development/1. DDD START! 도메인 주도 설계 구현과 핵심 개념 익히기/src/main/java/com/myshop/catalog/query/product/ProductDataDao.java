@@ -1,7 +1,7 @@
 package com.myshop.catalog.query.product;
 
-import com.myshop.catalog.domain.category.CategoryId;
-import com.myshop.catalog.domain.product.ProductId;
+import com.myshop.catalog.command.domain.category.CategoryId;
+import com.myshop.catalog.command.domain.product.model.ProductId;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.Repository;

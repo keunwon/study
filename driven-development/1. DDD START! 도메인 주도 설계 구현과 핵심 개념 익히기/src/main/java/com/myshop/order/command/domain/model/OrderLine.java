@@ -1,6 +1,6 @@
 package com.myshop.order.command.domain.model;
 
-import com.myshop.catalog.domain.product.ProductId;
+import com.myshop.catalog.command.domain.product.model.ProductId;
 import com.myshop.common.jpa.converter.MoneyConverter;
 import com.myshop.common.model.Money;
 import lombok.AccessLevel;

@@ -1,8 +1,8 @@
 package com.myshop.catalog.query.product;
 
 import com.myshop.catalog.NoCategoryException;
-import com.myshop.catalog.domain.category.CategoryId;
-import com.myshop.catalog.domain.product.ProductId;
+import com.myshop.catalog.command.domain.category.CategoryId;
+import com.myshop.catalog.command.domain.product.model.ProductId;
 import com.myshop.catalog.query.category.CategoryData;
 import com.myshop.catalog.query.category.CategoryDataDao;
 import lombok.RequiredArgsConstructor;
