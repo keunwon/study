@@ -23,7 +23,7 @@ public class CancelOrderService {
     @Transactional
     public void cancel(OrderNo orderNo, Canceller canceller) {
         //Events.handler((OrderCanceledEvent event) -> refundService.refund(event.getOrderNumber()));
-        Events.handleAsync((OrderCanceledEvent event) -> refundService.refund(event.getOrderNumber()));
+        //Events.handleAsync((OrderCanceledEvent event) -> refundService.refund(event.getOrderNumber()));
 
         Order order = orderRepository.findById(orderNo)
                 .orElseThrow(NoOrderException::new);

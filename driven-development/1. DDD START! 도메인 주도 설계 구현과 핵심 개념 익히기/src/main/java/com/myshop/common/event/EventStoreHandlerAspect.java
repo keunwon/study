@@ -8,13 +8,13 @@ import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
 @Aspect
-@Order(1)
-@Component
+//@Order(1)
+//@Component
 public class EventStoreHandlerAspect {
     private final EventStoreHandler eventStoreHandler;
 
     @Before("execution(public * com.myshop..*Service.*(..))")
     public void registerEventStoreHandler() {
-        Events.handleAsync(eventStoreHandler);
+        //Events.handleAsync(eventStoreHandler);
     }
 }

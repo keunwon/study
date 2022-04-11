@@ -16,13 +16,13 @@ public class Events {
         Events.publisher = publisher;
     }
 
-    /*public static void raise(Object event) {
+    public static void raise(Object event) {
         if (publisher != null) {
             publisher.publishEvent(event);
         }
-    }*/
+    }
 
-    private static ThreadLocal<List<EventHandler<?>>> syncHandlers = new ThreadLocal<>();
+    /*private static ThreadLocal<List<EventHandler<?>>> syncHandlers = new ThreadLocal<>();
     private static ThreadLocal<Boolean> publishing = new ThreadLocal<>() {
         @Override
         protected Boolean initialValue() {
@@ -128,5 +128,5 @@ public class Events {
             syncHandlers.remove();
             asyncHandlers.remove();
         }
-    }
+    }*/
 }

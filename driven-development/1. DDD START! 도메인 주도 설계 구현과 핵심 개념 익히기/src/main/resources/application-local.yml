@@ -4,8 +4,8 @@ logging:
   level:
     root: info
     com.myshop: debug
-    org.springframework.security: debug
-    org.hibernate.type.descriptor.sql: trace
+    #org.springframework.security: debug
+    #org.hibernate.type.descriptor.sql: trace
 
 spring:
   jpa:
@@ -28,7 +28,6 @@ spring:
     password:
     hikari:
       maximum-pool-size: 10
-      keepalive-time: 5
   sql:
     init:
       mode: always
