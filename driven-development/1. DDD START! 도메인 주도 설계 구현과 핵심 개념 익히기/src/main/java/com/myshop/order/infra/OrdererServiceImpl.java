@@ -3,8 +3,8 @@ package com.myshop.order.infra;
 import com.myshop.member.command.domain.model.MemberId;
 import com.myshop.member.query.MemberData;
 import com.myshop.member.query.MemberQueryService;
-import com.myshop.order.command.domain.OrdererService;
 import com.myshop.order.command.domain.model.Orderer;
+import com.myshop.order.command.domain.service.OrdererService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

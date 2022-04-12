@@ -8,6 +8,8 @@ import lombok.Getter;
 @AllArgsConstructor
 @EqualsAndHashCode
 public class Money {
+    public static Money ZERO = new Money(0);
+
     private int value;
 
     public Money add(Money money) {

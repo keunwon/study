@@ -1,7 +1,7 @@
 package com.myshop.order.ui;
 
-import com.myshop.order.command.application.OrderProduct;
-import com.myshop.order.command.application.OrderRequest;
+import com.myshop.order.command.application.dto.OrderProduct;
+import com.myshop.order.command.application.dto.OrderRequest;
 import org.springframework.util.CollectionUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;

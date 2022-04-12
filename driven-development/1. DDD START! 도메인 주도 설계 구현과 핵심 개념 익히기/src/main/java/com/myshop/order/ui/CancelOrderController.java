@@ -1,6 +1,6 @@
 package com.myshop.order.ui;
 
-import com.myshop.order.command.application.CancelOrderService;
+import com.myshop.order.command.application.service.CancelOrderService;
 import com.myshop.order.command.domain.Canceller;
 import com.myshop.order.command.domain.model.OrderNo;
 import lombok.RequiredArgsConstructor;
@@ -10,8 +10,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-
-import javax.swing.plaf.SeparatorUI;
 
 @RequiredArgsConstructor
 @Controller

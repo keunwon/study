@@ -1,8 +1,6 @@
 package com.myshop.catalog.command.domain.product.model;
 
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
@@ -16,9 +14,7 @@ import javax.persistence.InheritanceType;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
 
-@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "image_type")
@@ -34,6 +30,19 @@ public abstract class Image {
 
     @Column(name = "upload_time")
     private LocalDateTime uploadTime;
+
+    public Image(String path) {
+        this.path = path;
+        this.uploadTime = LocalDateTime.now();
+    }
+
+    protected String getPath() {
+        return path;
+    }
+
+    public LocalDateTime getUploadTime() {
+        return this.uploadTime;
+    }
 
     public abstract String getURL();
     public abstract boolean hasThumbnail();

@@ -1,6 +1,6 @@
 package com.myshop.order.infra;
 
-import com.myshop.order.command.application.RefundService;
+import com.myshop.order.command.application.service.RefundService;
 import com.myshop.order.command.domain.event.OrderCanceledEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;

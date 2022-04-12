@@ -1,15 +1,13 @@
-package com.myshop.eventstore.ui;
+package com.myshop.order.command.application.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
-@ToString
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class TestDto {
-    private String x;
-    private String y;
+public class OrderProduct {
+    private String productId;
+    private int quantity;
 }

@@ -28,6 +28,5 @@ public class ShippingInfo {
     @Column(name = "shipping_message")
     private String message;
 
-    @Embedded
     private Receiver receiver;
 }

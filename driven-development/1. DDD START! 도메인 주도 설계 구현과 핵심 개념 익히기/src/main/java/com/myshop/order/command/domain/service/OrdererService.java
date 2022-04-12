@@ -1,4 +1,4 @@
-package com.myshop.order.command.domain;
+package com.myshop.order.command.domain.service;
 
 import com.myshop.member.command.domain.model.MemberId;
 import com.myshop.order.command.domain.model.Orderer;

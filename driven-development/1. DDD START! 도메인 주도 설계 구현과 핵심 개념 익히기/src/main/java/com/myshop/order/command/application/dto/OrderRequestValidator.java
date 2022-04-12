@@ -1,4 +1,4 @@
-package com.myshop.order.command.application;
+package com.myshop.order.command.application.dto;
 
 import com.myshop.common.ValidationError;
 import org.springframework.util.StringUtils;

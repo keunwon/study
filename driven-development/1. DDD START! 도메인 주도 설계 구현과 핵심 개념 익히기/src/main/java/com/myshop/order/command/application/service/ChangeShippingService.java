@@ -1,6 +1,7 @@
-package com.myshop.order.command.application;
+package com.myshop.order.command.application.service;
 
 import com.myshop.order.NoOrderException;
+import com.myshop.order.command.application.dto.ChangeShippingRequest;
 import com.myshop.order.command.domain.model.OrderNo;
 import com.myshop.order.command.domain.model.Order;
 import com.myshop.order.command.domain.repository.OrderRepository;

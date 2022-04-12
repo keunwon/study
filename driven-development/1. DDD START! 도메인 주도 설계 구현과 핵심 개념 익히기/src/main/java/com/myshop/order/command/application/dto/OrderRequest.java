@@ -1,10 +1,8 @@
-package com.myshop.order.command.application;
+package com.myshop.order.command.application.dto;
 
 import com.myshop.member.command.domain.model.MemberId;
 import com.myshop.order.command.domain.model.ShippingInfo;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;

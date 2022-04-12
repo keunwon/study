@@ -20,8 +20,8 @@ import javax.persistence.Table;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@Entity
-@Table(name = "article")
+//@Entity
+//@Table(name = "article")
 @SecondaryTable(
         name = "article_content",
         pkJoinColumns = @PrimaryKeyJoinColumn(name = "id")
@@ -33,9 +33,8 @@ public class Article {
 
     private String title;
 
-
     @AttributeOverrides({
-            @AttributeOverride(name = "content", column = @Column(table = "article_content", name = "concent")),
+            @AttributeOverride(name = "content", column = @Column(table = "article_content", name = "content")),
             @AttributeOverride(name = "contentType", column = @Column(table = "article_content", name = "content_type"))
     })
     @Embedded
