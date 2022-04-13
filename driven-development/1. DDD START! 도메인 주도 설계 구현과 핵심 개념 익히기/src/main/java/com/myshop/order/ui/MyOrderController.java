@@ -1,10 +1,10 @@
 package com.myshop.order.ui;
 
+import com.myshop.common.user.LoginUser;
 import com.myshop.order.query.application.OrderDetail;
 import com.myshop.order.query.application.OrderDetailService;
 import com.myshop.order.query.dao.OrderSummaryDao;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -20,15 +20,13 @@ public class MyOrderController {
     private final OrderSummaryDao orderSummaryDao;
 
     @GetMapping(value = "/my/orders")
-    public String orders(ModelMap modelMap) {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    public String orders(@LoginUser User user, ModelMap modelMap) {
         modelMap.addAttribute("orders", orderSummaryDao.findByOrdererId(user.getUsername()));
         return "my/orders";
     }
 
     @GetMapping(value = "/my/orders/{orderNo}")
-    public String orderDetail(@PathVariable("orderNo") String orderNo, ModelMap modelMap) {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    public String orderDetail(@PathVariable("orderNo") String orderNo, @LoginUser User user, ModelMap modelMap) {
         Optional<OrderDetail> orderDetail = orderDetailService.getOrderDetail(orderNo);
 
         if (orderDetail.isPresent()) {

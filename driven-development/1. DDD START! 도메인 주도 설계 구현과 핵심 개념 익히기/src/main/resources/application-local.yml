@@ -21,7 +21,7 @@ spring:
       max-request-size: 10MB
   jpa:
     open-in-view: false
-    show-sql: true
+    show-sql: false
     defer-datasource-initialization: true
     hibernate:
       ddl-auto: none
@@ -40,6 +40,8 @@ spring:
     hikari:
       maximum-pool-size: 15
       connection-timeout: 10000
+  messages:
+    cache-duration: 10
   sql:
     init:
       mode: always
@@ -51,3 +53,8 @@ spring:
       enabled: true
     restart:
       enabled: false
+
+decorator:
+  datasource:
+    p6spy:
+      enable-logging: true

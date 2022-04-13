@@ -6,7 +6,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class Canceller {
-    private String memberId;
+    private final String memberId;
 
     public static Canceller of(String memberId) {
         return new Canceller(memberId);

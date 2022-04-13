@@ -32,6 +32,7 @@ public class Member {
     private MemberId id;
 
     private String name;
+
     @Embedded
     private Password password;
 
@@ -58,9 +59,10 @@ public class Member {
     }
 
     public void changePassword(String oldPassword, String newPassword) {
-        if (password.equals(oldPassword)) {
+        if (password.match(oldPassword)) {
             throw new IdPasswordNotMatchingException();
         }
+
         this.password = new Password(newPassword);
         Events.raise(new PasswordChangeEvent(id.getId(), newPassword));
     }
@@ -74,5 +76,4 @@ public class Member {
         this.blocked = false;
         Events.raise(new MemberUnblockedEvent(id.getId()));
     }
-
 }

@@ -7,5 +7,5 @@ import com.myshop.order.command.domain.model.OrderLine;
 import java.util.List;
 
 public interface RuleDiscounter {
-    public Money applyRules(Member member, List<OrderLine> orderLines);
+    Money applyRules(Member member, List<OrderLine> orderLines);
 }

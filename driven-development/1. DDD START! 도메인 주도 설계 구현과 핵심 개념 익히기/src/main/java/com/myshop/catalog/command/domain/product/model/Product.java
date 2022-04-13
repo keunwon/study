@@ -4,6 +4,7 @@ import com.myshop.catalog.command.domain.category.CategoryId;
 import com.myshop.common.jpa.converter.MoneyConverter;
 import com.myshop.common.model.Money;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

@@ -1,9 +1,10 @@
 package com.myshop.member.command.domain.model;
 
-import lombok.val;
+import lombok.Getter;
 
-public class Password {
-    private String value;
+@Getter
+public final class Password {
+    private final String value;
 
     public Password(String value) {
         this.value = value;

@@ -23,7 +23,7 @@ public class SecurityCancelPolicy implements CancelPolicy {
     }
 
     private boolean isCurrentUserAdminRole() {
-        SecurityContext context = SecurityContextHolder.createEmptyContext();
+        SecurityContext context = SecurityContextHolder.getContext();
         if (context == null) { return false; }
 
         Authentication authentication = context.getAuthentication();

@@ -1,10 +1,14 @@
 package com.myshop.springconfig.web;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.myshop.common.user.LoginUserArgumentResolver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @Configuration
@@ -21,5 +25,10 @@ public class WebMvcConfig implements WebMvcConfigurer {
         registry.addViewController("/my/main").setViewName("my/myMain");
         registry.addViewController("/admin/main").setViewName("admin/adminMain");
         registry.addViewController("/loggedOut").setViewName("loggedOut");
+    }
+
+    @Override
+    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
+        resolvers.add(new LoginUserArgumentResolver());
     }
 }

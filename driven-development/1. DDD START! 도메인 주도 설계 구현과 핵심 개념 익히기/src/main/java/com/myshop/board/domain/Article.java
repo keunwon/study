@@ -20,8 +20,8 @@ import javax.persistence.Table;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-//@Entity
-//@Table(name = "article")
+@Entity
+@Table(name = "article")
 @SecondaryTable(
         name = "article_content",
         pkJoinColumns = @PrimaryKeyJoinColumn(name = "id")

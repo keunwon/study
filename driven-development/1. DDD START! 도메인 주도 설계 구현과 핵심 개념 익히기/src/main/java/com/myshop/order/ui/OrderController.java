@@ -3,15 +3,15 @@ package com.myshop.order.ui;
 import com.myshop.catalog.query.product.ProductData;
 import com.myshop.catalog.query.product.ProductQueryService;
 import com.myshop.common.ValidationErrorException;
+import com.myshop.common.user.LoginUser;
 import com.myshop.member.command.domain.model.MemberId;
-import com.myshop.order.command.application.exception.NoOrderProductException;
 import com.myshop.order.command.application.dto.OrderProduct;
 import com.myshop.order.command.application.dto.OrderRequest;
+import com.myshop.order.command.application.exception.NoOrderProductException;
 import com.myshop.order.command.application.service.PlaceOrderService;
-import com.myshop.order.command.domain.service.OrdererService;
 import com.myshop.order.command.domain.model.OrderNo;
+import com.myshop.order.command.domain.service.OrdererService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -33,16 +33,15 @@ public class OrderController {
     private final OrdererService ordererService;
 
     @PostMapping(value = "/orders/orderConfirm")
-    public String orderconfirm(@ModelAttribute("orderReq") OrderRequest orderRequest, ModelMap modelMap) {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    public String orderConfirm(@ModelAttribute("orderReq") OrderRequest orderRequest, @LoginUser User user, ModelMap modelMap) {
         orderRequest.setOrdererMemberId(new MemberId(user.getUsername()));
         populateProductsAndTotalAmountsModel(orderRequest, modelMap);
         return "order/confirm";
     }
 
     @PostMapping(value = "/orders/order")
-    public String order(@ModelAttribute("orderReq") OrderRequest orderRequest, BindingResult bindingResult, ModelMap modelMap) {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    public String order(@LoginUser User user, @ModelAttribute("orderReq") OrderRequest orderRequest,
+                        BindingResult bindingResult, ModelMap modelMap) {
         orderRequest.setOrdererMemberId(new MemberId(user.getUsername()));
 
         try {
@@ -51,7 +50,7 @@ public class OrderController {
             return "order/orderComplete";
         } catch (ValidationErrorException e) {
             e.getErrors().forEach(err -> {
-                if (err.hasName()) {
+                if (err.hasName()) {/**/
                     bindingResult.rejectValue(err.getName(), err.getCode());
                 } else {
                     bindingResult.reject(err.getCode());
