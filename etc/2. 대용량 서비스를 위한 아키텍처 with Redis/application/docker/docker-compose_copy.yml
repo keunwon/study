@@ -5,7 +5,7 @@ services:
     image: prom/prometheus
     container_name: prometheus
     volumes:
-      - ./prometheus/config/:/etc/prometheus/
+      #- ./prometheus/config/:/etc/prometheus/
       - ./prometheus/prometheus-volume:/prometheus 
     ports:
       - 9090:9090
@@ -25,7 +25,7 @@ services:
       - 3000:3000
     volumes:
       - ./prometheus/grafana-volume:/var/lib/grafana
-      - ./config/grafana-init.ini:/etc/grafana/grafana.ini
+        #- ./config/grafana-init.ini:/etc/grafana/grafana.ini
         #- grafana_data:/var/lib/grafana
     restart: always
     networks:
@@ -37,13 +37,33 @@ services:
     user: root
     ports: 
       - 9093:9093
-    volumes:
-      - ./prometheus/alertmanager/config/:/etc/alertmanager/
     networks:
       - promnet
     restart: always
     command:
       - '--config.file=/etc/alertmanager/alertmanager.yml'
+
+  ubuntu:
+    image: local-ubuntu
+    container_name: local-ubuntu
+    networks:
+      - promnet
+    ports:
+      - '2222:22'
+    restart: always
+    privileged: true
+    command: 
+      - '/sbin/init'
+
+  ngrinder-controller:
+    image: ngrinder/controller
+    container_name: local-ngrinder-controller
+    ports:
+      - 8080:80
+      - 16001:16001
+      - 12000-12009:12000-12009
+    volumes:
+      - ./ngrinder-controller:/opt/ngrinder-controller
 
 networks:
   promnet:

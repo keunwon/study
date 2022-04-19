@@ -50,10 +50,57 @@ services:
       - promnet
     ports:
       - '2222:22'
+      - '27100:7100'
+      - '280:80'
     restart: always
     privileged: true
     command: 
       - '/sbin/init'
+
+  controller:
+    image: ngrinder/controller
+    container_name: local-ngrinder-controller
+    restart: always
+    ports:
+      - 8080:80
+      - 16001:16001
+      - 12000-12009:12000-12009
+    volumes:
+      - ./ngrinder-controller:/opt/ngrinder-controller
+    networks:
+      - promnet
+      
+  ngrinder-agent1:
+    image: ngrinder/agent
+    container_name: local-ngrinder-agent1
+    networks:
+      - promnet
+    links:
+      - controller
+
+  ngrinder-agent2:
+    image: ngrinder/agent
+    container_name: local-ngrinder-agent2
+    networks:
+      - promnet
+    links:
+      - controller
+
+  ngrinder-agent3:
+    image: ngrinder/agent
+    container_name: local-ngrinder-agent3
+    networks:
+      - promnet
+    links:
+      - controller
+
+  ngrinder-agent4:
+    image: ngrinder/agent
+    container_name: local-ngrinder-agent4
+    networks:
+      - promnet
+    links:
+      - controller
 
 networks:
   promnet:
