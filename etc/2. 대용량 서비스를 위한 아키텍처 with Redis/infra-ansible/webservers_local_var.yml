@@ -1,8 +1,0 @@
----
-- name: Install Web Server
-  hosts: test
-  vars: 
-    - nginx_root_dir: /var/www/html2
-  roles:
-    - { role: base, tags: ["base"] }
-    - { role: nginx, tags: ["nginx"] }

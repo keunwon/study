@@ -1,9 +1,0 @@
----
-- name: 초기 linux 세팅
-  hosts: test
-  roles:
-    - {role: base, tags: ['base']}
-    - { role: docker, tags: [ 'docker' ] }
-    - { role: locust, tags: [ 'locust' ] }
-    - { role: prometheus_node_exporter, tags: [ 'prometheus_node_exporter' ] }
-    - {role: pyenv, tags: ['pyenv']}

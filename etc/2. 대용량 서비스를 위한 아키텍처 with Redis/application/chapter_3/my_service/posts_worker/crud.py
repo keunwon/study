@@ -1,1 +1,0 @@
-../posts/crud.py

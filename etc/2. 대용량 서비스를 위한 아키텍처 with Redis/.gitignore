@@ -1,3 +1,0 @@
-application/docker/config/*
-application/docker/ngrinder-controller/*
-application/docker/prometheus/**
