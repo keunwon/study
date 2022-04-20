@@ -1,0 +1,12 @@
+---
+- name: node exporter 세팅
+  hosts: exporter_nodes
+  vars:
+    - node_url: http://localhost:9100/metrics
+    - node_path: /node_exporter/
+  tasks:
+    - name: 설치 & 압축 풀기
+      unarchive:
+        remote_src: true
+        src: "{{node_url}}"
+        dest: "{{node_path}}"

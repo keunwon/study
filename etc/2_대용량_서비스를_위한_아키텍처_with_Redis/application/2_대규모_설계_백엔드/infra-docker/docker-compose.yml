@@ -1,0 +1,86 @@
+version: '3.7'
+
+services:
+  redis:
+    image: redis:6.2.6
+    container_name: local-redis
+    ports:
+      - 6739:6739
+    environment:
+      - TZ=Asia/Seoul
+      - LC_ALL=C.UTF-8
+    volumes:
+      - ./redis-vaolume
+    command:
+      - '--appendonly yes'
+    networks:
+      - redis-net
+  
+  zoo1:
+    image: zookeeper:3.6.3
+    container_name: zoo1
+    hostname: zoo1
+    ports:
+      - 2181:2181
+    environment:
+      ZOO_MY_ID: 1
+      ZOO_SERVERS: server.1=zoo1:2888:3888;2181 server.2=zoo2:2888:3888;2181 server.3=zoo3:2888:3888;2181
+        
+  zoo2:
+    image: zookeeper:3.6.3
+    container_name: zoo2
+    hostname: zoo2
+    ports:
+      - 2182:2182
+    environment:
+      ZOO_MY_ID: 2
+      ZOO_SERVERS: server.1=zoo1:2888:3888;2181 server.2=zoo2:2888:3888;2181 server.3=zoo3:2888:3888;2181
+
+  zoo3:
+    image: zookeeper:3.6.3
+    container_name: zoo3
+    hostname: zoo3
+    ports:
+      - 2183:2183
+    environment:
+      ZOO_MY_ID: 3
+      ZOO_SERVERS: server.1=zoo1:2888:3888;2181 server.2=zoo2:2888:3888;2181 server.3=zoo3:2888:3888;2181
+
+  nginx:
+    image: nginx
+    container_name: local-nginx
+    hostname: nginx
+    ports:
+      - 8080:80
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+    networks:
+      - webserver-net
+
+  lb_scrap1:
+    image: lb_scrap
+    container_name: local-scrap1
+    hostname: scrap
+    ports:
+      - 7001:7001
+    environment:
+      - ENDPOINTS=0.0.0.0:7001
+    networks:
+      - webserver-net
+
+  lb_scrap2:
+    image: lb_scrap
+    container_name: local-scrap2
+    hostname: scrap
+    ports:
+      - 7002:7002
+    environment:
+      - ENDPOINTS=0.0.0.0:7001
+    networks:
+      - webserver-net
+
+networks:
+  redis-net:
+    driver: bridge
+  webserver-net:
+    driver: bridge

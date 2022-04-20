@@ -1,0 +1,13 @@
+K 8
+svn:date
+V 27
+2022-04-18T19:50:59.768000Z
+K 7
+svn:log
+V 78
+Quick test for http://172.25.0.2:7100/api/v1/scrap/?url=https://www.naver.com/
+K 10
+svn:author
+V 5
+admin
+END

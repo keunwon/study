@@ -1,0 +1,8 @@
+---
+- name: Test testboxes
+  hosts: test
+  tasks:
+    - name: Hello, World
+      debug:
+        msg: "Hello, World"
+

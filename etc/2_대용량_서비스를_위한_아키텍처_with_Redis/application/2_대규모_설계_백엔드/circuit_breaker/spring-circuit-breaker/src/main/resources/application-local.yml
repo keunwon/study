@@ -1,0 +1,15 @@
+server:
+  port: 9999
+
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        registerHealthIndicator: true
+        ringBufferSizeInClosedState: 5
+        ringBufferSizeInHalfOpenState: 3
+        failureRateThreshold: 50
+        waitInterval: 1m
+    instances:
+      scrap:
+        baseConfig: default

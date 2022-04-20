@@ -1,0 +1,13 @@
+---
+- name: geoip 설치
+  hosts: test
+  become: true
+
+  roles:
+    - {role: geoip, tags: ['geoip']}
+
+- name: nginx 설치
+  hosts: test
+  become: true
+  roles:
+    - {role: nginx, tags: ['nginx']}

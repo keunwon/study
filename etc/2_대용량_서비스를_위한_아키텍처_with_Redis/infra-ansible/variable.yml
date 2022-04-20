@@ -1,0 +1,14 @@
+---
+- name: Test testboxes
+  hosts: test
+
+  vars:
+    mymsg: "Hello, MyMSG"
+    mymsg2: 
+      name1: "Hello"
+      name2: "MyMSG"
+
+  tasks:
+    - name: mymsg
+      debug:
+        msg: "Msg is {{mymsg}}"
