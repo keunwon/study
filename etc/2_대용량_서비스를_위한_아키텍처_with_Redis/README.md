@@ -1,5 +1,11 @@
-
 ## Chapter 1. 장애 포인트를 찾기 위한 모니터링
+### Local & Docker 구성
+#### 1. Prometheus
+![prometheus](./images/local-docker-prometheus.png)
+#### 2. Grafana
+![grafana](./images/local-docker-grafana.png)
+#### 3. nGrinder
+![ngrinder](./images/local-ngrinder-test-1.png)
 ### 서비스에서의 지표
 #### API CALL 수
 - 현재 요청중인 초당 Call 수
@@ -139,7 +145,6 @@ ri
 - Worker 개수에 따라서 작업 처리량을 조절할 수 있음
 - 비동기로 동작하므로 실제 DB 처리가 늦어지므로, 내가 쓴 데이터를 바로 볼 수 없을 수도 있음
 	- 이를 위해 실제로 서비에서는 Cache에 먼저 저장해서 해당 결과를 서비스에서 볼 수 있도록 함 (Write-Back 형태를 취함)
-
 ### 배포
 ### 일반적인 무정지 배포 방법 (Rolling Update)
 - LB에서 배포할 서버를 제외하고, 서버에 배포 이후 LB에 다시 추가
@@ -159,3 +164,176 @@ ri
 - 몇 대만 배포를 해서 장애를 살펴봄
 - 어떻게 특정 유저들은 특정 서버로 고정할 수 있을까?
 	- tag를 추가하여 redirect 
+
+## chatper3. 대규모 트래픽 처리를 위한 Redis
+### Redis 기본 자료 구조
+#### Redis vs Memcached
+|이름|장점|
+|:---|:---|
+|Redis|많은 자료 구조 제공 (k.v, list, hash, set) <br> Replication을 제공해서 서비스를 안정적으로 제공 <br> Cluster 모드를 제공|
+|Memcached|Redis에 비해 메모리 관리가 더 안정적|
+#### Redis 사용처
+- 주로 Cache를 저장하기 위한 저장소
+- 특수한 케이스는 DB자체를 Redis를 사용
+#### Redis 제공 자료 구조
+#####  Strings
+- Key / value를 사용하는 자료구조
+- Key를 이용해서 Data를 저장하고 가져옴
+- 기본적인 Hash Table을 이용 
+- 명령어
+	- get / set
+	- mget / mset
+##### list
+- 중간에 추가/삭제가 느림
+- Head와 Tail 데이터를 추가, 삭제할 때 유용한 데이터 구조 (O(N)이라 선형 탐색의 비용이 비싼 자료 구조)
+- Queue 형태의 자료구조가 필요할 때 많이 사용
+- 명령어
+	- Lpush \<key> \<value> / Rpush \<key> \<value>
+	- Lpop \<key> / Rpop \<key>
+	- Lrange \<key> \<startIndex> \<endIndex> 
+##### set
+- 유일한 값들만 있는 집합을 유지하는 자료구조
+- 친구리스트, 팔로우 리스트 (특정 그룹을 저장할 때 사용)
+- 명령어
+	- Sadd \<key> \<item>
+	- SisMember \<key> \<item>
+	- Srem \<key> \<item>
+	- smembers \<key>
+##### hash
+- key 하위에 subkey를 이용해 추가적인 Hash Table을 제공하는 자료 구조
+- 일반적으로 key / value 데이터를 특정군의 데이터로 묶고 싶을 때 유용
+- 명령어
+	- hset \<key> \<subkey> \<value>
+	- hget \<key> \<subkey>
+	- hmset \<key> \<subkey> \<value> \<subkey> \<value> 
+	- hmget \<key> \<subkey> \<subkey> \<subkey>
+##### sorted set 
+- 스코어를 가지는 Set 자료구조
+- 아이템들의 랭킹을 가지는데 사용
+- 스코어는 Double 형태이므로, 특정 정수값을 사용할 수 없다는 것에 주의
+- Skiplist 자료 구조 사용
+	- Log(N)의 검색 속도를 가지는 리스트 자료 구조
+- 명령어
+	- zadd \<key> \<socre> \<item>
+	- zrange \<key> \<startIndex> \<endIndex>
+	- zervrange \<key> \<startIndex> \<endIndex> 
+	- zrangebyscore \<key> \<start score> \<end score>
+#### Reids Transaction - Multi/Exec
+- Redis 에서 한번에 실행되는 것을 보장해 주는 명령을 Redis Transaction이라 함
+- Multi: Exec가 나올 때 까지 명령을 모아서 대기
+- Exec: Exec를 실행하면 Multi로 모인 명령이 순서대로 실행
+#### Redis Pipeline
+- 동기적으로 명령을 보내는 경우 응답을 기다리지 않고 명령을 미리 보내는 방식
+- 실제로 Redis에서 제공하는 기능은 아니라, Library에서 제공하는 방식
+- Async Redis Clinet라면 Redis Pipeline 기능을 따로 제공할 필요가 없음 (Java의 Lettuce Redis Client)
+### Redis를 어디에 쓸수 있을까
+#### Cache
+- 같은 요청에 대해서 같은 결과를 제공
+- 재요청이 오면 재 계산 없이 바로 결과를 돌려주는 것
+#### In-Memory 장/단점
+- 장점: 접근 속도가 빠르므로, 다른 스토리지를 쓰는 것보다 속도가 빠름
+- 단점: 다른 스토리지 보다 크기가 작으면서 비쌈
+#### 파레토의 법칙과 Cache의 연관성
+- 80%의 활동을 20% 유저가 하기 때문에 20% 데이터를 캐시하면 서비스의 대부분의 데이터를 커버할 수 있음
+### Redis 모니터링
+- Redis는 많은 트래픽을 처리할 수 있기 때문에 Redis에 문제가 생기면 전체 성능 저하로 이어질 수 있음
+#### Redis Metrics
+- info all 명령으로 정보를 수집할 수 있는 Redis 자체의 Metrics
+
+|대항목|항목|내용|
+|:---|:---|:---|
+|memoery|used_memoery_rss|Redis가 현재 사용하고 있는 실제 물리 메모리양, 실제 메모리 사용량이 많으면 Swap이 일어나서 성능이 떨어짐|
+||used_memory|현재 Redis가 계산하고 있는 있는 사용 메모리양, malloc의 값을 저장하고 있다가 보여줌|
+||mem_fragmentation_ratio|used_memory, used_memory_ress의 비율 <br> 비율이 높으면 fragmentation이 높다고 봄 <br> 1보다 작으면 swap이 발생하고 있다고 봄|
+|stats|instantaneous_ops_per_sec|초당 실행 명령 수 <br> Redis는 CPU의 영향을 받으므로 CPU의 성능이 좋으면 명령어 처리 양이 늘어남|
+||total_cammnds_processed|지금까지 처리한 명령 수|
+||expired_keys|지금까지 expireation이 발생한 이벤트 수|
+||keyspace_hits|캐시 Hit 한 수|
+||keyspace_misses|캐시 miss 한 수|
+|Clinet|connected_clients|현재 접속해 있는 클라이언트의 수, Redis는 싱글 스레드 기반이라 클라이언트가 지속적으로 연결/해제 할 경우 성능이 떨어지므로 해당 값이 크게 계쇡 바뀌면 성능이 떨어짐|
+||maxclients|접속할 수 있는 최대 클라이언트의 수|
+|Replication|master_repl_offset|Primary의 replication offset|
+||slave_repl_offset|Secondary의 replication offset, replication에만 존재, master_repl_offset - slave_rep_repl_offset이 현재 replication lag|
+### Redis 장애 처리
+#### Redis 장애의 원인
+- Redis는 명령 처리는 한번에 하나만 처리 (single thread 사용)
+- 하나의 명령이 느리면 전체적인 전체 성능 저하가 일어남
+#### Redis 장애 종류
+- 메모리
+	- 메모리 과다 사용 (maxmemory 설정)
+	- RSS 관리
+- 설정
+	- 기본 설정 사용: 기본 설정으로 사용 시에 SAVE 설정이 1시간에 1개, 5분에 100개 1분에 10000개가 변경이 되면 디스크 메모리를 덤프,  
+	IO를 과다하게 사용해서 장애가 발생
+- 싱글 스레드
+	- 과도한 Value 크기
+	- O(N) 명령의 사용
+		- Keys, flushdb / flushall, 큰 키기의 collection을 삭제
+#### Redis 메모리 관련 장애
+- Redis 메모리 부족으로 인한 이슈
+- Copy on Write 이슈
+	- Redis가 fork 할때, 메모리 사용량이 최대 두 배까지 늘어날 수 있음
+		- Replication 연결이 되는 순간 데이터 이전을 위한 RDB를 만들면서 fork
+		- AOF Rewrite를 하기 위한 경우 (bgrewriteaof 명령) fork
+		- RDB 생성을 하기 위한 경우(bgsave 명령) fork
+#### Redis Single Threaded 관련 장애
+- 과도한 Value로 인해 발생하는 장애
+ - Redis의 Sorted Set, Hash, Set 등의 자료구조는 다시 Hash Table 등을 구성해서 관리
+- 장애 확인
+	- 사용하면 안되는 명령을 사용 중인지 확인
+	- O(N) 계열 커맨드의 사용이 늘어나는지 확인
+		- Hgetall, hvals, smembers, zrange 계열 함수
+	- Monitor 명령을 통해서 들어오는 KEY들의 빈도를 체크
+		- Monitor 명령은 서버에 부하를 추가로 주므로 사용하면서 서버 부하를 확인해야 함
+	- Scan 명령을 통해서 각 Key의 사이즈를 확인해서 특정 크기 이상의 KEY를 확인
+- KYES 대신 Scan을 사용하여 장애 해결
+#### Redis 보안 관련
+- 절대로 Redis의 포트를 public에 공개하면 안된다
+### 여러가지 발생할 수 있는 이슈들
+#### Thundering Herd
+- 특정 이벤트로 인해서 많은 프로세스가 동작, 그 중에 하나의 프로세스만 이벤트를 처리할 수 있어서, 많은 프로세스가 특정 리소스를 가지고 경쟁하면서 많은 리소스를 낭비하게 되는 경우
+- 웹 서비스에서는 Cache Miss로 인해서, 많은 프로세스가 같은 key를 읽으려고 시도하며서, 특정 서버에 부하를 극도로 증가시키는 경우를 의미
+#### Thundering Herd 원인
+- 캐시가 없을 발생
+	- 캐시 서버의 추가/삭제
+	- 해당 키의 TTL에 의한 데이터 삭제
+	- 캐시 서버 메모리 부족으로 해당 키의 Eviction
+#### Probabilisitc early Recomputation
+- DELTA, BETA 값을 지정
+- DELTA는 실제로 캐시 재계산을 위한 시간 범위
+- BETA는 여기에 다시 가중치를 줌
+	- 기본적으로 1.0 사용
+#### Hot Key
+- 과도하게 읽기/쓰기 요청이 집중되게 되는 KEY
+- Hot Key 해결책
+	- Query off (ReadFrom Secondry)
+		- Read 전용 리플리카를 여러개로 두어 분산
+		- Write는 Primary, Read는 Secondary를 이용하여 Read 부하를 줄임
+		- AWS ElasticCache Redis는 최대 5개의 읽기 전용 복제본을 추가할 수 있음
+	- Local Cache
+		- API 서버에서 특정 키들을 캐싱, 캐싱 서버에 요청하지 않음
+		- API 서버 수 만큼 Cache 처리량이 나눠짐
+		- 단점
+			- Cache가 공유되지 않고 API 서버에만 존재
+			- 데이터 변경되었을 때, 이를 통지 받는 메커니즘이 필요
+			- 이러한 문제를 해결하기 위해 Client-Side Caching을 제공하는 Cache 솔루션들이 있음
+	- Multiple Write And Read From one
+		- Cache를 써야 할 때 하나의 Key를 남기는 것이 아니라, 여러개의 키로 남기고 읽을 때는 하나의 Key만 읽어서 부하를 분산
+### 간단한 서비스 추상화 모습
+#### 대규모 서비스를 위해 필요한 부분들
+- 데이터 샤딩 (scale up, scale out)
+- 기본적인 캐싱
+- 모니터링
+- 비동기 작업을 이용한 부하의 조절
+- Primary Write, Secondary Read
+
+## chapter4. 어떻게 성장할 것인가?
+### 개발자의 실력은 어떻게 향상 시킬 수 있을까?
+- 개발자의 실력은 팀의 능력/성과를 늘릴 수 있어야 함
+- 개발자의 실력
+	- Hard Skill
+		- 기술과 직접적으로 연관된 부분
+		- 알고리즘/자료구조
+	- Soft Skill
+		- 기술과 직접적이지 않지만, 협업과 관련된 부분
+		- 커뮤니케이션 / 글쓰기 / 프리젠테이션 / 분위기 메이커
