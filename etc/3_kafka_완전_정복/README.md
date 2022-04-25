@@ -323,7 +323,138 @@
     - Producer를 고유하게 식별하기 위해 사용되면, TransactionId를 가진 Producer의 다른 인스턴스들은 어전 인스턴스에 의해 만들어진 모든 Transaction을 재개(또는 중단)할 수 있음
 
 ## ch 03. Apache Kafka 구성 및 관리
-
+### 01. Apache Kafka and Confluent Reference Architecture
+#### Eventsizer
+- https://eventsizer.io
+- Kafka 구성 시 필요한 하드웨어 스펙이나, 현재 하드웨어 스펙을 기준으로 얼마나 사용할 수 있는지 알려주는 사이트
+### 02. Kafka in Real Environment
+#### 전용 서버 권장
+- Broker는 분리된 각각의 전용 서버에 분리하여 설치 구성하는 것을 권장
+- N개의 Broker가 있으면, Replication Factor(RF)는 최대 N까지 사용하여 Topic 생성
+- Mission Critical Topic에는 Replication Factor는 보통 3을 많이 사용
+    - 3개의 Broker로 구성하고 하나의 Broker가 장애 상태시, RF 3인 Topic 생성 불가능
+    - Broker는 4개 이상 하나의 Cluster로 구성하는 것을 권장
+- 데이터 유실 방지를 위해서, min.sync.replicas는 2를 많이 사용
+#### 처리량에 따라 Thread 관련 파라미터 튜닝 필수
+- Broker는 CPU를 많이 사용하지 않으나, 처리량에 따라 Thread 파라미터 튜닝이 필요하며, Thread 증가에 따라 CPU 사용량이 증가함
+- Dual 12-core Sockets를 권장 (24-core)
+- Broker 파라미터
+    - num.io.threads
+        - 기본: 8
+        - Dish 개수보다 크게 설정
+    - num.network.threads
+        - 기본: 3
+        - TLS를 사용할 경우 두 배 이상으로 설정
+    - num.recovery.threads.per.data.dir
+        - 기본: 1
+        - Broker 시작 시 빠른 기동을 위해, core수까지만 설정
+    - num.replica.fetchers
+        - 기본: 1
+        - 보통 4 ~ 6개
+        - source broker에서 메시지를 복제하는데 사용되는 thread 수
+        - 빠르게 복제하기 위해 값을 증가
+        - Broker의 CPU 사용률과 네트워크 사용률이 올라감
+    - num.cleaner.threads
+        - 기본: 1
+        - Disk 개수 혹은 core 개수까지만 설정
+#### Broker는 File을 많이 사용
+- Broker는 많은 수의 Partition을 지원하므로 상대적으로 소규모 배포에서도 Open File Handler수가 기본값을 쉽게 초과할 수 있음
+- 최소: ulimit -n 100000
+#### Broker는 JVM Heap을 많이 사용하지 않음
+- Broker의 Heep 메모리는 운영환경의 경우 대부분 6GB까지 할당
+- 매우 큰 Cluster 혹은 많은 Partition이 필요한 경우 12GB 이상 사용
+- Broker의 OS만을 위해서는 보통 1GB정도 할당
+- Broker는 OS PAGE Cache를 많이 사용
+    - OS PAGE Cache를 통해서 Zero Copy전송을 수행
+    - 많을 수록 성능에 유리
+- 운영환경 Broker 메모리는 최소 32GB 이상 권장, 처리량에 따라서 64GB이상 사용 권장
+#### Heep 메모리 설정 방법
+- kafka-server-start 스크립트에 Java Heep 설정하는 옵션이 있음
+#### Broker Network
+- 처리량이 작은 Application인 경우, Broker의 NW은 1GB 충분
+- 처리량이 큰 Application인 경우, Broker의 NW은 10GB 이상 필요
+- Producer에서 압축 옵션을 사용하면 네트워크를 보다 효율적으로 사용 가능
+- Internal과 External 트래픽 간 분리 가능
+#### Broker Disk (Kafka 성능에 큰 영향)
+- Kafka Broker의 data log용 disk는 os용 disk와 분리 권장
+- Broker의 data log용으로 여러개의 Local Disk사용을 권장 (RAIO 10 권장, JBOD 사용 가능)
+- SSD Disk 권장
+- XFS 파일스템을 사용해야 함
+- mount시에 noatime 옵션 사용
+    - Linux가 각 파일에 마지막으로 엑세스한 시간을 기록하는 파일, 시스템 메타데이터를 유지 관리하는 방식을 off
+- Broker 파라미터 중 log.dirs에 콤마(,)로 구분한 디렉토리들로 정의
+- 하나의 Partition은 하나의 volume에서 생성
+- Partition들은 log.dirs의 디렉토리에 round-robin 방식으로 분배
+- NAS 사용 불가
+#### Virtual Memory (Kafka 성능에 큰 영향)
+- Memory swapping 최소화
+    - vm.swappiness=1 (기본 60)
+- Blocking Flush(synchronous) 빈도 감소
+    - vm.dirty_ratio=80 (기본 20)
+- Non-Blocking background flushes (aysnchronous) 빈도 증가
+    - vm.dirty_background_ratio=5 (기본: 10)
+- 위 파라미터들은 /etc/sysctl.conf에 설정하고 sysctl -p 로 load 함
+#### Zookeeper 권장 사양
+- 홀수 개로 구성
+- 2core ~ 4 core
+- memory 8GB
+- Transaction log(dataLogDir) 512GB SSD
+- Database snapshots(dataDir) 2TB SSD RAID 10
+#### Zookeeper의 server.properties 내의 purge snapshopts 파라미터 설정
+- autopurge.snapRetainCount: 보존할 Snapshop 개수 (권장 3)
+- autopurge.purgeInterval: Purge Interval(권장 24)
+- 위의 옵션은 24시간마다 3개를 제외한 모든 스냅샷을 제거하는 설정
+### 03. Installaction, Cluster Configuration
+### 04. Log Retention, Cleanup Policy
+#### Log 파일 관리 (Log Cleanup Policy)
+- Log는 Consume되어도 지우지 않음
+- Broker or Topic 단위로 cleanup 정책을 설정
+- log.cleanup.policy 파라미터
+    - delete
+    - compact
+    - delete, compact
+- 현재 active sgement의 log는 cleanup 대상이 아님
+#### Log Segment 삭제하는 정책
+- log.cleanup.policy: delete
+- log.retention.ms: log 보관 주기 (기본 7일)
+- log.retention.check.interval.ms: log segment를 체크하는 주기 (기본 5분)
+- segment 파일에 저장된 가장 최신의 메시지가 log.retension.ms보다 오래된 segment를 삭제
+#### Compact Cleanup Policy
+- 각 key의 최신 value만을 유지
+- compact 정책은 partition별로 특정 key의 최신 value만 유지하며 압축
+#### Log comaction 설정
+- log.cleaner.min.cleanable.ratio
+    - 기본: 0.5
+    - head 영역 데이터가 tail 영역보다 크면(기본값 50 %) clean 시작
+- log.cleaner.io.max.bytes.per.second
+    - 기본: 무제한
+    - Log Cleaner의 Read/Write의 처리량을 제한하여 시스템 리소스 보호 가능
+- 동일한 key를 갖는 메시지가 매우 많은 경우, 더 빠른 정리를 위해서 파라미터 값 변경 필요
+    - log.cleaner.threads
+        - 기본: 1
+        - core 수 만큼 할당
+    - log.cleaner.dedupe.buffer.size
+        - 기본 값: 134,217,728
+#### Tombstone Message (Log Compaction시 특정 key 데이터 삭제)
+- compaction 사용시에 key를 가지는 메시지를 지우려면, 동일한 key에 null value를 가지는 메시지를 topic으로 보냄
+- consumer는 해당 메시지가 지워지기 전에(기본 1 day) 해당 메시지를 conume 할 수 있음
+    - log.clean.delete.retention.ms
+        - 기본: 1 day
+        - 메시지를 지우기 전 보관 기간
+### 05. Kafka Cluster Upgrade, Expansion, Shrink
+#### kafka cluster 확장
+- 고유한 ID를 부여한 새로운 broker를 zookeeper Ensemble에 연결
+- 자동으로 partition을 새로운 broker로 옮겨주지 않음
+    - kafka-reassign-partition 도구
+    - Confluent Auto Data Balancer / Self-Balancing Cluster 기능 
+##### Confluent ADB(Auto Data Balancer)
+- Cluster내의 전체 Broker에 대한 Partition 리밸런싱을 명령어 하나로 자동 계산 및 수행
+- 한번에 하나의 리밸런싱만 수행 가능
+- 시스템 자원을 많이 사용
+- Cluster내의 전체 Broker가 살아있을 때만 동작
+##### Confluent Self-Balancing Cluster
+- 계산 및 실행을 모두 자동화
+- Broker 노드 추가시, 자동으로 리밸런싱 실행
 
 ## ch 04. Apache Kafka Connect 개념 및 이해
 ## ch 05. Confluent Scheuma Registry 개념 및 이해
