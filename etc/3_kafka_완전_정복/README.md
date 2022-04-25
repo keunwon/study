@@ -457,6 +457,57 @@
 - Broker 노드 추가시, 자동으로 리밸런싱 실행
 
 ## ch 04. Apache Kafka Connect 개념 및 이해
+### 01. Apache Kafka Connect
+#### 용어 정리
+- Kafka Connect
+    - Apache Kafka 안팎으로 데이터를 스트리밍하기 위한 Framework
+    - 다른 데이터 시스템을 kafka와 통합하는 과정을 표준화한 Framework
+    - 통합을 위한 Connector 개발, 배포, 관리를 단순화
+- Connectors: task를 관리하여 데이터 스트리밍을 조절하는 plugin(jar)
+- Tasks: Kafka와 다른 시스템간의 데이터를 전송하는 방법의 구현체
+- Workers: Connector, Task를 실행하는 실행 중인 프로세스
+- Convets: Connect와 데이터를 보내거나 받는 시스템 간에 데이터를 변환하는 데 사용되는 Components
+- Transfroms: Connector에 의해 생성되거나 Connector로 전송되는 각 메시지를 변경하는 간단한 Components
+
 ## ch 05. Confluent Scheuma Registry 개념 및 이해
+### 01. Confluent Schema Registry
+#### Schema
+- Data Structure
+- 데이터를 만드는 Producer와 데이터를 사용하는 Consumer 간의 계약으로 사용
+#### AVRO
+- Apache Open Source Software 프로젝트
+- 데이터 Serialization 제공
+- Java 포함한 많은 프로그래밍 언어에서 지원
+- 데이터 구조 형식 제공
+- Avro 데이터는 바이너리이므로 데이터를 효율적으로 저장
+- 장점
+    - 압축, 고성능, 바이너리 포멧
+    - AVRO 데이터 파일이 저장되면 해당 스키마가 함께 저장되므로 나중에 모든 프로그램에서 파일 처리 가능
+    - AVRO 스키마는 JSON으로 정의
+    - 데이터 타입을 알 수 있음
+    - Confluent Schema Registry에서 사용 가능
+- 단점
+    - 바이너리 형태로 serialization되기 때문에 데이터를 쉽게 해석하기 어려움
+#### Schema 설계시 고려할 점
+- 삭제될 가능성이 있는 필드이면 default value를 반드시 지정
+- 추가되는 필드라면 default value를 지정
+- 필드의 이름을 변경하지 않음
+#### Confluent Schema Registry
+- 모든 스키마의 버전 기록을 저장
+- Avro 스키마 저장 및 검색을 위한 Restful 인터페이스 제공
+- 스키마를 확인하고 데이터가 스키마와 일치하지 않은 예외를 던짐
+- 호환성 설정에 따라 스키마 진화 가능
+- 각 메시지와 함께 Avro 스키마를 보내는 것은 비효율적
+    - 대신 Avro 스키마를 나타내는 Golbal Unique ID가 각 메시지와 함께 전송
+- Schema Registry는 특별한 Kafka Topic스키마 (__schemas) 정보를 저장
+
 ## ch 06. Kafka Stream와 ksqlDB 개념 및 이해
-## ch 07. [부록] Confluent Certification 소개 및 팁들
+### 01. Kafka Streams, ksqlDB
+#### 실시간 이벤트 스트림 데이터 분석 및 처리
+- Database에 저장 후 분석 및 처리하는 것이 아니라, Kafka에 있는 움직이는 데이터를 바로 분석 및 처리하는 것이 핵심
+#### Kafka 진영에서 나온 Realtime Event Stream Processing 방법들
+- Kafka Streams
+    - Event Streaming용 Library (Java, Scala)
+    - Fromework 아니기 때문에 별도의 Cluster 구축이 불필요
+- ksqlKB
+    - Event Streaming Database - RDBMS/NoSQL DB가 아님
