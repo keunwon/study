@@ -265,9 +265,66 @@
     - 소유권을 이전하는(revoke) partition의 정보는 Group Codinator가 알려줌
 - Partition을 취소한 구성원은 그룹에 ReJoin하여 취소된 Partition을 할당할 수 있도록 두 번째 재조정을 트리거
 - 1st rebalance에서 consumer는 자신의 partition 중 어느 것이 다른 곳으로 재할당되어야 하는지 알게 됨
-
+### 07. Kafka Log File
+#### Kafka Log Segment File Directory
+- 각 Broker의 log.dirs 파라미터로 정의
+- Kafka Log Sement File은 Data File이라고 부르기도 함
+- Segment File이 생성되는 위치는 각 Broker의 server.properties 파일 안에 'log.dirs' 파라미터로 정의
+#### Partition 디렉토리에 생성되는 파일들의 타입
+- .log: Log Segment file (메시지와 metadata를 저장)
+- .index: 각 메시지의 Offset을 Log Segment 파일의 Byte위치에 매핑
+- .timeindex: 각 메시지의 timestamp를 기반으로 메시지를 검색하는 데 사용
+- .leader-epoch-checkpoint: Leader Epoch과 관련된 Offset 정보를 저장
+- .snapshot: IdepmpotentProducer(메시지 순서 보장)를 사용하면 생성
+- .txnindex: Transaction Producer를 사용하면 생성
+#### Log Segment File Rolling 파라미터
+- log.segment.bytes: default 1GB
+- log.roll.ms (default: 168시간 = 7일)
+- log.index.size.max.bytes (default: 10MB)
+- __consumer_offset (Offset Topic)의 Segment File Rolling 파라미터는 별도
+    - offsets.topic.segment.bytes (default: 100MB)
+#### CheckPoint File
+- 각 Broke에는 2개의 Checkpoint File이 존재함
+- logs.dir: 디렉토리 위치
+- replication-offset-checkpoint
+    - 마지막으로 commit된 메시지의 ID인 High Water Mark 시작 시 Follower가 이를 사용하여 Commit되지 않은 않은 메시지를 Truncate
+- recovery-point-offset-checkpoint
+    - 데이터가 디스크로 flush된 지점
+    - 복구 중 Broker는 이 시점 이후의 메시지가 손실되었는지 여부 확인
+### 08. Exactly Once Semantics (EOS)
+- Producer가 메시지를 전송을 다시 시도하더라도 메시지가 최종 consumer에게 정확히 한 번 전달
+- 메시징 시스템 자체와 메시지를 생성하고 소비하는 애플리케이션 간의 협력이 반드시 필요
+#### EOS 필요성
+- 데이터가 정확히 한번 처리되도록 보장해야 하는 실시간 미션 크리티컬 스트리밍 Application
+- 클라이언트(Idempotent Producer)에서 생성되는 중복 메시지 방지
+- Trsansaction 기능을 사용하여, 하나의 트랜잭션내의 모든 메시지가 모두 Write되었는지 또는 전혀 Write되지 않았는지 확인
+- Use Cases
+    - 금융 거래 처리 - 송금, 카드 결제 등
+    - 과금 정산을 위한 광고 조회 수 추적
+    - Billing 서비스간 메시지 전송
+#### EOS 관련 파라미터
+##### Idempotent Producer
+- enable.idempotence: true
+- Producer가 retry를 하더라도, 메시지 중복을 방지
+- 성능에 영향이 별로 없음 (메시지 헤더에 id값만 추가되어서 전송)
+##### Transaction
+- 각 Producer에 고유한 transactional.id 선정
+- Producer를 Transaction API를 사용하여 개발
+- Consumer에서 isolation.level을 read_committed로 설정
+> Broker 파라미터는 Transaction을 위한 Default 값이 적용되어 있음 (필요시에만 수정 필요)
+### 09. Exactly Once Semantics(EOS) 2
+#### Transaction 새로운 핵심 개념 도입
+- Transaction Coordinator
+    - Consumer Group Coordinator와 비슷하게, 각 Producer에게는 Transaction Coordinator가 할당되면, PID 할당 및 Transaction 관리의 모든 로직을 수행
+- Transaction Log
+    - 새로운 Internal Kafka Topic
+    - Consumer Offset Topic과 유사하게, 모든 Transaction의 영구적이고 복제된 데이터를 저장하는 Transaction Coordinator 상태 저장소
+- TransactionalId
+    - Producer를 고유하게 식별하기 위해 사용되면, TransactionId를 가진 Producer의 다른 인스턴스들은 어전 인스턴스에 의해 만들어진 모든 Transaction을 재개(또는 중단)할 수 있음
 
 ## ch 03. Apache Kafka 구성 및 관리
+
+
 ## ch 04. Apache Kafka Connect 개념 및 이해
 ## ch 05. Confluent Scheuma Registry 개념 및 이해
 ## ch 06. Kafka Stream와 ksqlDB 개념 및 이해
