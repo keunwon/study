@@ -1,0 +1,15 @@
+docker
+docker/**
+
+docker-elk/kafka
+docker-elk/zookeeper
+
+docker-connect/connectors
+docker-connect/kafka
+docker-connect/mysql
+docker-connect/connect
+
+burrow
+burrow/*
+
+edm/testdir

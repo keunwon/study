@@ -1,0 +1,8 @@
+version: '3'
+services:
+  apache-app:
+    image: centos:centos7
+    hostname: apache-app-server1
+    network_mode: host
+    command:
+      - bash

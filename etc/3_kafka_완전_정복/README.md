@@ -511,3 +511,79 @@
     - Fromework 아니기 때문에 별도의 Cluster 구축이 불필요
 - ksqlKB
     - Event Streaming Database - RDBMS/NoSQL DB가 아님
+
+# Part 2. 실무에서 쉽게 써보는 Kafka: 클러스 구축부터 MSA 환경에서 활용까지
+## ch 02. Kafka 설치와 설정
+### 01. Kafka 간단 요약
+#### Kafka 활용 사례
+- 데이터 파이프라인
+    - 중간에 사람의 개입없이 결함없는 데이터를 저장, 수집, ETL이 가능하도록 일련의 흐름을 만들어 주는 과정
+- 시스템 모니터링
+- 메시징 허브
+### 04. Kafka 설정 꼼꼼히 들여다보기
+- broker.id: 브로커 Id (고유한 값이여야 함)
+- listeners: broker에서 사용하는 endpoint
+- advertisted.listeners: producer, consumer의 endpoint
+- num.network.threads: 서버 요청/응답 thread
+- num.io.thread: 서버가 요청 처리할 때 I/O 처리 thread
+- log.dirs: broker 데이터 저장 경로
+- num.partition: 기본적으로 사용할 파티션 개수
+- log.flush.inverval.message: flush하기 전에 메시지를 몇개까지 모아둘것인지
+- log.flush.interval.ms: ms 마다 disk에 flush
+- log.retention.hours: log 삭제를 위해서 해당 시간마다 검사
+
+## ch 03. Kafka Data Pipeline 구축
+### 01. 데이터 파이프라인 구축해보기
+- ELK 구성
+    - Elasticsearch
+    - Logstash
+    - Kibana
+### 02. Confluent Kafka 추가 기능
+#### Rest Proxy
+- Kafka Client를 사용하지 않고 RESTful API를 이용하여 카프카 일부 기능을 사용
+- Kafka Broker와 별도로 구성
+- 상대적으로 저조한 성능
+- Confluent Community 라이센스
+#### Schema Registry
+- schema registry는 동일 스키마에 대한 호환성 체크를 하기 위해 버전을 유지
+- Backword(기본 설정): 필드 삭제, optional 필드 허용 (컨슈머부터 업그레이드)
+- Forward: 필드 추가, optional 필드 삭제 허용 (프로듀서부터 업그레이드)
+- Full: Backword, Forward 모두 만족 (순서 무관)
+- None: Backword, Forward 모두 만족하지 않음
+#### Kafka Connect
+##### 개념
+- 별도의 개발 없이 Kafka를 통해 메시지 송수신을 가능하도록 해주는 솔루션
+### 03. Kafka Connect 활용하기
+## ch 04. MSA 환경에서의 Kafka 활용
+### 01. MSA & EDA
+#### Monolithic, MSA 장/단점
+##### Monolithic
+- 장점
+    - 소규모 서비스에서 개발, 테스트, 운영이 용이
+- 단점
+    - 대규모 서비스에서 조그만한 수정에도 전체 빌드가 필요
+    - 수정과 무관한 모듈의 재배포가 불가피, Scale-out 불리
+##### MSA
+- 장점
+    - 각 서비스 독립적으로 개발, 테스트, 배포, scale-out 가능
+    - 서비스 별로 각기 다른 언어/DB 사용 가능
+- 단점
+    - 개발 복잡도와 통신 오버헤드 증가
+    - 통합 테스트 불리
+    - 트랜잭션 처리
+#### Event Driven Architecture
+- Event: 시스템 내부나 외부에서 유발된 시스템 상태의 중요한 변화 또는 의미있는 사건
+- 동기, 비동기 통신
+    - 동기: API를 통한 요청-응답 방식
+    - 비동기: Event Channel(Message Broker, Kafka)를 통한 pub/sub 방식
+- EDM = Event Driven Architecture를 적용한 MicroService
+### 02. EDM 서비스 구현
+#### SAGA 패턴
+- 마이크로서비스들 사이에 이벤트를 주고 받다가 특정 작업이 실패하면 이전 완료된 작업들에게 보상 이벤트를 소싱하면서 분산환경에서 원자성을 보장하는 패턴
+##### Choreography based SAGA pattern
+- 보유한 서비스에서 local transaction을 관리, 트랜잭션 완료 시 이벤트 발행
+- 다른 서버에서 이벤트 처리를 실패하면 트랜잭션 취소처리를 위한 이벤트 발행하여 Rollback 시도
+##### Orchestration based SAGA pattern
+- 트랜잭션을 처리하기 위한 별도의 Saga 인스턴스가 별도로 존재
+- 각 서버들의 트랜잭션 결과를 saga에 전달, 마지막 트랜잭션이 종료되면 전체 트랜잭션을 종료
+- 중간에 트랜잭션 실패 시 saga에서 보상 트랜잭션을 발동하여 일관성 유지
