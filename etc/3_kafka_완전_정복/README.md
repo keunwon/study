@@ -589,3 +589,24 @@
 - 중간에 트랜잭션 실패 시 saga에서 보상 트랜잭션을 발동하여 일관성 유지
 
 ## Part 3. Spring for Apache Kafka
+## ch 02. Spring for Kafka 기본
+### 02. Kafka Topic
+#### 토픽을 생성할 때 고려해야 할 점들
+1. 토픽명
+    - 토픽명은 한번 정하면 바꾸기가 매우 어려움
+    - Rule을 정해 패턴화하여 의미를 부여
+2. 토픽의 파티션 개수 계산
+    - 파티션 수를 늘릴 수 있지만, 줄일 수는 없음
+    - 파티션 수가 늘어나면 thread 수가 동일하게 늘어남
+    - 1초당 메시지 발행 수 / consumer thread가 1개가 1초당 처리하는 메시지 수
+3. Retention 시간
+    - 디스크 크기와 데이터의 중요성에 따라 판단
+### 03. Publish Messages 이론
+#### KafkaTemplate 설정
+- ProducerFactory 클래스를 이용해 생성
+- 트랜잭션을 사용하지 않는 경우, Signleton으로 생성
+- 기본적으로 비동기 처리
+#### RoutingKafkaTemplate
+- 전송하는 토픽별로 옵션을 다르게 설정할 수 있음
+#### ReplyingKafkaTemplate
+- Consumer가 특정 데이터를 전달 받았는지 여부를 확인 할 수 있음
