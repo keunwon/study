@@ -158,3 +158,6 @@ gradle-app.setting
 *.iml
 out
 gen
+
+# 그 외..
+monitor/prometheus/prometheus-volume

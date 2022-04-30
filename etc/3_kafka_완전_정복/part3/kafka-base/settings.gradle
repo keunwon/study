@@ -1,4 +1,6 @@
 rootProject.name = 'kafka-base'
 include 'publish'
 include 'consume'
+include 'topic'
+include 'monitor'
 

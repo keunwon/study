@@ -1,0 +1,28 @@
+version: '3.7'
+
+services:
+  prometheus:
+    image: prom/prometheus
+    container_name: local-prometheus
+    volumes:
+      - ./prometheus/prometheus-volume:/prometheus
+      - ./prometheus/config/prometheus.yml:/etc//prometheus/prometheus.yml
+    ports:
+      - 9091:9090
+    command:
+      - '--web.enable-lifecycle'
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    networks:
+      - promet
+
+  grafana:
+    image: grafana/grafana
+    container_name: local-grafana
+    ports:
+      - 3000:3000
+    networks:
+      - promet
+
+networks:
+  promet:
+    driver: bridge

@@ -23,6 +23,10 @@ subprojects {
         implementation 'org.springframework.boot:spring-boot-starter-web'
         implementation 'org.apache.kafka:kafka-streams'
         implementation 'org.springframework.kafka:spring-kafka'
+
+        developmentOnly 'org.springframework.boot:spring-boot-devtools'
+        annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+
         testImplementation 'org.springframework.boot:spring-boot-starter-test'
         testImplementation 'org.springframework.kafka:spring-kafka-test'
     }
@@ -36,5 +40,12 @@ project(':consume') {
     dependencies {
         implementation 'org.springframework.boot:spring-boot-starter-validation'
         implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.5'
+    }
+}
+
+project(':monitor') {
+    dependencies {
+        implementation 'org.springframework.boot:spring-boot-starter-actuator'
+        implementation 'io.micrometer:micrometer-registry-prometheus:1.7.11'
     }
 }
