@@ -3,4 +3,5 @@ include 'publish'
 include 'consume'
 include 'topic'
 include 'monitor'
+include 'kafka-stream'
 

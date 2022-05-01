@@ -30,4 +30,9 @@ public class ClipConsumer {
     public void listenAnimal(@Valid Animal animal) {
         System.out.println("Animal. animal = " + animal);
     }
+
+    @KafkaListener(id = "clip4-animal-listener.DLT", topics = "clip4-animal.DLT", containerFactory = "kafkaJsonContainerFactory")
+    public void listenAnimalDLT(Animal animal) {
+        System.out.println("Animal.DLT.animal= " + animal);
+    }
 }

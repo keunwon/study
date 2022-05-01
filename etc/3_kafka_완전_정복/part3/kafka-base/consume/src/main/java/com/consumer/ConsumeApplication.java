@@ -16,10 +16,10 @@ public class ConsumeApplication {
     }
 
     @Bean
-    public ApplicationRunner runner(ClipProducer producer, KafkaMessageListenerContainer<String, String> kafkaMessageListenerContainer) {
+    public ApplicationRunner runner(ClipProducer producer) {
         return args -> {
             //producer.async("clip4-listener", "Hello, Clip4 Listener");
-            producer.async("clip4-animal", new Animal("puppy", 1));
+            producer.async("clip4-animal", new Animal("puppy", 11));
         };
     }
 }
