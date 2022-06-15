@@ -16,8 +16,8 @@ internal class ExceptionHandlingTest : DescribeSpec({
             }
         }
 
-        context("숫자가 아닌 문자열 입기") {
-            listOf("abc", "bcd", "cde", "111").forAll { letter ->
+        context("숫자가 아닌 문자열 읽기") {
+            listOf("abc", "bcd", "cde").forAll { letter ->
                 val br = BufferedReader(StringReader(letter))
                 readNumber(br) shouldBe null
             }
