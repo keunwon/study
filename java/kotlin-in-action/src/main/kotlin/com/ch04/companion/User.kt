@@ -1,15 +1,14 @@
 package com.ch04.companion
 
-import com.ch04.`interface`.getFacebookName
+fun getFacebookName(accountId: Int) = "fb:$accountId"
 
-class User {
-    val nickname: String
+class User private constructor(val nickname: String) {
 
-    constructor(email: String) {
-        nickname = email.substringBefore('@')
-    }
+    companion object {
+        fun newSubscribingUser(email: String) =
+            User(email.substringBefore('@'))
 
-    constructor(facebookAccountId: Int) {
-        nickname = getFacebookName(facebookAccountId)
+        fun newFacebookUser(accountId: Int) =
+            User(getFacebookName(accountId))
     }
 }
