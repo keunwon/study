@@ -7,23 +7,25 @@ import io.kotest.matchers.shouldBe
 internal class PersonKtTest : DescribeSpec({
 
     describe("Person") {
+        context("json 사용하여 객체를 생성합니다") {
+            it("fromJson") {
+                val person = Person.fromJSON(personJson)
+                person.name shouldBe "홍길동"
+            }
 
-        context("fromJSON") {
-            it("json 사용하여 객체를 생성합니다") {
-                val json = jacksonObjectMapper().writeValueAsString(Person("홍길동"))
-                val person = Person.fromJSON(json)
+            it("fromJson2") {
+                val person = Person.fromJson2(personJson)
+                person.name shouldBe "홍길동"
+            }
 
+            it("personJsonFactory") {
+                val person = personJsonFactory.fromJSON(personJson)
                 person.name shouldBe "홍길동"
             }
         }
-
-        context("fromJson2") {
-            it("json 사용하여 객체를 생성합니다") {
-                val json = jacksonObjectMapper().writeValueAsString(Person("이순신"))
-                val person = Person.fromJson2(json)
-
-                person.name shouldBe "이순신"
-            }
-        }
     }
-})
+}) {
+    companion object {
+        val personJson: String = jacksonObjectMapper().writeValueAsString(Person("홍길동"))
+    }
+}

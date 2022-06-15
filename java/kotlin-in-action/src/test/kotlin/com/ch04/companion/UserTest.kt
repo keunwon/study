@@ -6,7 +6,6 @@ import io.kotest.matchers.shouldBe
 internal class UserTest : DescribeSpec({
 
     describe("Person 객체 생성") {
-
         context("newSubscribingUser") {
             it("이메일 주소를 입력, '@' 이전 문자열을 반환합니다") {
                 val user = User.newSubscribingUser("test@google.com")
