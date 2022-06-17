@@ -1,6 +1,6 @@
 package com.ch05
 
-data class Person(val name: String, val age: Int)
+data class Person(val name: String, var age: Int)
 
 fun Person.isAdult() = age >= 21
 
@@ -24,3 +24,5 @@ fun findTheOldestByLambda(people: List<Person>) =
 val sum = { x: Int, y: Int -> x + y}
 
 val getAge = { person: Person -> person.age }
+
+val canBeInClub27 = { p: Person -> p.age <= 27 }
