@@ -23,9 +23,11 @@ internal class PersonCollectionApiTest : DescribeSpec({
             it("lambda") {
                 people.map { it.name }.shouldContainExactly("Alice", "Bob")
             }
+
             it("member reference") {
                 people.map(Person::name).shouldContainExactly("Alice", "Bob")
             }
+
             it("영문자를 대문자로 변경하고 반환합니다") {
                 val numbers = mapOf(0 to "zero", 1 to "one")
                 numbers.mapValues { it.value.uppercase() }

@@ -10,12 +10,12 @@ internal class ClickableKtTest : DescribeSpec({
     val out = System.out
 
     describe("showOff") {
-        beforeAny {
+        beforeEach {
             output.reset()
             System.setOut(PrintStream(output))
         }
 
-        afterAny {
+        afterEach {
             System.setOut(out)
         }
 

@@ -10,7 +10,7 @@ import io.kotest.matchers.shouldBe
 internal class SequenceTest : DescribeSpec({
 
     describe("Person sequence") {
-        context("'A'로 시작하는 이름들을 리스트로 반환합니다") {
+        it("'A'로 시작하는 이름들을 리스트로 반환합니다") {
             val list = simplePeople.asSequence()
                 .map { it.name }
                 .filter { it.startsWith('A') }
@@ -19,7 +19,7 @@ internal class SequenceTest : DescribeSpec({
             list shouldContainExactlyInAnyOrder listOf("Alice")
         }
 
-        context("이름의 길이가 4미만인 이름들의 리스트로 반환합니다") {
+        it("이름의 길이가 4미만인 이름들의 리스트로 반환합니다") {
             val names = people.asSequence()
                 .filter { it.name.length < 4 }
                 .map { it.name }
@@ -30,7 +30,7 @@ internal class SequenceTest : DescribeSpec({
     }
 
     describe("number sequence") {
-        context("example-1") {
+        it("example-1") {
             val sequence = listOf(1, 2, 3, 4).asSequence()
                 .map { print("map($it)"); it * it }
                 .filter { print("filter($it)"); it % 2 == 0 }
@@ -38,7 +38,7 @@ internal class SequenceTest : DescribeSpec({
             sequence.toList() shouldContainExactly listOf(4, 16)
         }
 
-        context("example-2") {
+        it("example-2") {
             val numberSequence = listOf(1, 2, 3, 4).asSequence()
                 .map { it * it }
                 .find { it > 3 }

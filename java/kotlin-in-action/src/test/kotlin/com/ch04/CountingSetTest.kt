@@ -8,7 +8,7 @@ import io.kotest.matchers.shouldBe
 internal class CountingSetTest : DescribeSpec({
 
     describe("add") {
-        context("입력된 컬렉션 개수를 반환한다") {
+        it("입력된 set 개수를 반환한다") {
             val set = CountingSet<String>()
             set.add("홍길동")
             set.add("세종대왕")
@@ -18,7 +18,7 @@ internal class CountingSetTest : DescribeSpec({
     }
 
     describe("addAll") {
-        context("입력된 collection 개수를 반환한다") {
+        it("입력된 collection 개수를 반환한다") {
             val set = CountingSet<String>()
             val list1 = hashSetOf("홍길동", "세종대왕", "이순신")
             val list2 = hashSetOf("apple", "banana")

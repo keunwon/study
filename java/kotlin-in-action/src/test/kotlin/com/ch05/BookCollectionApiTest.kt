@@ -21,7 +21,7 @@ internal class BookCollectionApiTest : DescribeSpec({
             }
         }
 
-        context("flatten") {
+        it("flatten") {
             val numbers = listOf(listOf(1, 2, 3), listOf(4, 5, 6), listOf(7, 8, 9))
 
             numbers.flatten() shouldBe listOf(1, 2, 3, 4, 5, 6, 7, 8, 9)

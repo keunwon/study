@@ -7,7 +7,6 @@ import java.io.File
 internal class CaseInsensitiveFileComparatorTest : DescribeSpec({
 
     describe("compare") {
-
         context("파일 경로를 기준으로 오름차순 정렬을 합니다.") {
             val files = listOf(file2, file1, file1)
 

@@ -5,10 +5,9 @@ import io.kotest.inspectors.forAll
 import io.kotest.matchers.shouldBe
 
 internal class LengthCounterTest : DescribeSpec({
+
     describe("addWord") {
-
         context("문자열을 입력하면") {
-
             it("기본에 문자열 길이 + 입력된 문자의 길이의 합계를 반환한다") {
                 listOf("Hi!", "!Hi").forAll { word ->
                     val lengthCounter = LengthCounter()
@@ -22,6 +21,6 @@ internal class LengthCounterTest : DescribeSpec({
     }
 }) {
     companion object {
-        val prefix = "prefix"
+        const val prefix = "prefix"
     }
 }

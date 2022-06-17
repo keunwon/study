@@ -9,6 +9,7 @@ import java.io.ByteArrayOutputStream
 import java.io.PrintStream
 
 internal class PersonTest : DescribeSpec({
+
     describe("findTheOldest") {
         beforeAny {
             outputStream.reset()
@@ -29,7 +30,7 @@ internal class PersonTest : DescribeSpec({
     }
 
     describe("isAdult") {
-        context("나이가 21 이상인 경우 true 반환") {
+        it("나이가 21 이상인 경우 true 반환") {
             val predicate = Person::isAdult
 
             listOf(
@@ -48,10 +49,6 @@ internal class PersonTest : DescribeSpec({
                 findTheOldestByLambda(people) shouldBe people[1]
             }
         }
-
-        context("test") {
-            println(people.maxOfOrNull { it.age })
-        }
     }
 
     describe("sum") {
@@ -63,7 +60,7 @@ internal class PersonTest : DescribeSpec({
     }
 
     describe("getAge") {
-        context("가장 나이가 많은 Person 반환") {
+        it("가장 나이가 많은 Person 반환") {
             people.maxByOrNull(getAge) shouldBe people[1]
             people.maxByOrNull(Person::age) shouldBe people[1]
         }

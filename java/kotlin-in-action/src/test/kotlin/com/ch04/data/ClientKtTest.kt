@@ -3,7 +3,6 @@ package com.ch04.data
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.booleans.shouldBeTrue
 import io.kotest.matchers.collections.shouldBeUnique
-import io.kotest.matchers.should
 import io.kotest.matchers.string.shouldStartWith
 
 internal class ClientKtTest : DescribeSpec({
