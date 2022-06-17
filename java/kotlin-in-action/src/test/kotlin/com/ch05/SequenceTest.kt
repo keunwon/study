@@ -3,6 +3,8 @@ package com.ch05
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
+import io.kotest.matchers.longs.shouldBeGreaterThan
+import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 
 internal class SequenceTest : DescribeSpec({
@@ -10,7 +12,6 @@ internal class SequenceTest : DescribeSpec({
     describe("Person sequence") {
         context("'A'로 시작하는 이름들을 리스트로 반환합니다") {
             val list = simplePeople.asSequence()
-                .take(0)
                 .map { it.name }
                 .filter { it.startsWith('A') }
                 .toList()
@@ -19,11 +20,12 @@ internal class SequenceTest : DescribeSpec({
         }
 
         context("이름의 길이가 4미만인 이름들의 리스트로 반환합니다") {
-            val list = people.asSequence()
+            val names = people.asSequence()
                 .filter { it.name.length < 4 }
+                .map { it.name }
                 .toList()
 
-            list shouldContainExactlyInAnyOrder listOf(people[1], people[3])
+            names shouldContainExactlyInAnyOrder listOf(people[1].name, people[3].name)
         }
     }
 
@@ -34,6 +36,16 @@ internal class SequenceTest : DescribeSpec({
                 .filter { print("filter($it)"); it % 2 == 0 }
 
             sequence.toList() shouldContainExactly listOf(4, 16)
+        }
+
+        context("example-2") {
+            val numberSequence = listOf(1, 2, 3, 4).asSequence()
+                .map { it * it }
+                .find { it > 3 }
+
+            numberSequence?.toLong()
+                .shouldNotBeNull()
+                .shouldBeGreaterThan(3)
         }
     }
 

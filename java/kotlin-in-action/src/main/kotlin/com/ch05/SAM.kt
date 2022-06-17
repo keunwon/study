@@ -2,7 +2,7 @@ package com.ch05
 
 import com.ch05.java.OnClickListener
 
-fun createAllDoneRunnable() : Runnable {
+fun createAllDoneRunnable(): Runnable {
     return Runnable {
         println("All done!")
     }
