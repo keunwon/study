@@ -15,7 +15,7 @@ class Company(
 class Person(val name: String, val company: Company?)
 
 fun Person.countryName(): String {
-    val country = this.company?.address?.country
+    val country = company?.address?.country
     return country ?: "Unknown"
 }
 
