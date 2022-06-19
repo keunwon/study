@@ -1,6 +1,6 @@
 package com.ch02
 
-import io.kotest.assertions.throwables.shouldThrow
+import io.kotest.assertions.throwables.shouldThrowExactly
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.data.forAll
 import io.kotest.data.headers
@@ -67,7 +67,7 @@ internal class ColorTest: DescribeSpec({
                     Color.BLUE to Color.RED,
                 ).forAll { (first: Color, second: Color) ->
                     it("exception 발생, mix: $first, $second") {
-                        shouldThrow<Exception> {
+                        shouldThrowExactly<Exception> {
                             mix(first, second)
                         }.message shouldBe "Dirty color"
                     }

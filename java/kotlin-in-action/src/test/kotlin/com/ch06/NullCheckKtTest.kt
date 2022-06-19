@@ -1,7 +1,7 @@
 package com.ch06
 
 import com.ch06.java.Person
-import io.kotest.assertions.throwables.shouldThrow
+import io.kotest.assertions.throwables.shouldThrowExactly
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.inspectors.forAll
 import io.kotest.matchers.shouldBe
@@ -69,7 +69,7 @@ internal class NullCheckKtTest : DescribeSpec({
 
     describe("ignoreNulls") {
         it("null 타입을 입력하면 NullPointerException 발생합니다") {
-            shouldThrow<NullPointerException> {
+            shouldThrowExactly<NullPointerException> {
                 ignoreNulls(null)
             }
         }

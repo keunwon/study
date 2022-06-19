@@ -1,7 +1,7 @@
 package com.ch03
 
 import io.kotest.assertions.throwables.shouldNotThrowAny
-import io.kotest.assertions.throwables.shouldThrow
+import io.kotest.assertions.throwables.shouldThrowExactly
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 
@@ -17,7 +17,7 @@ internal class UserKtTest : DescribeSpec({
             it("IllegalArgumentException 예외를 던진다") {
                 val user = User(1, "", "서울 특별시")
 
-                shouldThrow<IllegalArgumentException> { saveUser(user) }
+                shouldThrowExactly<IllegalArgumentException> { saveUser(user) }
                     .message shouldBe "Can't save user ${user.id}: empty Name"
             }
         }
@@ -26,7 +26,7 @@ internal class UserKtTest : DescribeSpec({
             it("IllegalArgumentException 예외를 던진다") {
                 val user = User(1, "홍길동", "")
 
-                shouldThrow<IllegalArgumentException> { saveUser(user) }
+                shouldThrowExactly<IllegalArgumentException> { saveUser(user) }
                     .message shouldBe "Can't save user ${user.id}: empty Address"
             }
         }

@@ -1,6 +1,6 @@
 package com.ch06
 
-import io.kotest.assertions.throwables.shouldThrow
+import io.kotest.assertions.throwables.shouldThrowExactly
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import java.io.ByteArrayOutputStream
@@ -32,7 +32,7 @@ internal class PersonTest : DescribeSpec({
 
         context("Person 입력하면") {
             it("주소가 존재하지 않으면 IllegalArgumentException 발생합니다") {
-                val exception = shouldThrow<IllegalArgumentException> {
+                val exception = shouldThrowExactly<IllegalArgumentException> {
                     val person = Person("Alexey", null)
                     printShippingBabel(person)
                 }
