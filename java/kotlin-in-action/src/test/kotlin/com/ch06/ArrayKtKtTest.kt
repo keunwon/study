@@ -45,12 +45,26 @@ internal class ArrayKtKtTest : DescribeSpec({
             }
         }
     }
-    
+
     describe("printIntArray") {
-        it("출력합니다") {
+        it("배열의 내용을 출력합니다") {
             printIntArray()
 
             outputStream.toString() shouldBe "1, 4, 9, 16, 25\n"
+        }
+    }
+
+    describe("printForEachIndexed") {
+        it("배열의 내용을 출력합니다") {
+            val arr = arrayOf("Bob", "Alice")
+
+            printForEachIndexed(arr)
+
+            outputStream.toString() shouldBe """
+                Argument 0 is: ${arr[0]}
+                Argument 1 is: ${arr[1]}
+                
+            """.trimIndent()
         }
     }
 }) {

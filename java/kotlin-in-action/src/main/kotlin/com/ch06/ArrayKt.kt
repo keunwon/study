@@ -18,3 +18,9 @@ fun printIntArray() {
     val arr = IntArray(5) { i -> (i + 1) * (i + 1) }
     println(arr.joinToString())
 }
+
+fun printForEachIndexed(arr: Array<String>) {
+    arr.forEachIndexed { index, element ->
+        println("Argument $index is: $element")
+    }
+}
