@@ -119,6 +119,29 @@ internal class NullCheckKtTest : DescribeSpec({
             outputStream.toString() shouldBe "ANYONE!!!\n"
         }
     }
+
+    describe("showProgress") {
+        context("입력한 숫자가") {
+            it("0 ~ 100 사이인 경우, 입력한 숫자를 포함한 메시지를 출력합니다") {
+                listOf(0, 30, 60, 100).forAll { num ->
+                    showProgress(num)
+
+                    outputStream.toString() shouldBe "We're $num% done!\n"
+                    outputStream.reset()
+                }
+            }
+
+            it("100을 초과하면 100을 포함한 메시지를 출력합니다") {
+                showProgress(101)
+                outputStream.toString() shouldBe "We're 100% done!\n"
+            }
+
+            it("0 미만이면 0을 포함한 메시지를 출력합니다") {
+                showProgress(-1)
+                outputStream.toString() shouldBe "We're 0% done!\n"
+            }
+        }
+    }
 }) {
     companion object {
         val outputStream = ByteArrayOutputStream()

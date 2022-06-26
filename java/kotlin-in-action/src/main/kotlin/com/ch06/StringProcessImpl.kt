@@ -3,7 +3,7 @@ package com.ch06
 import com.ch06.java.StringProcessor
 
 class StringPrinter : StringProcessor {
-    override fun process(value: String?) {
+    override fun process(value: String) {
         println(value)
     }
 }
