@@ -7,9 +7,12 @@ plugins {
 group = "me.developer"
 version = "1.0-SNAPSHOT"
 
+val exposedVersion = "0.37.3"
+
 repositories {
     mavenCentral()
 }
+
 
 dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.3")
