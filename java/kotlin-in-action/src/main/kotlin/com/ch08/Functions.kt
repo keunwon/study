@@ -29,16 +29,16 @@ fun String.filter(predicate: (Char) -> Boolean): String {
 }
 
 fun <T> Collection<T>.joinToString(
-    separator: String = "",
+    separator: String = ", ",
     prefix: String = "",
     postfix: String = "",
-    transform: (T) -> String = { it.toString() }
+    transform: ((T) -> String)? = { it.toString() }
 ): String {
     val result = StringBuilder(prefix)
 
     for ((index, element) in this.withIndex()) {
         if (0 < index) result.append(separator)
-        result.append(transform(element))
+        result.append(transform?.invoke(element))
     }
     result.append(postfix)
 
@@ -48,4 +48,6 @@ fun <T> Collection<T>.joinToString(
 fun main() {
     val url = "http://kot1.in"
     performRequest(url) { code, content -> println("code: $code, content: $content") }
+
+    println(listOf("Alpha", "Beta").joinToString(transform = null))
 }

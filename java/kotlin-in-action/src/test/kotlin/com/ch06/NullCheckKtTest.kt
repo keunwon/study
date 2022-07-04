@@ -86,7 +86,7 @@ internal class NullCheckKtTest : DescribeSpec({
 
             sendEmailTo(email)
 
-            outputStream.toString() shouldBe "Sending email to $email"
+            outputStream.toString() shouldBe "Sending email to $email\n"
         }
 
         it("null 입력된 경우 아무것도 출력되지 않습니다") {
