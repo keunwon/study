@@ -21,3 +21,8 @@ class ContactListFilters {
         return { startsWithPrefix(it) && it.phoneNumber != null }
     }
 }
+
+inline fun foo(inlined: () -> Unit, noinline notInline: () -> Unit) {
+    inlined()
+    notInline()
+}
