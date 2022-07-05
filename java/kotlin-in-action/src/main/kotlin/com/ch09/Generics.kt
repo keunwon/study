@@ -1,9 +1,15 @@
 package com.ch09
 
-import java.security.Provider
 import java.util.*
 
 val letters = ('a'..'z').toList()
+
+val <T> List<T>.penultimate: T
+    get() = this[size - 2]
+
+fun <T: Number> oneHalf(value: T): Double {
+    return value.toDouble() / 2.0
+}
 
 fun <T: Comparable<T>> max(first: T, second: T): T {
     return if (first > second) first else second
@@ -37,6 +43,15 @@ inline fun <reified T> isA(value: Any) = value is T
 
 inline fun <reified T> loadService() = ServiceLoader.load(T::class.java)
 
+
+fun startProjection() {
+    val list: MutableList<Any?> = mutableListOf('a', 1, "qwe")
+    val chars = mutableListOf('a', 'b', 'c')
+
+    val unknownElements: MutableList<*> =
+        if (Random().nextBoolean()) list else chars
+}
+
 fun printFirst(list: List<*>) {
     if (list.isNotEmpty()) {
         println(list.first())
@@ -52,13 +67,9 @@ fun <T> printFirst2(list: List<T>) {
 fun main() {
     val nullableStringProcessor = Processor<String>()
     nullableStringProcessor.process("")
+
     printIntSum(listOf(1, 2, 3))
 
-    loadService<Provider.Service>()
-
     printFirst(listOf("한글", 1234))
-    printFirst(listOf(1234, "한글"))
-
     printFirst2(listOf(1234, "한글"))
-    printFirst2(listOf("한글", 1234))
 }

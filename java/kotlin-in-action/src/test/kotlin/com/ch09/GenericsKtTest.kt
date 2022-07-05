@@ -2,11 +2,14 @@ package com.ch09
 
 import io.kotest.assertions.throwables.shouldThrowExactlyUnit
 import io.kotest.core.spec.style.DescribeSpec
+import io.kotest.inspectors.forAll
 import io.kotest.matchers.booleans.shouldBeFalse
 import io.kotest.matchers.booleans.shouldBeTrue
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.collections.shouldHaveSize
+import io.kotest.matchers.doubles.shouldBeExactly
 import io.kotest.matchers.shouldBe
+import java.security.Provider
 
 internal class GenericsKtTest : DescribeSpec({
 
@@ -31,6 +34,22 @@ internal class GenericsKtTest : DescribeSpec({
 
             list.shouldHaveSize(4)
                 .shouldContainExactly('k', 'l', 'm', 'n')
+        }
+    }
+
+    describe("penultimate") {
+        it("리스트의 마지막에서 2번째 인덱스의 값을 반환합니다") {
+            val strings = listOf("apple", "banana", "cat", "dog", "egg")
+
+            strings.penultimate shouldBe strings.reversed()[1]
+        }
+    }
+
+    describe("oneHalf") {
+        it("숫자형 타입을 입력받으면 2.0으로 나눈 double 타입의 결과를 반환합니다") {
+            listOf(4 to 2.0, 6 to 3.0, 3 to 1.5).forAll { (num, mod) ->
+                oneHalf(num) shouldBeExactly mod
+            }
         }
     }
 
@@ -96,6 +115,12 @@ internal class GenericsKtTest : DescribeSpec({
             it("실수형 타입만 리스트로 반환합니다") {
                 anyList.filterIsInstance<Double>() shouldContainExactly listOf(1.2, 3.14)
             }
+        }
+    }
+
+    xdescribe("loadService") {
+        it("컴파일 오류가 발생하지 않습니다") {
+            loadService<Provider.Service>()
         }
     }
 }) {
