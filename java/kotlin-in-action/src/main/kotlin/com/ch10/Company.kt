@@ -46,6 +46,4 @@ fun main() {
 
     val memberProperty = Person2::age
     println(memberProperty.get(person))
-
-
 }

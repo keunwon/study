@@ -1,10 +1,13 @@
 package com.ch10.jkid.serialization
 
-import com.ch10.jkid.CustomSerializer
-import com.ch10.jkid.JKidException
-import com.ch10.jkid.JsonExclude
-import com.ch10.jkid.JsonName
-import com.ch10.jkid.ValueSerializer
+import com.SingleAnnotatedStringProp
+import com.SingleCustomSerializedProp
+import com.SingleListProp
+import com.SingleObjectProp
+import com.SingleStringProp
+import com.TwoBoolProp
+import com.TwoIntProp
+import com.TwoPropsOneExcluded
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 
@@ -57,26 +60,3 @@ internal class SerializeKtTest : DescribeSpec({
         }
     }
 })
-
-internal data class SingleStringProp(val s: String)
-internal data class TwoIntProp(val i1: Int, val i2: Int)
-internal data class TwoBoolProp(val b1: Boolean, val b2: Boolean)
-internal data class SingleObjectProp(val o: SingleStringProp)
-internal data class SingleListProp(val o: List<String?>)
-internal data class SingleAnnotatedStringProp(@JsonName("q") val s: String)
-internal data class SingleCustomSerializedProp(@CustomSerializer(NumberSerializer::class) val x: Int)
-internal data class TwoPropsOneExcluded(val s: String, @JsonExclude val x: String = "")
-
-class NumberSerializer : ValueSerializer<Int> {
-    override fun toJsonValue(value: Int): Any? = when (value) {
-        0 -> "ZERO"
-        1 -> "ONE"
-        else -> "?"
-    }
-
-    override fun fromJsonValue(jsonValue: Any?): Int = when (jsonValue) {
-        "ZERO" -> 0
-        "ONE" -> 1
-        else -> throw JKidException("Unexpected value $jsonValue")
-    }
-}

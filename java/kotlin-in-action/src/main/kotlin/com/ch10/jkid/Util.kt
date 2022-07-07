@@ -1,6 +1,33 @@
 package com.ch10.jkid
 
+import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
+import kotlin.reflect.KAnnotatedElement
+import kotlin.reflect.KClass
+
+inline fun <reified T> KAnnotatedElement.findAnnotation(): T? =
+    annotations.filterIsInstance<T>().firstOrNull()
+
+internal fun <T: Any> KClass<T>.createInstance(): T {
+    val noArgConstructor =  constructors.find { it.parameters.isEmpty() }
+        ?: throw IllegalArgumentException("Class must have a no-argument constructor")
+
+    return noArgConstructor.call()
+}
+
+@Suppress("UNCHECKED_CAST")
+fun Type.asJavaClass(): Class<Any> = when (this) {
+    is Class<*> -> this as Class<Any>
+    is ParameterizedType -> rawType as? Class<Any>
+        ?: throw UnsupportedOperationException("Unknown type $this")
+    else -> throw java.lang.UnsupportedOperationException("Unknown type $this")
+}
+
+@Suppress("UNCHECKED_CAST")
+fun Type.isPrimitiveOrString(): Boolean {
+    val cls = this as? Class<Any> ?: return false
+    return cls.kotlin.javaPrimitiveType != null || cls == String::class.java
+}
 
 fun <T> Iterable<T>.joinToStringBuilder(
     stringBuilder: StringBuilder,
@@ -17,9 +44,3 @@ fun <T> Iterable<T>.joinToStringBuilder(
         ""
     }
 }
-
-fun Type.isPrimitiveOrString(): Boolean {
-    val cls = this as? Class<Any> ?: return false
-    return cls.kotlin.javaPrimitiveType != null || cls == String::class.java
-}
-

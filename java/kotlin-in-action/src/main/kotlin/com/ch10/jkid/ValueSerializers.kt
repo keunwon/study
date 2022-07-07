@@ -20,6 +20,7 @@ fun serializerForType(type: Type): ValueSerializer<out Any?>? =
         else -> null
     }
 
+
 private fun Any?.expectNumber(): Number {
     if (this !is Number) throw JKidException("Expected number, was $this")
     return this
