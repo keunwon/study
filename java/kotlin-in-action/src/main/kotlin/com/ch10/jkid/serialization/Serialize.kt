@@ -3,7 +3,9 @@ package com.ch10.jkid.serialization
 import com.ch10.jkid.CustomSerializer
 import com.ch10.jkid.JsonExclude
 import com.ch10.jkid.JsonName
+import com.ch10.jkid.LocalDateSerializer
 import com.ch10.jkid.ValueSerializer
+import com.ch10.jkid.exercise.DateFormat
 import com.ch10.jkid.joinToStringBuilder
 import kotlin.reflect.KProperty
 import kotlin.reflect.KProperty1
@@ -45,13 +47,23 @@ private fun StringBuilder.serializeProperty(prop: KProperty1<Any, *>, obj: Any) 
 
 @Suppress("UNCHECKED_CAST")
 fun KProperty<*>.getSerializer(): ValueSerializer<Any?>? {
-    val customSerializerAnn = findAnnotation<CustomSerializer>() ?: return null
-    val serializerClass = customSerializerAnn.serializerClass
-
-    val valueSerializer = serializerClass.objectInstance
-        ?: serializerClass.createInstance()
+    val valueSerializer = getCustomSerializer()
+        ?: getLocalDateSerializer()
+        ?: return null
 
     return valueSerializer as ValueSerializer<Any?>
+}
+
+private fun KProperty<*>.getCustomSerializer(): ValueSerializer<out Any?>? {
+    val customSerializer = findAnnotation<CustomSerializer>() ?: return null
+    val serializerClass = customSerializer.serializerClass
+
+    return serializerClass.objectInstance ?: serializerClass.createInstance()
+}
+
+private fun KProperty<*>.getLocalDateSerializer(): ValueSerializer<out Any?>? {
+    val dateFormat = findAnnotation<DateFormat>() ?: return null
+    return LocalDateSerializer(dateFormat.format)
 }
 
 private fun StringBuilder.serializePropertyValue(value: Any?) {

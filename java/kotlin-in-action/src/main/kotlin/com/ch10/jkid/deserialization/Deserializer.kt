@@ -17,7 +17,7 @@ inline fun <reified T: Any> deserialize(json: Reader): T = deserialize(json, T::
 
 fun <T: Any> deserialize(json: Reader, targetClass: KClass<T>): T {
     val seed = ObjectSeed(targetClass, ClassInfoCache())
-    //val parser = Parser()
+    Parser(json, seed).parse()
     return seed.spawn()
 }
 

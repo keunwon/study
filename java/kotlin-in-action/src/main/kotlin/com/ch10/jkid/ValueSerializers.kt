@@ -1,6 +1,8 @@
 package com.ch10.jkid
 
 import java.lang.reflect.Type
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 fun serializerForBasicType(type: Type): ValueSerializer<out Any?> {
     assert(type.isPrimitiveOrString()) { "Expected primitive type or String: ${type.typeName}" }
@@ -74,5 +76,14 @@ object StringSerializer : ValueSerializer<String?> {
     }
 }
 
+class LocalDateSerializer(formatter: String) : ValueSerializer<LocalDate?> {
+    private val dateFormatter = DateTimeFormatter.ofPattern(formatter)
+
+    override fun toJsonValue(value: LocalDate?) = value?.format(dateFormatter)
+
+    override fun fromJsonValue(jsonValue: Any?): LocalDate? {
+        return LocalDate.parse(jsonValue as String)
+    }
+}
 
 class JKidException(message: String) : Exception(message)

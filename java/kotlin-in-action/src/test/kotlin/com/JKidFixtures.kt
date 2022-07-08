@@ -5,6 +5,8 @@ import com.ch10.jkid.JKidException
 import com.ch10.jkid.JsonExclude
 import com.ch10.jkid.JsonName
 import com.ch10.jkid.ValueSerializer
+import com.ch10.jkid.exercise.DateFormat
+import java.time.LocalDate
 
 data class SingleStringProp(val s: String)
 data class TwoIntProp(val i1: Int, val i2: Int)
@@ -14,6 +16,8 @@ data class SingleListProp(val o: List<String?>)
 data class SingleAnnotatedStringProp(@JsonName("q") val s: String)
 data class SingleCustomSerializedProp(@CustomSerializer(NumberSerializer::class) val x: Int)
 data class TwoPropsOneExcluded(val s: String, @JsonExclude val x: String = "")
+data class SingleDefaultDateFormatAnnotatedLocalProp(@DateFormat val now: LocalDate)
+data class SingleDateFormatAnnotatedLocalProp(@DateFormat("dd-MM-yyyy") val now: LocalDate)
 
 class NumberSerializer : ValueSerializer<Int> {
     override fun toJsonValue(value: Int): Any? = when (value) {

@@ -2,6 +2,8 @@ package com.ch10.jkid.serialization
 
 import com.SingleAnnotatedStringProp
 import com.SingleCustomSerializedProp
+import com.SingleDateFormatAnnotatedLocalProp
+import com.SingleDefaultDateFormatAnnotatedLocalProp
 import com.SingleListProp
 import com.SingleObjectProp
 import com.SingleStringProp
@@ -10,6 +12,7 @@ import com.TwoIntProp
 import com.TwoPropsOneExcluded
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
+import java.time.LocalDate
 
 internal class SerializeKtTest : DescribeSpec({
 
@@ -57,6 +60,16 @@ internal class SerializeKtTest : DescribeSpec({
         it("testJsonExclude") {
             val result = serialize(TwoPropsOneExcluded("foo", "bar"))
             result shouldBe """{"s": "foo"}"""
+        }
+
+        it("testBaseFormatDateFormat") {
+            val result = serialize(SingleDefaultDateFormatAnnotatedLocalProp(LocalDate.of(2022, 7, 8)))
+            result shouldBe """{"now": "2022-07-08"}"""
+        }
+
+        it("testFormatDateFormat") {
+            val result = serialize(SingleDateFormatAnnotatedLocalProp(LocalDate.of(2022, 7, 8)))
+            result shouldBe """{"now": "08-07-2022"}"""
         }
     }
 })
