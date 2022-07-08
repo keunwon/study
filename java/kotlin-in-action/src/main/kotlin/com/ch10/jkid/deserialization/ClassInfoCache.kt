@@ -14,21 +14,20 @@ import kotlin.reflect.full.primaryConstructor
 import kotlin.reflect.jvm.javaType
 
 class ClassInfoCache {
-    @Suppress("UNCHECKED_CAST")
-    operator fun <T: Any> get(cls: KClass<T>): ClassInfo<T> {
-        return cacheData.getOrPut(cls) { ClassInfo(cls) } as ClassInfo<T>
-    }
-
     private val cacheData = mutableMapOf<KClass<*>, ClassInfo<*>>()
+
+    @Suppress("UNCHECKED_CAST")
+    operator fun <T : Any> get(cls: KClass<T>): ClassInfo<T> =
+        cacheData.getOrPut(cls) { ClassInfo(cls) } as ClassInfo<T>
 }
 
-class ClassInfo<T: Any>(cls: KClass<T>) {
+class ClassInfo<T : Any>(cls: KClass<T>) {
     private val className = cls.qualifiedName
     private val constructor = cls.primaryConstructor
         ?: throw JKidException("Class ${cls.qualifiedName} doesn't have a primary constructor")
 
     private val jsonNameToParamMap = hashMapOf<String, KParameter>()
-    private val paramToSerializeMap = hashMapOf<KParameter, ValueSerializer<out Any?>>()
+    private val paramToSerializerMap = hashMapOf<KParameter, ValueSerializer<out Any?>>()
     private val jsonNameToDeserializeClassMap = hashMapOf<String, Class<out Any>?>()
 
     init {
@@ -47,16 +46,17 @@ class ClassInfo<T: Any>(cls: KClass<T>) {
         val valueSerializer = property.getSerializer()
             ?: serializerForType(param.type.javaType)
             ?: return
-        paramToSerializeMap[param] = valueSerializer
+        paramToSerializerMap[param] = valueSerializer
     }
 
-    fun getConstructorParameter(propertyName: String) = jsonNameToParamMap[propertyName]
+    fun getConstructorParameter(propertyName: String): KParameter = jsonNameToParamMap[propertyName]
         ?: throw JKidException("Constructor parameter $propertyName is not found for class $className")
 
-    fun getDeserializeClass(propertyName: String) =  jsonNameToDeserializeClassMap[propertyName]
+    fun getDeserializeClass(propertyName: String) = jsonNameToDeserializeClassMap[propertyName]
 
     fun deserializeConstructorArgument(param: KParameter, value: Any?): Any? {
-        paramToSerializeMap[param]?.let { return it.fromJsonValue(value) }
+        val serializer = paramToSerializerMap[param]
+        if (serializer != null) return serializer.fromJsonValue(value)
 
         validateArgumentType(param, value)
         return value
@@ -66,19 +66,18 @@ class ClassInfo<T: Any>(cls: KClass<T>) {
         if (value == null && !param.type.isMarkedNullable) {
             throw JKidException("Received null value for non-null parameter ${param.name}")
         }
-
         if (value != null && value.javaClass != param.type.javaType) {
             throw JKidException(
                 "Type mismatch for parameter ${param.name} expected ${param.type.javaType}, found ${value.javaClass}")
         }
     }
 
-    fun createInstance(arguments: Map<KParameter, Any?>) :T {
-        ensureAllParameterPresent(arguments)
+    fun createInstance(arguments: Map<KParameter, Any?>): T {
+        ensureAllParametersPresent(arguments)
         return constructor.callBy(arguments)
     }
 
-    private fun ensureAllParameterPresent(arguments: Map<KParameter, Any?>) {
+    private fun ensureAllParametersPresent(arguments: Map<KParameter, Any?>) {
         for (param in constructor.parameters) {
             if (arguments[param] == null && !param.isOptional && !param.type.isMarkedNullable) {
                 throw JKidException("Missing value for parameter ${param.name}")

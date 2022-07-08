@@ -10,6 +10,7 @@ import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 import kotlin.reflect.KClass
 import kotlin.reflect.KParameter
+import kotlin.reflect.jvm.javaType
 
 inline fun <reified T: Any> deserialize(json: String): T = deserialize(StringReader(json))
 
@@ -36,9 +37,9 @@ interface Seed : JsonObject {
 
     fun createCompositeProperty(propertyName: String, isList: Boolean): JsonObject
 
-    override fun createObject(propertyName: String): JsonObject = createCompositeProperty(propertyName, false)
+    override fun createObject(propertyName: String) = createCompositeProperty(propertyName, false)
 
-    override fun createArray(propertyName: String): JsonObject = createCompositeProperty(propertyName, true)
+    override fun createArray(propertyName: String) = createCompositeProperty(propertyName, true)
 }
 
 fun Seed.createSeedForType(paramType: Type, isList: Boolean): Seed {
@@ -74,10 +75,10 @@ class ObjectSeed<out T: Any>(
 
     override fun spawn(): T = classInfo.createInstance(arguments)
 
-    override fun createCompositeProperty(propertyName: String, isList: Boolean): JsonObject {
+    override fun createCompositeProperty(propertyName: String, isList: Boolean): Seed {
         val param = classInfo.getConstructorParameter(propertyName)
         val deserializeAs = classInfo.getDeserializeClass(propertyName)
-        val seed = createSeedForType(deserializeAs ?: param.type.javaClass, isList)
+        val seed = createSeedForType(deserializeAs ?: param.type.javaType, isList)
 
         return seed.apply { seedArguments[param] = this }
     }

@@ -149,7 +149,7 @@ class Lexer(reader: Reader) {
         while (true) {
             val c = charReader.peekNext()
             if (c == null || c in valueEndChars) break
-            buffer.append(charReader.readNext())
+            buffer.append(charReader.readNext()!!)
         }
         val value = buffer.toString()
         return if (value.contains(".")) Token.DoubleValue(value.toDouble()) else Token.LongValue(value.toLong())
