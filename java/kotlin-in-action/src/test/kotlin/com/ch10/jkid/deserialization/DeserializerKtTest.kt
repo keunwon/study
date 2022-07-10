@@ -3,6 +3,7 @@ package com.ch10.jkid.deserialization
 import com.ListOfInts
 import com.SingleAnnotatedStringProp
 import com.SingleCustomSerializedProp
+import com.SingleDefaultDateFormatAnnotatedLocalProp
 import com.SingleListProp
 import com.SingleNullableStringProp
 import com.SingleObjectListProp
@@ -20,6 +21,7 @@ import io.kotest.matchers.booleans.shouldBeTrue
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
+import java.time.LocalDate
 
 internal class DeserializerKtTest : DescribeSpec({
 
@@ -119,6 +121,11 @@ internal class DeserializerKtTest : DescribeSpec({
             shouldThrowExactlyUnit<JKidException> {
                 deserialize<ListOfInts>("""{"ints": {"a": 42}}""")
             }
+        }
+
+        it("testLocalDateObject") {
+            val result = deserialize<SingleDefaultDateFormatAnnotatedLocalProp>("""{"now": "2020-07-08"}""")
+            result.now shouldBe LocalDate.of(2020, 7, 8)
         }
     }
 })
