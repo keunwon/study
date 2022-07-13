@@ -66,13 +66,15 @@ internal class FunctionsKtTest : DescribeSpec({
         it("컬렉션 내용을 문자열로 변환하여 반환합니다") {
             val letters = listOf("Alpha", "Beta")
 
-            letters.joinToString() shouldBe "Alpha, Beta"
-            letters.joinToString { it.lowercase() } shouldBe "alpha, beta"
-            letters.joinToString(
-                separator = "! ",
-                postfix = "! ",
-                transform = { it.lowercase() }
-            ) shouldBe "alpha! beta! "
+            with (letters) {
+                joinToString() shouldBe "Alpha, Beta"
+                joinToString { it.lowercase() } shouldBe "alpha, beta"
+                joinToString(
+                    separator = "! ",
+                    postfix = "! ",
+                    transform = { it.lowercase() }
+                ) shouldBe "alpha! beta! "
+            }
         }
 
         it("컬력션 내용을 null 변환하여 반환합니다") {

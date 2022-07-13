@@ -15,25 +15,30 @@ internal class GenericsKtTest : DescribeSpec({
 
     describe("letters") {
         it("[a ~ z] 범위의 리스트를 반환합니다") {
-            letters
-                .shouldHaveSize(26)
-                .shouldContainExactly(
+            with (letters) {
+                shouldHaveSize(26)
+                shouldContainExactly(
                     'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
                     'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z')
+            }
         }
 
         it("[a ~ c] 범위의 리스트를 반환합니다") {
             val list = letters.slice(0..2)
 
-            list.shouldHaveSize(3)
-                .shouldContainExactly('a', 'b', 'c')
+            with (list) {
+                shouldHaveSize(3)
+                shouldContainExactly('a', 'b', 'c')
+            }
         }
 
         it("[k ~ n] 범위의 리스트를 반환합니다") {
             val list = letters.slice(10..13)
 
-            list.shouldHaveSize(4)
-                .shouldContainExactly('k', 'l', 'm', 'n')
+            with (list) {
+                shouldHaveSize(4)
+                shouldContainExactly('k', 'l', 'm', 'n')
+            }
         }
     }
 

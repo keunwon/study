@@ -8,15 +8,24 @@ group = "me.developer"
 version = "1.0-SNAPSHOT"
 
 val exposedVersion = "0.37.3"
+val kotlinxHtmlVersion = "0.7.5"
 
 repositories {
     mavenCentral()
 }
 
-
 dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.3")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.3")
+
+    implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
+    implementation("org.jetbrains.exposed:exposed-dao:$exposedVersion")
+    implementation("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
+    implementation("org.jetbrains.exposed:exposed-java-time:$exposedVersion")
+
+    implementation("org.jetbrains.kotlinx:kotlinx-html-jvm:$kotlinxHtmlVersion")
+    //implementation("org.jetbrains.kotlinx:kotlinx-html-js:$kotlinxHtmlVersion")
+    implementation("org.jetbrains.kotlinx:kotlinx-html:$kotlinxHtmlVersion")
 
     testImplementation(kotlin("test"))
     testImplementation("junit:junit:4.13.2")
