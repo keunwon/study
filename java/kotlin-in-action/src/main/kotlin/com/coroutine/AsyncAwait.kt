@@ -1,10 +1,6 @@
-@file:OptIn(DelicateCoroutinesApi::class, ExperimentalCoroutinesApi::class)
-
 package com.coroutine
 
-import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
@@ -45,6 +41,10 @@ fun dispatch() {
         launch(newSingleThreadContext("MyOwnThread")) {
             println("newSingleThreadContext: I'm working in thread [${Thread.currentThread().name}]")
         }
+
+        launch(Dispatchers.IO) {
+            println("Dispatcher.IO, thread [${Thread.currentThread().name}]")
+        }
     }
 }
 
@@ -66,12 +66,12 @@ fun suspendExample() {
 }
 
 fun main() {
-    /*println("----- sumAll -----")
-    sumAll()
+    println("----- sumAll -----")
+    //sumAll()
 
     println("----- dispatch -----")
-    dispatch()*/
+    dispatch()
 
-    suspendExample()
-    Thread.sleep(10000L)
+    println("----- suspend -----")
+    //suspendExample()
 }
