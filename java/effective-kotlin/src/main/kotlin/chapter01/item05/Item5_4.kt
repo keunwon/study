@@ -1,4 +1,4 @@
-package chapter01.item04
+package chapter01.item05
 
 class Person(val email: String?)
 fun validateEmail(email: String) {}

@@ -1,4 +1,4 @@
-package chapter01.item04
+package chapter01.item05
 
 fun factorial(n: Int): Long {
     require(n >= 0) { "Cannot calculate factorial of $n because it is smaller than 0" }
