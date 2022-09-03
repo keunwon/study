@@ -70,4 +70,3 @@ select ename, sal, job, comm,
        IF(job = 'SALESMAN', comm, sal) as ordered
 from emp
 order by 5;
-

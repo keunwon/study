@@ -251,4 +251,3 @@ on (d.deptno = e.deptno);
 select ename, comm, coalesce(comm, 0)
 from emp
 where coalesce(comm, 0) < (select comm from emp where ename = 'WARD');
-

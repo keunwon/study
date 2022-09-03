@@ -1,3 +1,18 @@
+create database if not exists sql_cookbook;
+
+drop table if exists dept;
+drop table if exists emp;
+drop table if exists new_dept;
+drop table if exists emp_bonus;
+drop table if exists t10;
+
+create table dept(
+     deptno int(2),
+     dname varchar(14),
+     loc varchar(13),
+     constraint pk_dept primary key (deptno)
+);
+
 create table emp(
     empno int(4),
     ename varchar(10),
@@ -130,3 +145,36 @@ values(
           1300, null, 10
       );
 
+# 예제 진행 중 추가되는 테이블 및 데이터
+-- new_dept
+create table new_dept(deptno int);
+insert into new_dept values (10);
+insert into new_dept values (50);
+insert into new_dept values (null);
+
+-- emp_bonus
+create table emp_bonus (
+    empno int(4),
+    received varchar(11),
+    type char(1)
+);
+delete from emp_bonus;
+
+insert emp_bonus values(7369, '14-MAR-2005', 1);
+insert emp_bonus values(7900, '14-MAR-2005', 2);
+insert emp_bonus values(7788, '14-MAR-2005', 3);
+
+insert emp_bonus values(7934, '17-MAR-2005', 1);
+insert emp_bonus values(7934, '17-MAR-2005', 2);
+insert emp_bonus values(7839, '17-MAR-2005', 3);
+insert emp_bonus values(7782, '17-MAR-2005', 1);
+
+insert emp_bonus values(7934, '17-MAR-2005', 1);
+insert emp_bonus values(7934, '17-MAR-2005', 2);
+
+-- 6. 문자열 작업 테이블(데이터) 추가
+create table t10 (
+     id int(2),
+     primary key (id)
+);
+insert into t10 values (1), (2), (3), (4), (5), (6), (7), (8), (9), (10);
