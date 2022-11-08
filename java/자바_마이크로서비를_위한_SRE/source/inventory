@@ -1,0 +1,5 @@
+[centos]
+dev.centos
+
+[centos:vars]
+ansible_user=dev-centos

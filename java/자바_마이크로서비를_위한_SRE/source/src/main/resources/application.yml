@@ -1,0 +1,40 @@
+---
+spring:
+  application:
+    name: 'spring-sre'
+#  mvc:
+#    throw-exception-if-no-handler-found: true
+#  web:
+#    resources:
+#      add-mappings: false
+  task:
+    scheduling:
+      pool:
+        size: 2
+      thread-name-prefix: scheduling-
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, beans, prometheus
+  endpoint:
+    health:
+      show-details: always
+  metrics:
+    tags:
+      application: ${spring.application.name}
+      region: seoul
+    distribution:
+      percentiles:
+        requeststest: [0.99, 0.999]
+
+server:
+  error:
+    whitelabel:
+      enabled: true
+  tomcat:
+    threads:
+      max: 200
+      min-spare: 10
+    accept-count: 100

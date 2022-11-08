@@ -1,0 +1,49 @@
+---
+- name: 'gradle build (profile: dev)'
+  hosts: localhost
+  tasks:
+    - command: ./gradlew clean build
+
+#- name: 'run local jar'
+#  hosts: localhost
+#  vars:
+#    local_port: "8081"
+#  tasks:
+#    - name: '실행중인 서비스 pid 구하기'
+#      shell: jps | grep spring | cut -f1 -d ' '
+#      register: pid_output
+#    - set_fact:
+#        pid={{ pid_output.stdout }}
+#    - name: 'process kill {{ pid }}'
+#      shell: kill -kill {{ pid }}
+#      when: pid != ""
+#    - name: nohup.out 삭제
+#      file:
+#        path: nohup.out
+#        state: absent
+#    - name: '로컬환경에 jar 배포(port: {{ local_port }})'
+#      shell:
+#        chdir: build/libs
+#        cmd: nohup java -jar -Xms512 -Xms512m -Dspring.profiles.active=local -Dserver.port={{ local_port }} spring-sre.jar >> spring-log.log.out 2>&1 &
+
+- name: 'upload jar & deploy.sh'
+  hosts: centos
+  vars:
+    app_path: app/
+  tasks:
+    - copy:
+        src: build/libs/spring-sre.jar
+        dest: '{{ app_path }}'
+        mode: 0744
+    - copy:
+        src: deploy.sh
+        dest: '{{ app_path }}'
+        mode: 0777
+
+- name: 'run deploy.sh'
+  hosts: centos
+  tasks:
+    - shell: /home/dev-centos/app/deploy.sh {{ PROFILE }}
+      register: deploy_output
+    - debug:
+        var: deploy_output.stdout_lines

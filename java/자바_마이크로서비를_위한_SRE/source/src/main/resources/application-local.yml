@@ -1,0 +1,10 @@
+---
+server:
+  port: 8080
+logging:
+  config: classpath:logs/log4j2-console.xml
+
+management:
+  metrics:
+    tags:
+      stack: local

@@ -1,0 +1,35 @@
+### 1 test
+POST {{host}}/chapter/2/counter/simple-increment
+
+### 2. list Gauge 증가
+POST  {{host}}/chapter/2/gauge/simple-increment
+
+### 3. list Gauge 감소
+POST {{host}}/chapter/2/gauge/simple-decline
+
+### 4. multi Gauge 조회
+GET {{host}}/chapter/2/gauge/multi
+
+### 5. 기본 타이머(timer.record) 기록
+GET {{host}}/chapter/2/timer/simple
+
+### 6. 백분위수 타이머(requests.test) 기록
+GET {{host}}/chapter/2/timer/percentiles
+
+### 7. 백분위수 타이머(requests.test) max delay 기록
+GET {{host}}/chapter/2/timer/max-percentiles
+
+### 8. 히스토그램 타이머(requests.test) 기록
+GET {{host}}/chapter/2/timer/histogram
+
+### 9. 히스토그램 타이머(requests.test) max delay 기록
+GET {{host}}/chapter/2/timer/max-histogram
+
+### 10. slo 타이머(requests.slo) 기록
+GET {{host}}/chapter/2/timer/slo
+
+### 11. slo 타이머(requests.slo) max delay 기록
+GET {{host}}/chapter/2/timer/max-slo
+
+### 12. summary(requests.summary)기록
+GET {{host}}/chapter/2/timer/

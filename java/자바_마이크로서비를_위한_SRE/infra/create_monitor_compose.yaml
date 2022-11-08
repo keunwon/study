@@ -1,0 +1,38 @@
+version: '3.7'
+
+services:
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    ports: 
+      - '9090:9090'
+    restart: unless-stopped
+    volumes:
+      - ./prometheus/:/etc/prometheus/
+    networks: 
+      - prometheus-net
+    command:
+      - '--web.enable-lifecycle'
+      - '--config.file=/etc/prometheus/prometheus.yml'
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    user: grafana
+    ports: 
+      - '3000:3000'
+    links:
+      - 'prometheus'
+    depends_on:
+      - prometheus
+    restart: unless-stopped 
+    volumes:
+      - ./docker-grafana:/grafana
+    networks:
+      - prometheus-net
+    environment:
+      - TZ=Asia/Seoul      
+
+networks:
+  prometheus-net:
+    driver: bridge
