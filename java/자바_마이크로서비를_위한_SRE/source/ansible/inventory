@@ -3,3 +3,6 @@ dev.centos
 
 [centos:vars]
 ansible_user=dev-centos
+
+[ssh_connection]
+pipelining=true

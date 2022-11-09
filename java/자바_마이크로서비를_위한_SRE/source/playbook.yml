@@ -1,8 +1,13 @@
 ---
-- name: 'gradle build (profile: dev)'
+- name: 'sre-mvc gradle build (profile: dev)'
   hosts: localhost
   tasks:
-    - command: ./gradlew clean build
+    - shell: './gradlew sre-mvc:clean && ./gradlew sre-mvc:build'
+
+- name: 'sre-webflux gradle build(profile: dev)'
+  hosts: localhost
+  tasks:
+    - shell: './gradlew sre-webflux:clean && ./gradlew sre-webflux:build'
 
 #- name: 'run local jar'
 #  hosts: localhost
@@ -26,24 +31,61 @@
 #        chdir: build/libs
 #        cmd: nohup java -jar -Xms512 -Xms512m -Dspring.profiles.active=local -Dserver.port={{ local_port }} spring-sre.jar >> spring-log.log.out 2>&1 &
 
+- name: 'jar 경로 디렉토리 경로 생성'
+  hosts: centos
+  vars_files:
+    - ansible/ansible-variable.yml
+  tasks:
+    - name: '디렉토리가 존재 여부 확인'
+      stat:
+        path: '{{ item }}'
+      register: path_exists
+      loop:
+        - '{{ app_path.root }}'
+        - '{{ app_path.mvc }}'
+        - '{{ app_path.webflux }}'
+    - name: '디렉토리가 존재하지 않으면 생성'
+      file:
+        path: '{{ item.item }}'
+        state: directory
+      when: not item.stat.exists
+      loop: '{{ path_exists.results }}'
+
 - name: 'upload jar & deploy.sh'
   hosts: centos
-  vars:
-    app_path: app/
+  vars_files:
+    - ansible/ansible-variable.yml
   tasks:
     - copy:
-        src: build/libs/spring-sre.jar
-        dest: '{{ app_path }}'
-        mode: 0744
-    - copy:
-        src: deploy.sh
-        dest: '{{ app_path }}'
-        mode: 0777
+        src: '{{ item.name }}/build/libs/'
+        dest: '{{ item.path }}'
+        mode: 0755
+      loop:
+        - { name: sre-mvc, path: '{{ app_path.mvc }}' }
+        - { name: sre-webflux, path: '{{ app_path.webflux }}' }
+    - template:
+        src: ansible/deploy-template.j2
+        dest: '{{ item.path }}/deploy.sh'
+        mode: 0755
+      vars:
+        APP_NAME: '{{ item.name }}'
+        APP_PATH: '{{ item.path }}'
+      loop:
+        - { path: '{{ app_path.mvc }}', name: '{{ app_name.mvc }}' }
+        - { path: '{{ app_path.webflux }}', name: '{{ app_name.webflux }}' }
+
 
 - name: 'run deploy.sh'
   hosts: centos
+  vars_files:
+    - ansible/ansible-variable.yml
   tasks:
-    - shell: /home/dev-centos/app/deploy.sh {{ PROFILE }}
+    - shell:
+        cmd: 'app/{{ item }}/deploy.sh {{ PROFILE }}'
+      loop:
+        - '{{ app_name.mvc }}'
+        - '{{ app_name.webflux }}'
       register: deploy_output
     - debug:
-        var: deploy_output.stdout_lines
+        msg: '{{ item.stdout_lines }}'
+      with_items: '{{ deploy_output.results }}'

@@ -7,50 +7,60 @@ plugins {
     kotlin("plugin.spring") version "1.6.21"
 }
 
-group = "com.spring"
-//version = "1.0"
-java.sourceCompatibility = JavaVersion.VERSION_17
-
-configurations {
-    all {
-        exclude("org.springframework.boot", "spring-boot-starter-logging")
-    }
-    compileOnly {
-        extendsFrom(configurations.annotationProcessor.get())
+allprojects {
+    repositories {
+        mavenCentral()
     }
 }
 
-repositories {
-    mavenCentral()
-}
-
-dependencies {
-    implementation("org.springframework.boot:spring-boot-starter-aop")
-    implementation("org.springframework.boot:spring-boot-starter-actuator")
-    implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-    implementation("org.jetbrains.kotlin:kotlin-reflect")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    developmentOnly("org.springframework.boot:spring-boot-devtools")
-    //implementation("io.micrometer:micrometer-registry-prometheus")
-    runtimeOnly("io.micrometer:micrometer-registry-prometheus")
-    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
-
-    implementation("org.springframework.boot:spring-boot-starter-log4j2")
-}
-
-tasks.withType<KotlinCompile> {
-    kotlinOptions {
-        freeCompilerArgs = listOf("-Xjsr305=strict")
-        jvmTarget = "17"
+subprojects {
+    apply {
+        plugin("org.springframework.boot")
+        plugin("io.spring.dependency-management")
+        plugin("org.jetbrains.kotlin.jvm")
+        plugin("org.jetbrains.kotlin.plugin.spring")
     }
-}
 
-tasks.withType<Test> {
-    useJUnitPlatform()
-}
+    java.sourceCompatibility = JavaVersion.VERSION_17
 
-tasks.withType<Jar> {
-    archiveBaseName.set("spring-sre")
+    dependencies {
+        implementation("org.springframework.boot:spring-boot-starter-aop")
+        implementation("org.springframework.boot:spring-boot-starter-actuator")
+        implementation("org.springframework.boot:spring-boot-starter-web")
+        implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+        implementation("org.jetbrains.kotlin:kotlin-reflect")
+        implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+
+        developmentOnly("org.springframework.boot:spring-boot-devtools")
+        //implementation("io.micrometer:micrometer-registry-prometheus")
+        runtimeOnly("io.micrometer:micrometer-registry-prometheus")
+        annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
+        testImplementation("org.springframework.boot:spring-boot-starter-test")
+
+        implementation("org.springframework.boot:spring-boot-starter-log4j2")
+    }
+
+    configurations {
+        all {
+            exclude("org.springframework.boot", "spring-boot-starter-logging")
+        }
+        compileOnly {
+            extendsFrom(configurations.annotationProcessor.get())
+        }
+    }
+
+    tasks.withType<KotlinCompile> {
+        kotlinOptions {
+            freeCompilerArgs = listOf("-Xjsr305=strict")
+            jvmTarget = "17"
+        }
+    }
+
+    tasks.withType<Test> {
+        useJUnitPlatform()
+    }
+
+    tasks.getByName<Jar>("jar") {
+        enabled = false
+    }
 }

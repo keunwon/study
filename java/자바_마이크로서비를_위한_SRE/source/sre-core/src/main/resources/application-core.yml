@@ -1,0 +1,58 @@
+---
+spring:
+  lifecycle:
+    timeout-per-shutdown-phase: 5s
+#  web:
+#    resources:
+#      add-mappings: false
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, beans, prometheus
+  endpoint:
+    health:
+      show-details: always
+  metrics:
+    tags:
+      application: ${spring.applicatoin.name}
+      region: seoul
+server:
+#  error:
+#    whitelabel:
+#      enabled: true
+  shutdown: graceful
+
+---
+spring:
+  config:
+    activate:
+      on-profile: local
+logging:
+  config: classpath:logs/log4j2-console.xml
+
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+  main:
+    banner-mode: log
+logging:
+  config: classpath:logs/log4j2-file.xml
+management:
+  metrics:
+    tags:
+      stack: dev
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+logging:
+  config: classpath:logs/log4j2-file.xml
+management:
+  metrics:
+    tags:
+      stack: prod

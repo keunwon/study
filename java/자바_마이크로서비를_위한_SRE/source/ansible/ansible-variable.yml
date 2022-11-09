@@ -1,0 +1,9 @@
+---
+app_path:
+  root: app/
+  mvc: app/sre-mvc
+  webflux: app/sre-webflux
+
+app_name:
+  mvc: sre-mvc
+  webflux: sre-webflux

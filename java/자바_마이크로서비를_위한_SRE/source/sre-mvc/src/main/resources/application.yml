@@ -1,0 +1,16 @@
+---
+spring:
+  application:
+    name: sre-mvc
+  profiles:
+    include: core, mvc
+server:
+  port: 8080
+
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+server:
+  port: 8080

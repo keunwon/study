@@ -1,1 +1,4 @@
-rootProject.name = "sre"
+rootProject.name = "spring-sre"
+include("sre-core")
+include("sre-mvc")
+include("sre-webflux")
