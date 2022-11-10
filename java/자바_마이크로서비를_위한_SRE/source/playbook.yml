@@ -1,13 +1,17 @@
 ---
-- name: 'sre-mvc gradle build (profile: dev)'
+- name: 'gradle build'
   hosts: localhost
+  vars_files:
+    - ansible/ansible-variable.yml
+  gather_facts: false
   tasks:
-    - shell: './gradlew sre-mvc:clean && ./gradlew sre-mvc:build'
-
-- name: 'sre-webflux gradle build(profile: dev)'
-  hosts: localhost
-  tasks:
-    - shell: './gradlew sre-webflux:clean && ./gradlew sre-webflux:build'
+    - shell: './gradlew {{ item }}:clean && ./gradlew {{ item }}:build'
+      loop:
+        - '{{ app_name.mvc }}'
+        - '{{ app_name.webflux }}'
+      register: build_output
+      async: 10
+      poll: 0
 
 #- name: 'run local jar'
 #  hosts: localhost
@@ -33,6 +37,7 @@
 
 - name: 'jar 경로 디렉토리 경로 생성'
   hosts: centos
+  gather_facts: false
   vars_files:
     - ansible/ansible-variable.yml
   tasks:
@@ -53,6 +58,7 @@
 
 - name: 'upload jar & deploy.sh'
   hosts: centos
+  gather_facts: false
   vars_files:
     - ansible/ansible-variable.yml
   tasks:
@@ -77,6 +83,7 @@
 
 - name: 'run deploy.sh'
   hosts: centos
+  gather_facts: false
   vars_files:
     - ansible/ansible-variable.yml
   tasks:
