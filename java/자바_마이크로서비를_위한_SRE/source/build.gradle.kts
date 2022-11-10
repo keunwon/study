@@ -23,6 +23,8 @@ subprojects {
 
     java.sourceCompatibility = JavaVersion.VERSION_17
 
+    extra.set("springCloudVersion", "2021.0.5")
+
     dependencies {
         implementation("org.springframework.boot:spring-boot-starter-aop")
         implementation("org.springframework.boot:spring-boot-starter-actuator")
@@ -38,6 +40,12 @@ subprojects {
         testImplementation("org.springframework.boot:spring-boot-starter-test")
 
         implementation("org.springframework.boot:spring-boot-starter-log4j2")
+    }
+
+    dependencyManagement {
+        imports {
+            mavenBom("org.springframework.cloud:spring-cloud-dependencies:${property("springCloudVersion")}")
+        }
     }
 
     configurations {

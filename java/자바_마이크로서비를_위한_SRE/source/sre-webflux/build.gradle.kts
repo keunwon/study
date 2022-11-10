@@ -12,8 +12,11 @@ repositories {
 
 dependencies {
     implementation(project(":sre-core"))
-    implementation("org.springframework.boot:spring-boot-starter-webflux")
     implementation(kotlin("stdlib"))
+    implementation("org.springframework.boot:spring-boot-starter-webflux")
+
+    runtimeOnly("org.springframework.cloud:spring-cloud-sleuth-zipkin")
+    runtimeOnly("org.springframework.cloud:spring-cloud-starter-sleuth")
 }
 
 configurations {
