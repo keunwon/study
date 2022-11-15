@@ -1,0 +1,21 @@
+{
+  "groups": [
+    {
+      "name": "api",
+      "type": "com.spring.sre.config.WebClientHostProperties",
+      "sourceType": "com.spring.sre.config.WebClientHostProperties"
+    }
+  ],
+  "properties": [
+    {
+      "name": "api.host",
+      "type": "java.util.Map",
+      "description": "Description for api.host.spring-mvc."
+    },
+    {
+      "name": "remote.home",
+      "type": "java.net.URI",
+      "description": "Description for remote.home."
+    }
+  ]
+}

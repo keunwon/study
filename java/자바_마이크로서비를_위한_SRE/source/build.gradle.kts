@@ -21,9 +21,13 @@ subprojects {
         plugin("org.jetbrains.kotlin.plugin.spring")
     }
 
-    java.sourceCompatibility = JavaVersion.VERSION_17
+    ext {
+        set("springCloudVersion", "2021.0.5")
+        set("kotestVersion", "5.5.3")
+        set("mockkVersion", "1.13.2")
+    }
 
-    extra.set("springCloudVersion", "2021.0.5")
+    java.sourceCompatibility = JavaVersion.VERSION_17
 
     dependencies {
         implementation("org.springframework.boot:spring-boot-starter-aop")
@@ -32,14 +36,18 @@ subprojects {
         implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
         implementation("org.jetbrains.kotlin:kotlin-reflect")
         implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+        implementation("org.springframework.boot:spring-boot-starter-log4j2")
+        implementation("org.apache.logging.log4j:log4j-spring-cloud-config-client") {
+            exclude("org.springframework.cloud", "spring-cloud-bus")
+        }
 
         developmentOnly("org.springframework.boot:spring-boot-devtools")
-        //implementation("io.micrometer:micrometer-registry-prometheus")
         runtimeOnly("io.micrometer:micrometer-registry-prometheus")
         annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
-        testImplementation("org.springframework.boot:spring-boot-starter-test")
 
-        implementation("org.springframework.boot:spring-boot-starter-log4j2")
+        testImplementation("org.springframework.boot:spring-boot-starter-test")
+        testImplementation("io.kotest:kotest-runner-junit5:${property("kotestVersion")}")
+        testImplementation("io.kotest:kotest-framework-api-jvm:${property("kotestVersion")}")
     }
 
     dependencyManagement {
@@ -51,6 +59,7 @@ subprojects {
     configurations {
         all {
             exclude("org.springframework.boot", "spring-boot-starter-logging")
+            exclude("ch.qos.logback", "logback-classic")
         }
         compileOnly {
             extendsFrom(configurations.annotationProcessor.get())

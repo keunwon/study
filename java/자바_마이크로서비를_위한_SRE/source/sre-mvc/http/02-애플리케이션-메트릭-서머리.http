@@ -1,2 +1,2 @@
 ### 1. summary(requests.summary)기록
-GET {{host}}/chapter/2/summary/record
+GET {{spring-mvc}}/chapter/2/summary/record

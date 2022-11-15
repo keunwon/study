@@ -15,7 +15,7 @@ management:
       show-details: always
   metrics:
     tags:
-      application: ${spring.applicatoin.name}
+      application: ${spring.application.name}
       region: seoul
 server:
 #  error:

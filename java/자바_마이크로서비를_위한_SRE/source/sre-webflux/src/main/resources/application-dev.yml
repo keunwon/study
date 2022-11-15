@@ -1,0 +1,11 @@
+---
+spring:
+  zipkin:
+    base-url: "http://192.168.45.42:9411"
+server:
+  port: 8090
+logging:
+  config: classpath:logs/log4j2-file-sleuth.xml
+api:
+  host:
+    spring-mvc: "http://192.168.45.42:8080"

@@ -4,6 +4,10 @@ spring:
     name: sre-mvc
   profiles:
     include: core, mvc
+  task:
+    scheduling:
+      pool:
+        size: 10
 server:
   port: 8080
 

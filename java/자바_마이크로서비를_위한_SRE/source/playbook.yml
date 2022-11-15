@@ -10,8 +10,6 @@
         - '{{ app_name.mvc }}'
         - '{{ app_name.webflux }}'
       register: build_output
-      async: 10
-      poll: 0
 
 #- name: 'run local jar'
 #  hosts: localhost
@@ -80,7 +78,6 @@
         - { path: '{{ app_path.mvc }}', name: '{{ app_name.mvc }}' }
         - { path: '{{ app_path.webflux }}', name: '{{ app_name.webflux }}' }
 
-
 - name: 'run deploy.sh'
   hosts: centos
   gather_facts: false
@@ -90,8 +87,8 @@
     - shell:
         cmd: 'app/{{ item }}/deploy.sh {{ PROFILE }}'
       loop:
-        - '{{ app_name.mvc }}'
         - '{{ app_name.webflux }}'
+        - '{{ app_name.mvc }}'
       register: deploy_output
     - debug:
         msg: '{{ item.stdout_lines }}'

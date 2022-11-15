@@ -4,14 +4,3 @@ spring:
     name: sre-webflux
   profiles:
     include: core
-server:
-  port: 8082
-
-
----
-spring:
-  config:
-    activate:
-      on-profile: dev
-server:
-  port: 8090

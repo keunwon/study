@@ -1,11 +1,11 @@
 ### 1. multi Gauge 조회
-GET {{host}}/chapter/2/gauge/multi
+GET {{spring-mvc}}/chapter/2/gauge/multi
 
 ### 2. 기본 타이머(timer.record) 기록
-GET {{host}}/chapter/2/timer/simple
+GET {{spring-mvc}}/chapter/2/timer/simple
 
 ### 3. 백분위수 타이머(requests.test) 기록
-GET {{host}}/chapter/2/timer/percentiles
+GET {{spring-mvc}}/chapter/2/timer/percentiles
 
 ### 4. 백분위수 타이머(requests.test) max delay 기록
-GET {{host}}/chapter/2/timer/max-percentiles
+GET {{spring-mvc}}/chapter/2/timer/max-percentiles

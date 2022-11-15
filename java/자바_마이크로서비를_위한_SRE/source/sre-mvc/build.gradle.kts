@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "com.spring"
-version = "unspecified"
+version = "1.0.0"
 
 repositories {
     mavenCentral()

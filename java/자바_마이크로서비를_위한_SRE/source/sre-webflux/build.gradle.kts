@@ -13,10 +13,20 @@ repositories {
 dependencies {
     implementation(project(":sre-core"))
     implementation(kotlin("stdlib"))
-    implementation("org.springframework.boot:spring-boot-starter-webflux")
 
-    runtimeOnly("org.springframework.cloud:spring-cloud-sleuth-zipkin")
-    runtimeOnly("org.springframework.cloud:spring-cloud-starter-sleuth")
+    // webflux
+    implementation("org.springframework.boot:spring-boot-starter-webflux")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
+
+    // cloud
+    implementation("org.springframework.cloud:spring-cloud-sleuth-zipkin")
+    implementation("org.springframework.cloud:spring-cloud-starter-sleuth")
+    implementation("org.springframework.cloud:spring-cloud-starter-gateway")
+    implementation("org.springframework.cloud:spring-cloud-gateway-webflux")
+
+    // blockhound
+    implementation("io.projectreactor.tools:blockhound:1.0.6.RELEASE")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-debug")
 }
 
 configurations {
