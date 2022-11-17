@@ -3,3 +3,6 @@ GET {{spring-webflux}}/chapter/2/tmp/many-delay
 
 ###
 GET {{spring-webflux}}/chapter/3/zipkin/delay
+
+###
+GET {{spring-webflux}}/chapter/3/proxy/path/1

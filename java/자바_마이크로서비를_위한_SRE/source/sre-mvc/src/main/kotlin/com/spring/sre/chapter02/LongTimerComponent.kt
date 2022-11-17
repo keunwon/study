@@ -22,7 +22,7 @@ class LongTimerComponent {
             .register(Metrics.globalRegistry)
             .record(Runnable {
                 val num = getRandNum()
-                log.info("scrapResources-1-second: $num")
+                //log.info("scrapResources-1-second: $num")
                 TimeUnit.SECONDS.sleep(num)
             })
     }
@@ -32,9 +32,9 @@ class LongTimerComponent {
     @Scheduled(fixedRate = 15 * 1000L)
     fun scrapeResources2() {
         val num = getRandNum()
-        log.info("---- [s] scrapeResources-2-second: $num [s] ---")
+        //log.info("---- [s] scrapeResources-2-second: $num [s] ---")
         TimeUnit.SECONDS.sleep(num)
-        log.info("---- [e] scrapeResources-2-second: $num [e] ---")
+        //log.info("---- [e] scrapeResources-2-second: $num [e] ---")
     }
 
     fun getRandNum(): Long = ThreadLocalRandom.current().nextLong(30, 36)

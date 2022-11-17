@@ -23,7 +23,7 @@ if [ -z "${CURRENT_PID}" ]; then
 else
   echo "> kill -15 ${APP_NAME}"
   kill -15 $CURRENT_PID
-  sleep 3
+  sleep 1
 fi
 
 echo "> 변경 사항 배포(${PROFILE})"
@@ -35,7 +35,6 @@ echo "> JAR 이름: ${JAR_NAME}"
 
 nohup java -jar \
   -Dspring.profiles.active="${PROFILE}" \
-  -XX:+AllowRedefinitionToAddDeleteMethods \
   -Xms256m \
   -Xmx256m \
   "${JAR_PATH}/${JAR_NAME}" 2>&1 &
