@@ -4,7 +4,7 @@
         <Property name="LOG_EXCEPTION_CONVERSION_WORD">%xwEx</Property>
         <Property name="LOG_DATEFORMAT_PATTERN">yyyy-MM-dd HH:mm:ss.SSS</Property>
         <Property name="appName">${spring:spring.application.name}</Property>
-        <Property name="FILE_LOG_PATTERN">%d{${sys:LOG_DATEFORMAT_PATTERN}} %5level [%pid, ${appName}, %X{traceId}, %X{spanId}] --- [%t] [%-40.40c{1.}:%4L] : %m%n${sys:LOG_EXCEPTION_CONVERSION_WORD}</Property>
+        <Property name="FILE_LOG_PATTERN">%d{${sys:LOG_DATEFORMAT_PATTERN}} %5level [%pid, ${appName}, %X{traceId}, %X{spanId}] --- [%t] [%-40.40C{1.}:%4L] : %m%n${sys:LOG_EXCEPTION_CONVERSION_WORD}</Property>
         <Property name="APP_NAME">${spring:spring.application.name}</Property>
         <Property name="APP_LOG_PATH">/home/dev-centos/app/${APP_NAME}/logs</Property>
     </Properties>

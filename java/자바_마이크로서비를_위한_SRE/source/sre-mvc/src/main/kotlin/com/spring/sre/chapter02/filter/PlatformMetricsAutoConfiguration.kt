@@ -11,5 +11,6 @@ class PlatformMetricsAutoConfiguration {
     @Value("\${spring.application.name:unknown}")
     private lateinit var appName: String
 
+    @Value("\${HOSTNAME:unkown}")
     private lateinit var host: String
 }

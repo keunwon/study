@@ -20,4 +20,3 @@ class TestMeterFilter : MeterFilter {
             .meterFilter(MeterFilter.denyNameStartsWith("jvm"))
     }
 }
-

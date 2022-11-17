@@ -42,8 +42,11 @@ subprojects {
         }
 
         developmentOnly("org.springframework.boot:spring-boot-devtools")
-        runtimeOnly("io.micrometer:micrometer-registry-prometheus")
         annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
+
+        // micrometer-registry
+        runtimeOnly("io.micrometer:micrometer-registry-prometheus")
+        implementation("io.micrometer:micrometer-registry-cloudwatch2")
 
         testImplementation("org.springframework.boot:spring-boot-starter-test")
         testImplementation("io.kotest:kotest-runner-junit5:${property("kotestVersion")}")

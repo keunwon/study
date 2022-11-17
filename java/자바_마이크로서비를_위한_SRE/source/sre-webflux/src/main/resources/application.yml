@@ -4,3 +4,6 @@ spring:
     name: sre-webflux
   profiles:
     include: core
+  sleuth:
+    sampler:
+      probability: 0.1

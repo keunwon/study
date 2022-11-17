@@ -14,6 +14,7 @@ repositories {
 
 dependencies {
     implementation(project(":sre-core"))
+    implementation("ca.pjer:logback-awslogs-appender:1.6.0")
     implementation(kotlin("stdlib"))
 }
 
