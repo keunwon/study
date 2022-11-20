@@ -1,7 +1,7 @@
 version: '3.7'
 
 services:
-  ngrinder-controller:
+  controller:
     image: ngrinder/controller
     container_name: ngrinder
     environment:
@@ -14,19 +14,20 @@ services:
       - ./ngrinder-tmp:/opt/ngrinder-controller
     sysctls:
       - net.core.somaxconn=65000
-    networks:
-      - ngrinder-net 
+    restart: unless-stopped
   agent-1:
     image: ngrinder/agent
     container_name: agent-1
     environment:
       - TZ=Asia/Seoul
     links:
-      - ngrinder-controller
-    networks:
-      - ngrinder-net 
-        
-
-networks:
-  ngrinder-net:
-    driver: bridge
+      - controller
+    restart: unless-stopped
+  agent-2:
+    image: ngrinder/agent
+    container_name: agent-2
+    environment:
+      - TZ=Asia/Seoul
+    links:
+      - controller
+    restart: unless-stopped
