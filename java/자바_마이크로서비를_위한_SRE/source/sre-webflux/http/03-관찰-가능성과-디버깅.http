@@ -6,3 +6,9 @@ GET {{spring-webflux}}/chapter/3/zipkin/delay
 
 ###
 GET {{spring-webflux}}/chapter/3/proxy/path/1
+
+###
+GET {{spring-webflux}}/chapter/3/zipkin/delay/millisecond
+
+###
+GET {{spring-webflux}}/chapter/3/zipkin/delay/second

@@ -6,59 +6,36 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.reactive.function.client.WebClient
-import org.springframework.web.reactive.function.client.awaitBody
-import org.springframework.web.reactive.function.client.awaitExchange
 
 @RestController
 @RequestMapping("/chapter/3/zipkin")
 class ZipKinApi(
     private val mvcApiWebClient: WebClient,
+    private val zipkinService: ZipkinService,
 ) {
     private val log = LogManager.getLogger(ZipKinApi::class)
 
     @GetMapping("/delay")
     suspend fun simple(): ResponseEntity<DelayResponse> {
-        val response1 = delayMilliSecond()
-        val response2 = delaySecond()
-        val response3 = delayError()
+        val response1 = zipkinService.delayMilliSecond()
+        val response2 = zipkinService.delaySecond()
+        val response3 = zipkinService.delayError()
         log.info("response-1: $response1, response-2: $response2, response-3: $response3")
         return ResponseEntity.ok(DelayResponse(response1, response2))
     }
 
-    suspend fun delayMilliSecond(): String {
-        return mvcApiWebClient.get()
-            .uri("/chapter/2/delay/millisecond")
-            .awaitExchange {
-                if (!it.statusCode().is2xxSuccessful) {
-                    log.info(">> api failed")
-                    return@awaitExchange "failed"
-                }
-                it.awaitBody()
-            }
+    @GetMapping("/delay/millisecond")
+    suspend fun delayMilliSecond(): ResponseEntity<String> {
+        val response = zipkinService.delayMilliSecond()
+        log.info("response: $response")
+        return ResponseEntity.ok(response)
     }
 
-    suspend fun delaySecond(): String {
-        return mvcApiWebClient.get()
-            .uri("/chapter/2/delay/second")
-            .awaitExchange {
-                if (!it.statusCode().is2xxSuccessful) {
-                    log.info("> second failed")
-                    return@awaitExchange "failed"
-                }
-                it.awaitBody()
-            }
-    }
-
-    suspend fun delayError(): String {
-        return mvcApiWebClient.get()
-            .uri("/chapter/2/delay/error")
-            .awaitExchange {
-                if (!it.statusCode().is2xxSuccessful) {
-                    log.info("> error second")
-                    return@awaitExchange "failed"
-                }
-                it.awaitBody()
-            }
+    @GetMapping("/delay/second")
+    suspend fun delaySecond(): ResponseEntity<String> {
+        val response = zipkinService.delaySecond()
+        log.info("response: $response")
+        return ResponseEntity.ok(response)
     }
 }
 

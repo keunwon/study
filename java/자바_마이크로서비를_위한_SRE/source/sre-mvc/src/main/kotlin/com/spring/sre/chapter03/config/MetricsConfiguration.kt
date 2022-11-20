@@ -21,9 +21,9 @@ class MetricsConfiguration {
         return object : DefaultWebMvcTagsProvider() {
             override fun getTags(
                 request: HttpServletRequest,
-                response: HttpServletResponse,
-                handler: Any,
-                exception: Throwable
+                response: HttpServletResponse?,
+                handler: Any?,
+                exception: Throwable?
             ): MutableIterable<Tag> {
                 val capabilities = userAgentParser.parse(request.getHeader(HttpHeaders.USER_AGENT))
                 return Tags.concat(

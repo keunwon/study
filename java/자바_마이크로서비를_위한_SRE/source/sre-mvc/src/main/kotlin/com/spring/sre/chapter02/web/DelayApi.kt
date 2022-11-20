@@ -1,6 +1,8 @@
 package com.spring.sre.chapter02.web
 
 import org.apache.logging.log4j.LogManager
+import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
@@ -18,7 +20,9 @@ class DelayApi {
         val randNum = ThreadLocalRandom.current().nextLong(100, 900)
         log.info("millisecond: $randNum")
         TimeUnit.MILLISECONDS.sleep(randNum)
-        return ResponseEntity.ok("ms-$randNum")
+
+        val headers = HttpHeaders().apply { set(SUBSCIRPTION, "pro") }
+        return ResponseEntity("ms-$randNum", headers, HttpStatus.OK)
     }
 
     @GetMapping("/second")
@@ -26,7 +30,9 @@ class DelayApi {
         val randNum = ThreadLocalRandom.current().nextLong(1, 3)
         log.info("second: $randNum")
         TimeUnit.SECONDS.sleep(randNum)
-        return ResponseEntity.ok("second-$randNum")
+
+        val headers = HttpHeaders().apply { set(SUBSCIRPTION, "vip") }
+        return ResponseEntity("second-$randNum", headers, HttpStatus.OK)
     }
 
     @GetMapping("/error")
@@ -35,5 +41,9 @@ class DelayApi {
         log.info("error-second: $randNum")
         TimeUnit.SECONDS.sleep(randNum)
         return ResponseEntity.internalServerError().body("failed")
+    }
+
+    companion object {
+        private const val SUBSCIRPTION = "subscription"
     }
 }

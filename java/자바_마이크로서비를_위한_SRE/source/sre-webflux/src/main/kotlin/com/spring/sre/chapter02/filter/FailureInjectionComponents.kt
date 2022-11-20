@@ -7,7 +7,6 @@ import io.micrometer.core.instrument.Tags
 import org.apache.logging.log4j.LogManager
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.actuate.metrics.web.reactive.server.DefaultWebFluxTagsProvider
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
 import org.springframework.web.server.ServerWebExchange
@@ -25,12 +24,6 @@ class FailureInjectionTestingHandlerFilterFunction : WebFilter {
 
     override fun filter(exchange: ServerWebExchange, chain: WebFilterChain): Mono<Void> {
         val name = BaggageField.getByName(GatewayController.FAILURE_INJECTION_BAGGAGE).value
-        log.info("name: $name, serviceName: $serviceName")
-        log.info("size: ${BaggageField.getAllValues().size}")
-        BaggageField.getAllValues().forEach { (key, value) ->
-            log.info("> key: $key, value: $value")
-        }
-
         if (serviceName == name) {
             exchange.response.statusCode = HttpStatus.INTERNAL_SERVER_ERROR
             return Mono.empty()
@@ -39,7 +32,7 @@ class FailureInjectionTestingHandlerFilterFunction : WebFilter {
     }
 }
 
-@ConditionalOnBean(GatewayController::class)
+//@ConditionalOnBean(GatewayController::class)
 @Component
 class FailureInjectionWebfluxTags : DefaultWebFluxTagsProvider() {
     @Value("\${spring.application.name}")
