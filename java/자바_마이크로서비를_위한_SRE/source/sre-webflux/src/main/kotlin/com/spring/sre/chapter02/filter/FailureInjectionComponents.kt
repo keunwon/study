@@ -1,4 +1,4 @@
-package com.spring.sre.filter
+package com.spring.sre.chapter02.filter
 
 import brave.baggage.BaggageField
 import com.spring.sre.chapter03.GatewayController

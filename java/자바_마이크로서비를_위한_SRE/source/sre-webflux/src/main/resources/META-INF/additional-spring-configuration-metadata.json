@@ -2,8 +2,8 @@
   "groups": [
     {
       "name": "api",
-      "type": "com.spring.sre.config.WebClientHostProperties",
-      "sourceType": "com.spring.sre.config.WebClientHostProperties"
+      "type": "com.spring.sre.chapter02.config.WebClientHostProperties",
+      "sourceType": "com.spring.sre.chapter02.config.WebClientHostProperties"
     }
   ],
   "properties": [

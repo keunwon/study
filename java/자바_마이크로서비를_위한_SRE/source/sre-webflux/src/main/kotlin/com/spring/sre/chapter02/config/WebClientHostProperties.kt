@@ -1,4 +1,4 @@
-package com.spring.sre.config
+package com.spring.sre.chapter02.config
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.context.properties.ConstructorBinding

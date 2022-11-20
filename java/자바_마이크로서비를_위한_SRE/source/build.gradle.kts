@@ -41,6 +41,8 @@ subprojects {
             exclude("org.springframework.cloud", "spring-cloud-bus")
         }
 
+        implementation("com.blueconic:browscap-java:1.3.13")
+
         developmentOnly("org.springframework.boot:spring-boot-devtools")
         annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 

@@ -1,4 +1,4 @@
-package com.spring.sre.config
+package com.spring.sre.chapter02.config
 
 import com.spring.sre.chapter02.filter.Vehicle
 import com.spring.sre.chapter02.filter.VehicleMeterBinder

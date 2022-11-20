@@ -1,4 +1,4 @@
-package com.spring.sre.config
+package com.spring.sre.chapter02.config
 
 import org.apache.logging.log4j.LogManager
 import org.springframework.context.annotation.Bean

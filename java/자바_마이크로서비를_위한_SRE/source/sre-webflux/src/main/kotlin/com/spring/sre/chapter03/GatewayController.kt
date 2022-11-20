@@ -3,7 +3,7 @@ package com.spring.sre.chapter03
 import brave.baggage.BaggageField
 import brave.baggage.BaggagePropagationConfig
 import brave.baggage.BaggagePropagationCustomizer
-import com.spring.sre.config.WebClientHostProperties
+import com.spring.sre.chapter02.config.WebClientHostProperties
 import kotlinx.coroutines.reactor.awaitSingle
 import org.apache.logging.log4j.LogManager
 import org.springframework.cloud.gateway.webflux.ProxyExchange
@@ -33,7 +33,7 @@ class GatewayController(
 
         BaggageField.getByName(FAILURE_INJECTION_BAGGAGE)
             .updateValue("sre-webflux")
-       
+
         BaggageField.getAllValues().forEach { (key, value) ->
             log.info("key: $key, value: $value")
         }

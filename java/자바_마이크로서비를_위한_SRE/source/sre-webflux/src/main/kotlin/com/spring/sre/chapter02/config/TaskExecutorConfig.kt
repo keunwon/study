@@ -1,4 +1,4 @@
-package com.spring.sre.config
+package com.spring.sre.chapter02.config
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -9,6 +9,6 @@ class TaskExecutorConfig {
 
     @Bean
     fun taskExecutor(): TaskExecutor {
-        return TaskExecutor {  }
+        return TaskExecutor { }
     }
 }
