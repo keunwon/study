@@ -18,6 +18,9 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-webflux")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
 
+    // resilience
+    implementation("io.github.resilience4j:resilience4j-spring-boot2")
+
     // cloud
     implementation("org.springframework.cloud:spring-cloud-sleuth-zipkin")
     implementation("org.springframework.cloud:spring-cloud-starter-sleuth")
