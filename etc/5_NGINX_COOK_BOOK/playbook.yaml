@@ -1,4 +1,17 @@
 ---
+- name: nginx 설정파일 업로드
+  hosts: nginx
+  tasks:
+    - copy:
+        src: '{{ item.src }}'
+        dest: '{{ item.dest }}'
+        mode: 0776
+      loop:
+        - { src: './nginx.conf', dest: '/home/nginx' }
+        - { src: './conf.d', dest: '/home/nginx' }
+        - { src: './stream.conf.d', dest: '/home/nginx' }
+        - { src: './html', dest: '/home/nginx' }
+
 - name: nginx docker-compose 업로드
   hosts: nginx
   vars:
@@ -12,18 +25,5 @@
         dest: /home/nginx/
         mode: 0766
       when: not path_output.stat.exists or FORCE_WRITE
-    - shell: 'docker-compose -f create-nginx-compose.yml down &&
-    docker-compose -f create-nginx-compose.yml up -d'
+    - shell: 'docker-compose -f create-nginx-compose.yml restart'
       when: FORCE_WRITE
-
-- name: nginx 설정파일 업로드
-  hosts: nginx
-  tasks:
-    - copy:
-        src: '{{ item.src }}'
-        dest: '{{ item.dest }}'
-        mode: 0766
-      loop:
-        - { src: './nginx.conf', dest: '/home/nginx' }
-        - { src: './conf.d', dest: '/home/nginx' }
-        - { src: './stream.conf.d', dest: '/home/nginx' }
