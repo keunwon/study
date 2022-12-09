@@ -1,6 +1,6 @@
 package com.spring.sre.chapter02.web
 
-import org.apache.logging.log4j.LogManager
+import com.spring.sre.chapter02.config.Log4j2Support
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.core.io.Resource
 import org.springframework.core.io.UrlResource
@@ -19,8 +19,6 @@ import java.util.*
 
 @RestController
 class FileDownloadApi {
-    private val log = LogManager.getLogger(FileDownloadApi::class)
-
     @Value("\${appDownloadFilePath}")
     private lateinit var appDownloadFilePath: String
 
@@ -82,6 +80,8 @@ class FileDownloadApi {
         val path = "${dirPath}/${uuid}.txt"
         return File(path).apply { this.parentFile.mkdirs() }
     }
+
+    companion object : Log4j2Support
 }
 
 data class DeleteFilesDto(

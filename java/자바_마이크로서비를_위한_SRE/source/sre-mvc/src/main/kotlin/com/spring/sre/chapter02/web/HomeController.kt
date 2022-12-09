@@ -1,7 +1,7 @@
 package com.spring.sre.chapter02.web
 
 import com.fasterxml.jackson.annotation.JsonFormat
-import org.apache.logging.log4j.LogManager
+import com.spring.sre.chapter02.config.Log4j2Support
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -11,7 +11,6 @@ import java.time.LocalDateTime
 
 @RestController
 class HomeController {
-    private val log = LogManager.getLogger(HomeController::class)
 
     @Value("\${spring.application.name}")
     private lateinit var appName: String
@@ -30,6 +29,8 @@ class HomeController {
         return HomeDto(appName, LocalDateTime.now(), cache)
             .also { log.info("> response(cache: $cache): $it") }
     }
+
+    companion object : Log4j2Support
 }
 
 data class HomeDto(
