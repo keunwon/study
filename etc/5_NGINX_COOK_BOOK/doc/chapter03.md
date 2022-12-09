@@ -20,7 +20,12 @@
 - 'geoip_proxy' 지시자를 사용해 특정 IP 대역에서 들어오는 요청에 대해 X-Forwarded-For 헤더값을 참조하도록 할 수 있음
 ## 3.5. 연결 제한
 - 연결에 대한 지표를 저장할 공유 메모리 영역을 만들고 'limit_conn' 지시자를 사용해 연결 수를 제한
+- http, server, location에 'limit_conn', 'limit_conn_status' 사용 가능
+- 'limit_con_zone' 지시자는 http 블록에서만 사용 가능
+- 'limit_conn_dry_on' 지시자를 이용하여 로그에만 에러로 남길지 에러 코드를 반활하지 설정
 ## 3.6. 요청 빈도 제한
 - 'rate-limiting' 모듈을 활용해 요청 빈도를 제한
 ## 3.7. 전송 대역폭 제한
 - 엔진엑스가 제공하는 'limit_rate'와 'limit_rate_after' 지시자를 사용해 사용자에 대한 응답 대역폭을 제한
+- location 블록 내부에 위치한 다양한 곳에서 사용 가능
+- '$limit_rate' 변수로도 설정을 할 수 있음
