@@ -7,3 +7,11 @@ app_path:
 app_name:
   mvc: sre-mvc
   webflux: sre-webflux
+
+app_path2:
+  webflux:
+    - { name: sre-webflux, instance: sre-webflux, port: 8090 }
+  mvc:
+    - { name: sre-mvc, instance: sre-mvc, port: 8080 }
+    - { name: sre-mvc, instance: copy1-sre-mvc, port: 8081 }
+    - { name: sre-mvc, instance: copy2-sre-mvc, port: 8082 }

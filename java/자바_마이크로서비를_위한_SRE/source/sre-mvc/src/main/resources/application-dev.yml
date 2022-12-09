@@ -1,0 +1,9 @@
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+server:
+  port: 8080
+
+appDownloadFilePath: /home/dev-centos/files

@@ -60,23 +60,29 @@
   vars_files:
     - ansible/ansible-variable.yml
   tasks:
+    - shell: 'find . -type f -name *.jar -exec rm -rf {} \;'
     - copy:
         src: '{{ item.name }}/build/libs/'
-        dest: '{{ item.path }}'
+        dest: 'app/{{ item.instance }}/'
         mode: 0755
-      loop:
-        - { name: sre-mvc, path: '{{ app_path.mvc }}' }
-        - { name: sre-webflux, path: '{{ app_path.webflux }}' }
+      with_items:
+        - '{{ app_path2.webflux }}'
+        - '{{ app_path2.mvc }}'
+    - shell: 'find app/{{ item.instance }} -type f -name *.jar -exec rename {{ item.name }}- {{ item.instance }}- {} \;'
+      with_items:
+        - '{{ app_path2.webflux }}'
+        - '{{ app_path2.mvc }}'
     - template:
         src: ansible/deploy-template.j2
-        dest: '{{ item.path }}/deploy.sh'
+        dest: 'app/{{ item.instance }}/deploy.sh'
         mode: 0755
       vars:
-        APP_NAME: '{{ item.name }}'
-        APP_PATH: '{{ item.path }}'
-      loop:
-        - { path: '{{ app_path.mvc }}', name: '{{ app_name.mvc }}' }
-        - { path: '{{ app_path.webflux }}', name: '{{ app_name.webflux }}' }
+        APP_NAME: '{{ item.instance }}'
+        APP_PATH: 'app/{{ item.instance }}'
+        PORT: '{{ item.port }}'
+      with_items:
+        - '{{ app_path2.webflux }}'
+        - '{{ app_path2.mvc }}'
 
 - name: 'run deploy.sh'
   hosts: centos
@@ -85,10 +91,10 @@
     - ansible/ansible-variable.yml
   tasks:
     - shell:
-        cmd: 'app/{{ item }}/deploy.sh {{ PROFILE }}'
-      loop:
-        - '{{ app_name.webflux }}'
-        - '{{ app_name.mvc }}'
+        cmd: 'app/{{ item.instance }}/deploy.sh {{ PROFILE }}'
+      with_items:
+        - '{{ app_path2.webflux }}'
+        - '{{ app_path2.mvc }}'
       register: deploy_output
     - debug:
         msg: '{{ item.stdout_lines }}'
