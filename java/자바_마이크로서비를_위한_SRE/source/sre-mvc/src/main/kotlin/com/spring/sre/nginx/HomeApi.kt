@@ -1,7 +1,6 @@
-package com.spring.sre.chapter02.web
+package com.spring.sre.nginx
 
 import com.fasterxml.jackson.annotation.JsonFormat
-import com.spring.sre.chapter02.config.Log4j2Support
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -25,12 +24,14 @@ class HomeController {
         return ResponseEntity.ok(createHomeDto(true))
     }
 
-    private fun createHomeDto(cache: Boolean = false): HomeDto {
-        return HomeDto(appName, LocalDateTime.now(), cache)
-            .also { log.info("> response(cache: $cache): $it") }
+    @GetMapping("/no-cache")
+    fun nocache(): ResponseEntity<HomeDto> {
+        return ResponseEntity.ok(createHomeDto())
     }
 
-    companion object : Log4j2Support
+    private fun createHomeDto(cache: Boolean = false): HomeDto {
+        return HomeDto(appName, LocalDateTime.now(), cache)
+    }
 }
 
 data class HomeDto(

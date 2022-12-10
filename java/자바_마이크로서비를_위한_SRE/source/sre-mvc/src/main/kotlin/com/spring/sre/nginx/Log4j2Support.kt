@@ -1,4 +1,4 @@
-package com.spring.sre.chapter02.config
+package com.spring.sre.nginx
 
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger

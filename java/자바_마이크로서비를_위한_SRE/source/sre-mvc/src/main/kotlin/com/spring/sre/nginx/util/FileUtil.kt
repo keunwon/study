@@ -1,4 +1,4 @@
-package com.spring.sre.chapter02.util
+package com.spring.sre.nginx.util
 
 import org.springframework.core.io.Resource
 import org.springframework.core.io.UrlResource

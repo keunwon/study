@@ -1,6 +1,5 @@
-package com.spring.sre.chapter02.web
+package com.spring.sre.nginx
 
-import com.spring.sre.chapter02.config.Log4j2Support
 import org.springframework.stereotype.Service
 import org.springframework.util.unit.DataSize
 import java.io.File
@@ -9,7 +8,7 @@ import java.util.*
 @Service
 class DumpFileService {
 
-    fun crateFileAndWriteDumpContent(dirPath: String, size: DataSize): File {
+    fun createFileAndWriteDumpContent(dirPath: String, size: DataSize): File {
         return createDumpFile(dirPath)
             .apply { writeDumpContent(size) }
             .also { log.info("> 덤프 파일 생성 경로: {}, 용량: {}MB", it.path, DataSize.ofBytes(it.length()).toMegabytes()) }
@@ -17,9 +16,7 @@ class DumpFileService {
 
     fun deleteDumpFiles(dirPath: String): DeleteFilesDto {
         val fileInfoList = File(dirPath).listFiles()?.map { file ->
-            val fileInfo = FileInfo(file)
-            file.deleteOnExit()
-            fileInfo
+            FileInfo(file).also { file.deleteOnExit() }
         } ?: emptyList()
         return fileInfoList
             .run { DeleteFilesDto(dirPath, this) }
@@ -33,9 +30,8 @@ class DumpFileService {
     }
 
     private fun File.writeDumpContent(size: DataSize) {
-        if (Int.MAX_VALUE < size.toBytes()) {
-            throw IllegalArgumentException("너무 큰 파일을 생성하려고 합니다. ${size.toMegabytes()}MB")
-        }
+        require(size.toBytes() < Int.MAX_VALUE) { "너무 큰 파일을 생성하려고 합니다. ${size.toMegabytes()}MB" }
+       
         this.bufferedWriter().use { bw ->
             val sequence = generateSequence(0) { (it + 1) % 26 }.take(size.toBytes().toInt())
             val content = sequence.joinToString(separator = "") { ('a' + it).toString() }
