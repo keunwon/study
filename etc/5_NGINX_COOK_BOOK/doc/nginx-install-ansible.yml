@@ -1,0 +1,20 @@
+# Ansible을 이용하여 NGINX 설치 예제
+---
+- name: NGINX | Installing NGINX
+  package: name=nginx state=present
+
+- name: NGINX | Starting NGINX
+  service:
+    name: nginx
+    state: started
+    enabled: yes
+
+- name: Copy nginx configuration in place.
+  template:
+    src: nginx.conf.j2
+    dest: "/etc/nginx/nginx.conf"
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - reload nginx
