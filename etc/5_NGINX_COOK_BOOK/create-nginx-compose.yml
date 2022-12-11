@@ -6,15 +6,25 @@ services:
     container_name: nginx
     restart: unless-stopped
     ports: 
-      - 80:80
-      - 433:433
+      - '80:80'
+      - '443:443'
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf
-      - ./conf.d:/etc/nginx/conf.d
-      - ./stream.conf.d:/etc/nginx/stream.conf.d
-      - ./geoip:/etc/nginx/geoip
-      - ./html:/usr/share/nginx/html
-  certbot:
-    image: certbot/certbot
-    container_name: certbot
-    restart: unless-stopped
+      - ./data/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./data/nginx/conf.d:/etc/nginx/conf.d
+      - ./data/nginx/stream.conf.d:/etc/nginx/stream.conf.d
+      - ./data/nginx/cache:/data/nginx/
+      - ./data/nginx/geoip:/etc/nginx/geoip
+      - ./data/nginx/html:/usr/share/nginx/html
+      - ./data/nginx/ssl/:/etc/nginx/ssl
+
+  #     - ./data/certbot/conf:/etc/letsencrypt
+  #     - ./data/certbot/www:/var/www/certbot
+  #   command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+  # certbot:
+  #   image: certbot/certbot
+  #   container_name: certbot
+  #   restart: unless-stopped
+  #   volumes:
+  #     - ./data/certbot/conf:/etc/letsencrypt
+  #     - ./data/certbot/www:/var/www/certbot
+  #   entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"

@@ -7,23 +7,25 @@
         dest: '{{ item.dest }}'
         mode: 0776
       loop:
-        - { src: './nginx.conf', dest: '/home/nginx' }
-        - { src: './conf.d', dest: '/home/nginx' }
-        - { src: './stream.conf.d', dest: '/home/nginx' }
-        - { src: './html', dest: '/home/nginx' }
+        #- { src: 'init-letsencrypt.sh', dest: 'init-letsencrypt.sh' }
+        - { src: 'create-nginx-compose.yml', dest: 'docker-compose.yml' }
+        - { src: 'nginx.conf', dest: 'data/nginx/' }
+        - { src: 'conf.d', dest: 'data/nginx' }
+        - { src: 'stream.conf.d', dest: 'data/nginx' }
+        - { src: 'html', dest: 'data/nginx' }
 
-- name: nginx docker-compose 업로드
-  hosts: nginx
-  vars:
-    - FORCE_WRITE: '{{ FORCE | default(false) }}'
-  tasks:
-    - stat:
-        path: create-nginx-compose.yml
-      register: path_output
-    - copy:
-        src: create-nginx-compose.yml
-        dest: /home/nginx/
-        mode: 0766
-      when: not path_output.stat.exists or FORCE_WRITE
-    - shell: 'docker-compose -f create-nginx-compose.yml restart'
-      when: FORCE_WRITE
+# - name: nginx docker-compose 업로드
+#   hosts: nginx
+#   vars:
+#     - FORCE_WRITE: '{{ FORCE | default(false) }}'
+#   tasks:
+#     - stat:
+#         path: create-nginx-compose.yml
+#       register: path_output
+#     - copy:
+#         src: create-nginx-compose.yml
+#         dest: /home/nginx/
+#         mode: 0766
+#       when: not path_output.stat.exists or FORCE_WRITE
+#     - shell: 'docker-compose -f create-nginx-compose.yml restart'
+#       when: FORCE_WRITE
