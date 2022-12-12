@@ -19,18 +19,13 @@ class HomeController {
         return ResponseEntity.ok(createHomeDto())
     }
 
-    @GetMapping("/cache")
-    fun cache(): ResponseEntity<HomeDto> {
-        return ResponseEntity.ok(createHomeDto(true))
-    }
-
     @GetMapping("/no-cache")
     fun nocache(): ResponseEntity<HomeDto> {
         return ResponseEntity.ok(createHomeDto())
     }
 
-    private fun createHomeDto(cache: Boolean = false): HomeDto {
-        return HomeDto(appName, LocalDateTime.now(), cache)
+    private fun createHomeDto(): HomeDto {
+        return HomeDto(appName, LocalDateTime.now())
     }
 }
 
@@ -38,5 +33,4 @@ data class HomeDto(
     val name: String,
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     val dateTime: LocalDateTime,
-    val cache: Boolean = false,
 )

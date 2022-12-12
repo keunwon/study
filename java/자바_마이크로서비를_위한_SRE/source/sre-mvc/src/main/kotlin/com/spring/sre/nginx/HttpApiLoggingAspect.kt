@@ -46,7 +46,7 @@ class HttpApiLoggingAspect {
 
     private fun loggingResponse(request: HttpServletRequest, response: HttpServletResponse, proceed: Any) {
         with(response) {
-            val body = getResponseBodyToString(response, proceed)
+            val body = getResponseBodyToString(this, proceed)
             log.info("> [Response] $status ${request.servletPath}, content-type=$contentType, response=$body")
         }
     }

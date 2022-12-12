@@ -1,5 +1,6 @@
 package com.spring.sre.nginx
 
+import com.spring.sre.nginx.util.getMegabytes
 import org.springframework.stereotype.Service
 import org.springframework.util.unit.DataSize
 import java.io.File
@@ -11,7 +12,7 @@ class DumpFileService {
     fun createFileAndWriteDumpContent(dirPath: String, size: DataSize): File {
         return createDumpFile(dirPath)
             .apply { writeDumpContent(size) }
-            .also { log.info("> 덤프 파일 생성 경로: {}, 용량: {}MB", it.path, DataSize.ofBytes(it.length()).toMegabytes()) }
+            .also { log.info("> 덤프 파일 생성 경로: ${it.path}, 용량: ${it.getMegabytes()}MB") }
     }
 
     fun deleteDumpFiles(dirPath: String): DeleteFilesDto {
@@ -20,18 +21,18 @@ class DumpFileService {
         } ?: emptyList()
         return fileInfoList
             .run { DeleteFilesDto(dirPath, this) }
-            .also { log.info("> 삭제 대상 파일 경로: {}, 파일 개수: {}", it.rootPath, it.size) }
+            .also { log.info("> 삭제 대상 파일 경로: ${it.rootPath}, 파일 개수: ${it.size}") }
     }
 
     private fun createDumpFile(dirPath: String): File {
         val uuid = UUID.randomUUID().toString().replace("-", "")
         val path = "${dirPath}/${uuid}.txt"
-        return File(path).apply { this.parentFile.mkdirs() }
+        return File(path).apply { parentFile.mkdirs() }
     }
 
     private fun File.writeDumpContent(size: DataSize) {
         require(size.toBytes() < Int.MAX_VALUE) { "너무 큰 파일을 생성하려고 합니다. ${size.toMegabytes()}MB" }
-       
+
         this.bufferedWriter().use { bw ->
             val sequence = generateSequence(0) { (it + 1) % 26 }.take(size.toBytes().toInt())
             val content = sequence.joinToString(separator = "") { ('a' + it).toString() }

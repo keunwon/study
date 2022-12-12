@@ -7,19 +7,25 @@ import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
+import org.springframework.util.unit.DataSize
 import java.io.File
 
 fun File.toResponseEntity(): ResponseEntity<Resource> {
+    val a = attachmentContentDisposition(name)
     return ResponseEntity
         .status(HttpStatus.CREATED)
-        .header(HttpHeaders.CONTENT_DISPOSITION, attachmentContentDisposition(this.name).toString())
+        .header(HttpHeaders.CONTENT_DISPOSITION, attachmentContentDispositionToString(name))
         .contentType(MediaType.APPLICATION_OCTET_STREAM)
-        .body(UrlResource(this.toURI()))
+        .body(UrlResource(toURI()))
 }
+
+fun File.getMegabytes() = DataSize.ofBytes(length()).toMegabytes()
+
+private fun attachmentContentDispositionToString(fileName: String): String =
+    attachmentContentDisposition(fileName).toString()
 
 private fun attachmentContentDisposition(fileName: String): ContentDisposition {
     return ContentDisposition.attachment()
         .filename(fileName)
         .build()
 }
-
