@@ -16,10 +16,21 @@ services:
       - ./data/nginx/geoip:/etc/nginx/geoip
       - ./data/nginx/html:/usr/share/nginx/html
       - ./data/nginx/ssl/:/etc/nginx/ssl
-
   #     - ./data/certbot/conf:/etc/letsencrypt
   #     - ./data/certbot/www:/var/www/certbot
   #   command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+
+  nginx-exporter:
+    image: nginx/nginx-prometheus-exporter:0.10.0
+    container_name: nginx-exporter
+    restart: unless-stopped
+    ports:
+      - 9113:9113
+    command:
+      - -nginx.scrape-uri=http://192.168.45.42/nginx_status
+    links:
+      - nginx
+
   # certbot:
   #   image: certbot/certbot
   #   container_name: certbot
