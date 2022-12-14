@@ -13,8 +13,8 @@
 10. [클라우드 환경 배포](./doc/chapter10.md)
 11. [컨테이너와 마이크로서비스](./doc/chapter11.md)
 12. [고가용성 보장을 위한 설정](./doc/chapter12.md)
-13. [고급 활동 모니터링](./doc/chapter13.md)
+13. 고급 활동 모니터링
 14. [디버깅과 트러블슈팅](./doc/chapter14.md)
 15. [성능 튜닝](./doc/chapter15.md)
-16. [엔진엑스 컨트롤러](./doc/chapter16.md)
-17. [실전 운용 팁](./doc/chapter17.md)
+16. 엔진엑스 컨트롤러
+17. 실전 운용 팁
