@@ -1,0 +1,21 @@
+---
+spring:
+  application:
+    name: spring-test
+  datasource:
+    hikari:
+      jdbc-url: jdbc:h2:mem:test-db;MODE=MYSQL;NON_KEYWORDS=USER
+      username: sa
+      password:
+      driver-class-name: org.h2.Driver
+  jpa:
+    open-in-view: false
+    generate-ddl: true
+    database: h2
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL57Dialect
+        format_sql: true
+        show_sql: true
