@@ -2,6 +2,11 @@
 spring:
   application:
     name: springboot-run
+  mvc:
+    throw-exception-if-no-handler-found: true
+  web:
+    resources:
+      add-mappings: false
   h2:
     console:
       enabled: true

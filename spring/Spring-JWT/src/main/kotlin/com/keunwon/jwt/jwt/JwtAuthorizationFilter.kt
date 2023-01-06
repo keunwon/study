@@ -44,7 +44,7 @@ class JwtAuthorizationFilter(
             }
             filterChain.doFilter(request, response)
         } catch (e: Exception) {
-            log.error("> 토큰 검증 중 오류가 발생하였습니다.", e)
+            log.error("> 토큰 검증 중 오류가 발생하였습니다. Request Url: ${request.servletPath}", e)
             responseBody(response, e)
         }
     }

@@ -25,8 +25,6 @@ import java.nio.charset.StandardCharsets
 import java.sql.Timestamp
 import java.time.LocalDateTime
 import javax.servlet.FilterChain
-import javax.servlet.ServletRequest
-import javax.servlet.ServletResponse
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
@@ -42,7 +40,7 @@ class CustomAuthenticationFilter(authenticationManager: AuthenticationManager)
         return authenticationManager.authenticate(authentication)
     }
 
-    override fun doFilter(request: ServletRequest, response: ServletResponse, chain: FilterChain) {
+    /*override fun doFilter(request: ServletRequest, response: ServletResponse, chain: FilterChain) {
         try {
             super.doFilter(request, response, chain)
         } catch (e: Exception) {
@@ -56,7 +54,7 @@ class CustomAuthenticationFilter(authenticationManager: AuthenticationManager)
                 objectMapper.writeValue(outputStream, errorDto)
             }
         }
-    }
+    }*/
 
     private fun resolveAuthentication(request: HttpServletRequest): Authentication {
         val jsonMap = resolveJsonMap(request)
