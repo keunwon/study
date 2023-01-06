@@ -3,6 +3,7 @@ package com.keunwon.jwt.jwt
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.keunwon.jwt.common.ErrorDto
 import com.keunwon.jwt.config.LogSupport
+import com.keunwon.jwt.config.SecurityConfiguration.Companion.matchSkipRequest
 import io.jsonwebtoken.ExpiredJwtException
 import io.jsonwebtoken.JwtException
 import io.jsonwebtoken.MalformedJwtException
@@ -27,7 +28,7 @@ class JwtAuthorizationFilter(
         response: HttpServletResponse,
         filterChain: FilterChain
     ) {
-        if (skipUrls.contains(request.requestURI)) {
+        if (matchSkipRequest(request)) {
             filterChain.doFilter(request, response)
             return
         }
@@ -79,7 +80,6 @@ class JwtAuthorizationFilter(
 
     companion object : LogSupport {
         private const val AUTHORIZATION_TYPE = "Bearer "
-        private val skipUrls = listOf(CustomAuthenticationFilter.LOGIN_URL, "/auth/sign")
         private val errorMessages = mapOf(
             UnsupportedJwtException::class to "토큰 형식이 올바르지 않습니다.",
             MalformedJwtException::class to "토큰이 유효하지 않습니다.",

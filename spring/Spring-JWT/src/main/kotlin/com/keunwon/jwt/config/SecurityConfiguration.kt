@@ -1,7 +1,9 @@
 package com.keunwon.jwt.config
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.keunwon.jwt.jwt.CustomAuthenticationFilter
 import com.keunwon.jwt.jwt.JwtAuthorizationFilter
+import com.keunwon.jwt.jwt.TokenProvider
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -11,6 +13,9 @@ import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.config.web.servlet.invoke
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher
+import org.springframework.security.web.util.matcher.RequestMatcher
+import javax.servlet.http.HttpServletRequest
 
 @EnableWebSecurity
 @Configuration
@@ -20,7 +25,7 @@ class SecurityConfiguration(
 ) {
 
     @Bean
-    fun filterChain(http: HttpSecurity): SecurityFilterChain {
+    fun filterChain(http: HttpSecurity, jwtProvider: TokenProvider, objectMapper: ObjectMapper): SecurityFilterChain {
         http {
             csrf { disable() }
             httpBasic { disable() }
@@ -36,12 +41,10 @@ class SecurityConfiguration(
             addFilterBefore<UsernamePasswordAuthenticationFilter>(jwtAuthorizationFilter)
             addFilterBefore<UsernamePasswordAuthenticationFilter>(customAuthenticationFilter)
 
-            //securityMatcher("/api/**")
             authorizeHttpRequests {
                 authorize(PathRequest.toH2Console(), permitAll)
-                authorize("/resources/**", permitAll)
-                authorize("/login", permitAll)
-                authorize("/auth/sign", permitAll)
+                authorize(PathRequest.toStaticResources().atCommonLocations(), permitAll)
+                skipRequestMatchers.forEach { authorize(it, permitAll) }
 
                 authorize("/admin/**", hasRole("ADMIN"))
                 authorize("/user/**", hasAnyRole("USER", "ADMIN"))
@@ -49,5 +52,16 @@ class SecurityConfiguration(
             }
         }
         return http.build()
+    }
+
+    companion object {
+        val skipRequestMatchers: List<RequestMatcher> = listOf(
+            AntPathRequestMatcher(CustomAuthenticationFilter.LOGIN_URL),
+            AntPathRequestMatcher("/auth/sign"),
+            AntPathRequestMatcher("/resources/**"),
+            AntPathRequestMatcher("/h2-console"),
+        )
+
+        fun matchSkipRequest(request: HttpServletRequest): Boolean = skipRequestMatchers.any { it.matches(request) }
     }
 }
