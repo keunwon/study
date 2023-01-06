@@ -67,7 +67,7 @@ class JwtAuthorizationFilter(
         val httpStatus = HttpStatus.FORBIDDEN.value()
         val defaultErrorMessage = error.message ?: "토큰 검증 중 알 수 없는 오류가 발생하였습니다."
         val body = ErrorDto(
-            status = httpStatus,
+            code = httpStatus,
             message = errorMessages[error::class] ?: defaultErrorMessage
         )
         response.apply {

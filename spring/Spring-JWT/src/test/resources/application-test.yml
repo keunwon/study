@@ -19,3 +19,6 @@ spring:
         dialect: org.hibernate.dialect.MySQL57Dialect
         format_sql: true
         show_sql: true
+logging:
+  level:
+    root: debug

@@ -58,7 +58,7 @@ class JwtLoginMvcTest {
         ).andExpectAll(
             status().isUnauthorized,
             content().contentType(MediaType.APPLICATION_JSON),
-            jsonPath("$.status").value(HttpStatus.UNAUTHORIZED.value()),
+            jsonPath("$.code").value(HttpStatus.UNAUTHORIZED.value()),
             jsonPath("$.message").value("사용자 명이 비어있거나 존재하지 않습니다."),
         )
     }
@@ -75,7 +75,7 @@ class JwtLoginMvcTest {
         ).andExpectAll(
             status().isUnauthorized,
             content().contentType(MediaType.APPLICATION_JSON),
-            jsonPath("$.status").value(HttpStatus.UNAUTHORIZED.value()),
+            jsonPath("$.code").value(HttpStatus.UNAUTHORIZED.value()),
             jsonPath("$.message").value("사용자 비밀번호가 비어있거나 존재하지 않습니다.")
         )
     }
@@ -92,7 +92,7 @@ class JwtLoginMvcTest {
         ).andExpectAll(
             status().isUnauthorized,
             content().contentType(MediaType.APPLICATION_JSON),
-            jsonPath("$.status").value("401"),
+            jsonPath("$.code").value("401"),
             jsonPath("$.message").value("사용자를 찾을 수 없습니다. 사용자: $username")
         )
     }
@@ -110,7 +110,7 @@ class JwtLoginMvcTest {
         ).andExpectAll(
             status().isUnauthorized,
             content().contentType(MediaType.APPLICATION_JSON),
-            jsonPath("$.status").value("401"),
+            jsonPath("$.code").value("401"),
             jsonPath("$.message").value("사용자 비밀번호가 일치하지 않습니다. 사용자: $username")
         )
     }
@@ -128,7 +128,7 @@ class JwtLoginMvcTest {
         ).andExpectAll(
             status().isUnauthorized,
             content().contentType(MediaType.APPLICATION_JSON),
-            jsonPath("$.status").value("401"),
+            jsonPath("$.code").value("401"),
             jsonPath("$.message").value("사용자 계정이 잠겨있습니다. 사용자: $username")
         )
     }
@@ -146,7 +146,7 @@ class JwtLoginMvcTest {
         ).andExpectAll(
             status().isUnauthorized,
             content().contentType(MediaType.APPLICATION_JSON),
-            jsonPath("$.status").value("401"),
+            jsonPath("$.code").value("401"),
             jsonPath("$.message").value("사용자 비밀번호가 일치하지 않습니다. 사용자: $username")
         )
     }

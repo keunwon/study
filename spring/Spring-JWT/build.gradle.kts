@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     id("org.springframework.boot") version "2.7.7"
     id("io.spring.dependency-management") version "1.1.0"
+    id ("org.asciidoctor.jvm.convert") version "3.3.2"
     kotlin("jvm") version "1.7.22"
     kotlin("plugin.spring") version "1.7.22"
     kotlin("plugin.jpa") version "1.7.22"
@@ -38,6 +39,7 @@ noArg {
 extra.apply {
     set("jwtVersion", "0.11.5")
     set("mockkVersion", "1.13.3")
+    set("restAssuredVersion", "4.5.1")
 }
 
 dependencies {
@@ -59,8 +61,9 @@ dependencies {
     runtimeOnly("io.jsonwebtoken:jjwt-impl:${property("jwtVersion")}")
     runtimeOnly("io.jsonwebtoken:jjwt-jackson:${property("jwtVersion")}")
 
-    // kotlin-test
+    // mock
     testImplementation("io.mockk:mockk:${property("mockkVersion")}")
+    testImplementation("io.rest-assured:spring-mock-mvc:${property("restAssuredVersion")}")
 }
 
 tasks.withType<KotlinCompile> {
@@ -72,4 +75,37 @@ tasks.withType<KotlinCompile> {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+// spring rest-doc
+val asciidoctorExt: Configuration by configurations.creating
+val snippetsDir by extra { file("build/generated-snippets") }
+dependencies {
+    asciidoctorExt("org.springframework.restdocs:spring-restdocs-asciidoctor")
+    testImplementation("org.springframework.restdocs:spring-restdocs-mockmvc")
+}
+tasks {
+    test {
+        outputs.dir(snippetsDir)
+    }
+
+    asciidoctor {
+        inputs.dir(snippetsDir)
+        configurations(asciidoctorExt.name)
+        dependsOn(test)
+        doFirst {
+            delete("src/main/resources/static/docs")
+            mkdir("src/main/resources/static/docs")
+        }
+        doLast {
+            copy {
+                from("${buildDir.path}/docs/asciidoc")
+                into("src/main/resources/static/docs")
+            }
+        }
+    }
+
+    build {
+        dependsOn(asciidoctor)
+    }
 }

@@ -13,9 +13,9 @@ class UserService(
 ) {
 
     @Transactional
-    fun sign(requestDto: UserDto): User {
-        if (exitUser(requestDto.username)) throw IllegalArgumentException("현재 사용 중인 아이디 입니다.")
-        return userRepository.save(requestDto.toEntity(passwordEncoder))
+    fun sign(requestSignDto: UserSignDto): User {
+        if (exitUser(requestSignDto.username)) throw IllegalArgumentException("현재 사용 중인 아이디 입니다.")
+        return userRepository.save(requestSignDto.toEntity(passwordEncoder))
     }
 
     private fun exitUser(name: String): Boolean = userRepository.existsByUsername(name)

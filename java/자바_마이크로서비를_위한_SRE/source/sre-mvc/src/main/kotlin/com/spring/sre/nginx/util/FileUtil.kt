@@ -11,7 +11,6 @@ import org.springframework.util.unit.DataSize
 import java.io.File
 
 fun File.toResponseEntity(): ResponseEntity<Resource> {
-    val a = attachmentContentDisposition(name)
     return ResponseEntity
         .status(HttpStatus.CREATED)
         .header(HttpHeaders.CONTENT_DISPOSITION, attachmentContentDispositionToString(name))

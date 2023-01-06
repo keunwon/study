@@ -25,6 +25,8 @@ import java.nio.charset.StandardCharsets
 import java.sql.Timestamp
 import java.time.LocalDateTime
 import javax.servlet.FilterChain
+import javax.servlet.ServletRequest
+import javax.servlet.ServletResponse
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
@@ -38,6 +40,22 @@ class CustomAuthenticationFilter(authenticationManager: AuthenticationManager)
     override fun attemptAuthentication(request: HttpServletRequest, response: HttpServletResponse): Authentication {
         val authentication = resolveAuthentication(request)
         return authenticationManager.authenticate(authentication)
+    }
+
+    override fun doFilter(request: ServletRequest, response: ServletResponse, chain: FilterChain) {
+        try {
+            super.doFilter(request, response, chain)
+        } catch (e: Exception) {
+            val errorDto = ErrorDto(
+                code = HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                message = "서버에 문제가 발생하여 로그인이 불가능합니다."
+            )
+            (response as HttpServletResponse).apply {
+                status = HttpStatus.INTERNAL_SERVER_ERROR.value()
+                contentType = MediaType.APPLICATION_JSON_VALUE
+                objectMapper.writeValue(outputStream, errorDto)
+            }
+        }
     }
 
     private fun resolveAuthentication(request: HttpServletRequest): Authentication {
@@ -83,6 +101,7 @@ class CustomAuthenticationFilter(authenticationManager: AuthenticationManager)
 
     companion object {
         const val LOGIN_URL = "/auth/login"
+        val objectMapper = jacksonObjectMapper()
     }
 }
 
@@ -142,7 +161,7 @@ open class CustomAuthenticationFailureHandler(
     }
 
     private fun createBody(errorMessage: String?) = ErrorDto(
-        status = HttpStatus.UNAUTHORIZED.value(),
+        code = HttpStatus.UNAUTHORIZED.value(),
         message = errorMessage ?: "로그인을 실패하였습니다."
     )
 }

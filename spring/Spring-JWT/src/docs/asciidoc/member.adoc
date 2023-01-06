@@ -1,0 +1,3 @@
+include::{snippets}/member/http-request.adoc[]
+include::{snippets}/member/http-response.adoc[]
+include::{snippets}/member/curl-request.adoc[]

@@ -43,7 +43,7 @@ class JwtAuthorizationFilterMvcTest {
         ).andExpectAll(
             status().isForbidden,
             content().contentType(MediaType.APPLICATION_JSON),
-            jsonPath("$.status").value(HttpStatus.FORBIDDEN.value()),
+            jsonPath("$.code").value(HttpStatus.FORBIDDEN.value()),
             jsonPath("$.message").value("토큰이 비어있거나 존재하지 않습니다."),
         ).andDo { MockMvcResultHandlers.print() }
     }
@@ -61,7 +61,7 @@ class JwtAuthorizationFilterMvcTest {
         ).andExpectAll(
             status().isForbidden,
             content().contentType(MediaType.APPLICATION_JSON),
-            jsonPath("$.status").value(HttpStatus.FORBIDDEN.value()),
+            jsonPath("$.code").value(HttpStatus.FORBIDDEN.value()),
             jsonPath("$.message").value("지원하지 않는 토큰 인가 타입입니다."),
         )
     }
@@ -78,7 +78,7 @@ class JwtAuthorizationFilterMvcTest {
         ).andExpectAll(
             status().isForbidden,
             content().contentType(MediaType.APPLICATION_JSON),
-            jsonPath("$.status").value(HttpStatus.FORBIDDEN.value()),
+            jsonPath("$.code").value(HttpStatus.FORBIDDEN.value()),
             jsonPath("$.message").value("토큰이 유효하지 않습니다."),
         )
     }
@@ -96,7 +96,7 @@ class JwtAuthorizationFilterMvcTest {
         ).andExpectAll(
             status().isForbidden,
             content().contentType(MediaType.APPLICATION_JSON),
-            jsonPath("$.status").value(HttpStatus.FORBIDDEN.value()),
+            jsonPath("$.code").value(HttpStatus.FORBIDDEN.value()),
             jsonPath("$.message").value("유효기간이 만료된 토큰입니다."),
         )
     }
@@ -113,7 +113,7 @@ class JwtAuthorizationFilterMvcTest {
         ).andExpectAll(
             status().isForbidden,
             content().contentType(MediaType.APPLICATION_JSON),
-            jsonPath("$.status").value(HttpStatus.FORBIDDEN.value()),
+            jsonPath("$.code").value(HttpStatus.FORBIDDEN.value()),
             jsonPath("$.message").value("시그니처 연산에 실패하였습니다.")
         )
     }
