@@ -16,7 +16,7 @@ internal class TokenProviderTest {
     @Test
     fun `문자열 토큰을 발급`() {
         // given
-        val token = tokenProvider.generateToken(authentication)
+        val token = tokenProvider.generateAccessToken(authentication)
 
         // when, then
         assertAll({
@@ -28,7 +28,7 @@ internal class TokenProviderTest {
     @Test
     fun `정상적인 토큰을 검증하면 true 반환`() {
         // given
-        val token = tokenProvider.generateToken(authentication)
+        val token = tokenProvider.generateAccessToken(authentication)
 
         // when, then
         assertThat(tokenProvider.validationToken(token)).isTrue
@@ -53,7 +53,7 @@ internal class TokenProviderTest {
     @Test
     fun `문자열 토큰을 Authentication 변환`() {
         // given
-        val token = tokenProvider.generateToken(authentication)
+        val token = tokenProvider.generateAccessToken(authentication)
 
         // when
         val auth = tokenProvider.getAuthentication(token)

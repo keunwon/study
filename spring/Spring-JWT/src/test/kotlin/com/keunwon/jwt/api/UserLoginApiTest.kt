@@ -34,7 +34,6 @@ import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.context.WebApplicationContext
-import java.util.*
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
@@ -114,8 +113,8 @@ class LoginSuccessHandlerStub : AuthenticationSuccessHandler {
         authentication: Authentication
     ) {
         val body = TokenIssue(
-            accessToken = TokenProviderFixture.testTokenProvider.generateToken(authentication),
-            refreshToken = TokenProviderFixture.testTokenProvider.generateToken(authentication, Date(Date().time + 10000))
+            accessToken = TokenProviderFixture.testTokenProvider.generateAccessToken(authentication),
+            refreshToken = TokenProviderFixture.testTokenProvider.generateRefreshToken(authentication),
         )
         response.apply {
             status = HttpStatus.OK.value()

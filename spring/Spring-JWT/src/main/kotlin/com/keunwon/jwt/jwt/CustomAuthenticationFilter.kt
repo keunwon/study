@@ -22,14 +22,12 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.util.StreamUtils
 import java.nio.charset.StandardCharsets
-import java.sql.Timestamp
-import java.time.LocalDateTime
 import javax.servlet.FilterChain
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
-class CustomAuthenticationFilter(authenticationManager: AuthenticationManager)
-    : UsernamePasswordAuthenticationFilter(authenticationManager) {
+class CustomAuthenticationFilter(authenticationManager: AuthenticationManager) :
+    UsernamePasswordAuthenticationFilter(authenticationManager) {
 
     init {
         setRequiresAuthenticationRequestMatcher(AntPathRequestMatcher(LOGIN_URL, HttpMethod.POST.name))
@@ -39,22 +37,6 @@ class CustomAuthenticationFilter(authenticationManager: AuthenticationManager)
         val authentication = resolveAuthentication(request)
         return authenticationManager.authenticate(authentication)
     }
-
-    /*override fun doFilter(request: ServletRequest, response: ServletResponse, chain: FilterChain) {
-        try {
-            super.doFilter(request, response, chain)
-        } catch (e: Exception) {
-            val errorDto = ErrorDto(
-                code = HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                message = "서버에 문제가 발생하여 로그인이 불가능합니다."
-            )
-            (response as HttpServletResponse).apply {
-                status = HttpStatus.INTERNAL_SERVER_ERROR.value()
-                contentType = MediaType.APPLICATION_JSON_VALUE
-                objectMapper.writeValue(outputStream, errorDto)
-            }
-        }
-    }*/
 
     private fun resolveAuthentication(request: HttpServletRequest): Authentication {
         val jsonMap = resolveJsonMap(request)
@@ -99,7 +81,6 @@ class CustomAuthenticationFilter(authenticationManager: AuthenticationManager)
 
     companion object {
         const val LOGIN_URL = "/auth/login"
-        val objectMapper = jacksonObjectMapper()
     }
 }
 
@@ -129,8 +110,8 @@ open class CustomAuthenticationSuccessHandler(
     }
 
     private fun createBody(authentication: Authentication) = TokenIssue(
-        accessToken = tokenProvider.generateToken(authentication),
-        refreshToken = tokenProvider.generateToken(authentication, Timestamp.valueOf(LocalDateTime.now().plusMonths(1L)))
+        accessToken = tokenProvider.generateAccessToken(authentication),
+        refreshToken = tokenProvider.generateRefreshToken(authentication),
     )
 
     companion object : LogSupport

@@ -52,7 +52,7 @@ class JwtAuthorizationFilterMvcTest {
     fun `토큰 인증 타입(Bearer)을 지정하지 않으면 실패(403) 응답`() {
         // given
         val authentication = UsernamePasswordAuthenticationToken("홍길동", "password")
-        val token = tokenProvider.generateToken(authentication)
+        val token = tokenProvider.generateAccessToken(authentication)
 
         // when, then
         mockMvc.perform(
@@ -87,7 +87,7 @@ class JwtAuthorizationFilterMvcTest {
     fun `만료된 토큰을 함께 보내면 실패(403) 응답`() {
         // given
         val authenticationToken = UsernamePasswordAuthenticationToken("홍길동", "password")
-        val token = tokenProvider.generateToken(authenticationToken, Date(Date().time - 10000))
+        val token = tokenProvider.generateToken(authenticationToken, Date((Date().time - 10000)))
 
         // when, then
         mockMvc.perform(
@@ -104,7 +104,8 @@ class JwtAuthorizationFilterMvcTest {
     @Test
     fun `임의로 생성한 토큰을 함께 보내면 실패(403) 응답`() {
         // given
-        val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+        val token =
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
 
         // when, then
         mockMvc.perform(
