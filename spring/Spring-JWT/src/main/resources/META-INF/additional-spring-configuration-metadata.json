@@ -6,8 +6,14 @@
       "description": "Description for jwt.secret."
     },
     {
-      "name": "jwt.token-validity-in-seconds",
+      "name": "jwt.access-token-validity-seconds",
       "type": "java.lang.String",
-      "description": "Description for jwt.token-validity-in-seconds."
+      "description": "Description for jwt.access-token-validity-seconds."
+    },
+    {
+      "name": "jwt.refresh-token-validity-seconds",
+      "type": "java.lang.String",
+      "description": "Description for jwt.refresh-token-validity-seconds."
     }
-  ] }
+  ]
+}

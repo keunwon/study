@@ -1,4 +1,7 @@
 ---
+server:
+  port: 8080
+
 spring:
   application:
     name: springboot-run
@@ -21,7 +24,7 @@ spring:
     generate-ddl: true
     database: h2
     hibernate:
-      ddl-auto: create
+      ddl-auto: create-drop
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL57Dialect
@@ -34,4 +37,6 @@ logging:
 
 jwt:
   secret: 0uy8K1Oh7JHfjsRjZ7Tq7/h5hpsX1rrRcC0CzFTSBKHF7FZcooz4QC167w9i6YiMzxkLxZ2ntXkfSxIdyp1ssA==
-  token-validity-in-seconds: 3600
+  access-token-validity-seconds: 600
+  refresh-token-validity-seconds: 6000
+

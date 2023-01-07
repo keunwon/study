@@ -9,6 +9,7 @@ import io.jsonwebtoken.io.Decoders
 import io.jsonwebtoken.security.Keys
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.GrantedAuthority
@@ -19,19 +20,24 @@ import java.security.Key
 import java.util.*
 
 @Component
+@EnableConfigurationProperties(JwtProperties::class)
 class TokenProvider(
     @Value("\${spring.application.name}") private val appName: String,
-    @Value("\${jwt.secret}") private val secret: String,
-    @Value("\${jwt.token-validity-in-seconds}") tokenValidityInSecond: Long,
+    private val jwtProperties: JwtProperties,
 ) : InitializingBean {
-    private val tokenValidityInMilliseconds: Long = tokenValidityInSecond * 1000
-    private var key: Key? = null
+    private lateinit var key: Key
 
     override fun afterPropertiesSet() {
-        key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret))
+        key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtProperties.secret))
     }
 
-    fun generateToken(authentication: Authentication, expiredDate: Date = createNowExpiredDate()): String {
+    fun generateAccessToken(authentication: Authentication): String =
+        generateToken(authentication, jwtProperties.expiredDateByAccessToken)
+
+    fun generateRefreshToken(authentication: Authentication): String =
+        generateToken(authentication, jwtProperties.expirationDateByRefreshToken)
+
+    fun generateToken(authentication: Authentication, expiredDate: Date): String {
         val authorities = authentication.authorities.joinToString(",") { it.authority }
         return Jwts.builder()
             .setIssuer(appName)
@@ -76,8 +82,6 @@ class TokenProvider(
             .map { SimpleGrantedAuthority(it) }
             .toList()
     }
-
-    private fun createNowExpiredDate(): Date = Date(Date().time + tokenValidityInMilliseconds)
 
     companion object : LogSupport {
         private const val ROLE_KEY = "role"
