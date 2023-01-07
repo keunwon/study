@@ -3,7 +3,6 @@ package com.keunwon.jwt.jwt
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.keunwon.jwt.common.ErrorDto
 import com.keunwon.jwt.config.LogSupport
-import com.keunwon.jwt.config.SecurityConfiguration.Companion.matchSkipRequest
 import io.jsonwebtoken.ExpiredJwtException
 import io.jsonwebtoken.JwtException
 import io.jsonwebtoken.MalformedJwtException
@@ -28,16 +27,19 @@ class JwtAuthorizationFilter(
         response: HttpServletResponse,
         filterChain: FilterChain
     ) {
-        if (matchSkipRequest(request)) {
-            filterChain.doFilter(request, response)
-            return
+        when (noRequiresAuthorization(request)) {
+            true -> filterChain.doFilter(request, response)
+            false -> process(request, response, filterChain)
         }
-        process(request, response, filterChain)
     }
 
-    private fun process(request: HttpServletRequest, response: HttpServletResponse, filterChain: FilterChain) {
+    private fun process(
+        request: HttpServletRequest,
+        response: HttpServletResponse,
+        filterChain: FilterChain
+    ) {
         try {
-            validateAuthorizationTypeWithThrow(request)
+            verifyHttpHeaders(request)
             resolveToken(request).also { token ->
                 jwtProvider.verifyTokenWithThrows(token)
                 registerSecurityContext(token)
@@ -49,11 +51,15 @@ class JwtAuthorizationFilter(
         }
     }
 
+    private fun noRequiresAuthorization(request: HttpServletRequest): Boolean {
+        return CustomAuthenticationFilter.LOGIN_URL == request.servletPath
+    }
+
     private fun registerSecurityContext(token: String) {
         SecurityContextHolder.getContext().authentication = jwtProvider.getAuthentication(token)
     }
 
-    private fun validateAuthorizationTypeWithThrow(request: HttpServletRequest) {
+    private fun verifyHttpHeaders(request: HttpServletRequest) {
         val headerValue = request.getHeader(HttpHeaders.AUTHORIZATION)
             ?: throw JwtException("토큰이 비어있거나 존재하지 않습니다.")
         if (!headerValue.startsWith(AUTHORIZATION_TYPE)) throw JwtException("지원하지 않는 토큰 인가 타입입니다.")

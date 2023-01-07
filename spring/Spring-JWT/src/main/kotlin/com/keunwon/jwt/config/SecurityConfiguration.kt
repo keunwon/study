@@ -1,7 +1,10 @@
 package com.keunwon.jwt.config
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.keunwon.jwt.jwt.CustomAuthenticationFailureHandler
 import com.keunwon.jwt.jwt.CustomAuthenticationFilter
+import com.keunwon.jwt.jwt.CustomAuthenticationSuccessHandler
+import com.keunwon.jwt.jwt.JwtAuthenticationManager
 import com.keunwon.jwt.jwt.JwtAuthorizationFilter
 import com.keunwon.jwt.jwt.TokenProvider
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest
@@ -10,26 +13,54 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
+import org.springframework.security.config.web.servlet.HttpSecurityDsl
 import org.springframework.security.config.web.servlet.invoke
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher
-import org.springframework.security.web.util.matcher.RequestMatcher
-import javax.servlet.http.HttpServletRequest
+
 
 @EnableWebSecurity
 @Configuration
-class SecurityConfiguration(
-    private val customAuthenticationFilter: CustomAuthenticationFilter,
-    private val jwtAuthorizationFilter: JwtAuthorizationFilter,
-) {
+class SecurityConfiguration {
 
     @Bean
-    fun filterChain(http: HttpSecurity, jwtProvider: TokenProvider, objectMapper: ObjectMapper): SecurityFilterChain {
+    fun permitAllFilterChain(
+        http: HttpSecurity,
+        authenticationManager: JwtAuthenticationManager,
+        customAuthenticationSuccessHandler: CustomAuthenticationSuccessHandler,
+        customAuthenticationFailureHandler: CustomAuthenticationFailureHandler,
+    ): SecurityFilterChain {
         http {
-            csrf { disable() }
-            httpBasic { disable() }
-            sessionManagement { sessionCreationPolicy = SessionCreationPolicy.STATELESS }
+            defaultSettings()
+
+            securityMatcher("/resources/**")
+            securityMatcher("/auth/sign", "/auth/login")
+            securityMatcher(PathRequest.toH2Console())
+            securityMatcher(PathRequest.toStaticResources().atCommonLocations())
+
+            authorizeHttpRequests {
+                authorize("/auth/login", permitAll)
+                authorize(anyRequest, permitAll)
+            }
+
+            addFilterBefore<UsernamePasswordAuthenticationFilter>(
+                CustomAuthenticationFilter(authenticationManager).apply {
+                    setAuthenticationSuccessHandler(customAuthenticationSuccessHandler)
+                    setAuthenticationFailureHandler(customAuthenticationFailureHandler)
+                })
+        }
+        return http.build()
+    }
+
+    @Bean
+    fun jwtFilterChain(
+        http: HttpSecurity,
+        authenticationManager: JwtAuthenticationManager,
+        tokenProvider: TokenProvider,
+        objectMapper: ObjectMapper,
+    ): SecurityFilterChain {
+        http {
+            defaultSettings()
 
             headers {
                 frameOptions {
@@ -38,14 +69,8 @@ class SecurityConfiguration(
                 }
             }
 
-            addFilterBefore<UsernamePasswordAuthenticationFilter>(jwtAuthorizationFilter)
-            addFilterBefore<UsernamePasswordAuthenticationFilter>(customAuthenticationFilter)
-
+            addFilterBefore<UsernamePasswordAuthenticationFilter>(JwtAuthorizationFilter(tokenProvider, objectMapper))
             authorizeHttpRequests {
-                authorize(PathRequest.toH2Console(), permitAll)
-                authorize(PathRequest.toStaticResources().atCommonLocations(), permitAll)
-                skipRequestMatchers.forEach { authorize(it, permitAll) }
-
                 authorize("/admin/**", hasRole("ADMIN"))
                 authorize("/user/**", hasAnyRole("USER", "ADMIN"))
                 authorize(anyRequest, authenticated)
@@ -54,14 +79,18 @@ class SecurityConfiguration(
         return http.build()
     }
 
-    companion object {
-        val skipRequestMatchers: List<RequestMatcher> = listOf(
-            AntPathRequestMatcher(CustomAuthenticationFilter.LOGIN_URL),
-            AntPathRequestMatcher("/auth/sign"),
-            AntPathRequestMatcher("/resources/**"),
-            AntPathRequestMatcher("/h2-console"),
-        )
+    fun HttpSecurityDsl.defaultSettings() {
+        csrf { disable() }
+        httpBasic { disable() }
+        logout { disable() }
+        anonymous { disable() }
+        sessionManagement { sessionCreationPolicy = SessionCreationPolicy.STATELESS }
 
-        fun matchSkipRequest(request: HttpServletRequest): Boolean = skipRequestMatchers.any { it.matches(request) }
+        headers {
+            frameOptions {
+                sameOrigin = true
+                disable()
+            }
+        }
     }
 }

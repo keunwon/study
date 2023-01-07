@@ -1,6 +1,5 @@
 package com.keunwon.jwt.jwt
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.keunwon.jwt.config.CustomUserDetailsServiceImpl
 import com.keunwon.jwt.domain.User
 import com.keunwon.jwt.domain.UserRepository
@@ -23,16 +22,6 @@ class JwtConfiguration {
     ) : JwtAuthenticationManager = JwtAuthenticationManager(customUserDetailsService, passwordEncoder)
 
     @Bean
-    fun customAuthenticationFilter(
-        jwtAuthenticationManager: JwtAuthenticationManager,
-        customAuthenticationSuccessHandler: CustomAuthenticationSuccessHandler,
-        customAuthenticationFailureHandler: CustomAuthenticationFailureHandler,
-    ): CustomAuthenticationFilter = CustomAuthenticationFilter(jwtAuthenticationManager).apply {
-        setAuthenticationSuccessHandler(customAuthenticationSuccessHandler)
-        setAuthenticationFailureHandler(customAuthenticationFailureHandler)
-    }
-
-    @Bean
     fun customAuthenticationSuccessHandler(
         tokenProvider: TokenProvider,
         customUserDetailsServiceImpl: CustomUserDetailsServiceImpl,
@@ -41,10 +30,6 @@ class JwtConfiguration {
     @Bean
     fun customAuthenticationFailureHandler(customUserDetailsServiceImpl: CustomUserDetailsServiceImpl)=
         CustomAuthenticationFailureHandler(customUserDetailsServiceImpl)
-
-    @Bean
-    fun jwtAuthorizationFilter(jwtProvider: TokenProvider, objectMapper: ObjectMapper): JwtAuthorizationFilter =
-        JwtAuthorizationFilter(jwtProvider, objectMapper)
 
     @Bean
     fun passwordEncoder(): PasswordEncoder = BCryptPasswordEncoder()
