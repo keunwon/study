@@ -139,3 +139,5 @@ gradle-app.setting
 # gradle/wrapper/gradle-wrapper.properties
 
 src/main/resources/static/docs
+
+src/main/resources/application-oauth.yml
