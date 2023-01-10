@@ -16,7 +16,7 @@ abstract class RestDocsSupport {
     fun mockMvc(controller: Any, restDocumentation: RestDocumentationContextProvider): MockMvcRequestSpecification {
         return RestAssuredMockMvc.given()
             .mockMvc(createMockMvc(controller, restDocumentation))
-            .log().all()
+            //.log().all()
     }
 
     fun mockMvc(context: WebApplicationContext, restDocumentation: RestDocumentationContextProvider): MockMvcRequestSpecification {

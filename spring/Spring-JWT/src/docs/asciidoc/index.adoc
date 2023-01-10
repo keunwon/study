@@ -9,9 +9,11 @@
 
 [[common]]
 == 1. 공통사항
+
 API 관계없이 아래 사항을 지켜주셔야 합니다.
 
 === 1.1. Domain
+
 |===
 | 환경 | domain
 
@@ -23,6 +25,7 @@ API 관계없이 아래 사항을 지켜주셔야 합니다.
 |===
 
 === 1.2. Header
+
 |===
 | name | 설명
 
@@ -31,6 +34,7 @@ API 관계없이 아래 사항을 지켜주셔야 합니다.
 |===
 
 === 1.3. Error Response Body
+
 |===
 | field | type | 설명
 
@@ -52,8 +56,23 @@ API 관계없이 아래 사항을 지켜주셔야 합니다.
 
 === 2.1. 사용자 회원가입
 
+Request Fields::
+include::{snippets}/사용자 회원가입/request-fields.adoc[]
+
+Request CURL::
+include::{snippets}/사용자 회원가입/curl-request.adoc[]
+
+Request HTTP::
+include::{snippets}/사용자 회원가입/http-request.adoc[]
+
+Response Fields::
+include::{snippets}/사용자 회원가입/response-fields.adoc[]
+
+Response HTTP::
+include::{snippets}/사용자 회원가입/http-response.adoc[]
 
 === 2.2. 사용자 로그인
+
 Request Fields::
 include::{snippets}/사용자 로그인/request-fields.adoc[]
 

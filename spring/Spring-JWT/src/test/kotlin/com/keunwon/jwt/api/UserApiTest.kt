@@ -6,18 +6,17 @@ import com.keunwon.jwt.RestDocsSupport
 import com.keunwon.jwt.STRING
 import com.keunwon.jwt.domain.User
 import com.keunwon.jwt.domain.UserRole
-import com.keunwon.jwt.invoke
+import com.keunwon.jwt.makeDocument
 import com.keunwon.jwt.type
 import io.mockk.every
 import io.mockk.mockk
+import io.restassured.http.ContentType
 import io.restassured.module.mockmvc.specification.MockMvcRequestSpecification
 import org.hamcrest.Matchers
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
-import org.springframework.http.MediaType
 import org.springframework.restdocs.RestDocumentationContextProvider
 import org.springframework.restdocs.RestDocumentationExtension
 import org.springframework.test.context.junit.jupiter.SpringExtension
@@ -35,6 +34,7 @@ class UserApiTest : RestDocsSupport() {
     @Test
     fun `사용자 회원가입`() {
         every { userService.sign(userSignDto) } returns User(
+            name = "홍길동",
             username = userSignDto.username,
             password = userSignDto.password,
             nickname = userSignDto.nickname,
@@ -42,10 +42,11 @@ class UserApiTest : RestDocsSupport() {
         ).apply { id = 1L }
 
         val response = mockMvc
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .header(HttpHeaders.AUTHORIZATION, "accessToken")
+            .contentType(ContentType.JSON)
             .body(jacksonObjectMapper().writeValueAsString(userSignDto))
             .post("/auth/sign")
+
+        response.prettyPrint()
 
         // then
         response.then()
@@ -55,9 +56,7 @@ class UserApiTest : RestDocsSupport() {
             .body("nickname", Matchers.equalTo(userSignDto.nickname))
 
         // doc
-        response {
-            identifier = "사용자 회원가입"
-            requestAuthorizationHeader()
+        response.makeDocument("사용자 회원가입") {
             requestBody(
                 "username" type STRING means "사용자 아이디",
                 "password" type STRING means "사용자 비밀번호",
@@ -73,7 +72,8 @@ class UserApiTest : RestDocsSupport() {
 
     companion object {
         val userSignDto = UserSignDto(
-            username = "홍길동",
+            name = "홍길동",
+            username = "test-id",
             password = "password",
             nickname = "닉네임",
         )

@@ -81,14 +81,14 @@ open class Field(val descriptor: FieldDescriptor) {
     }
 }
 
-operator fun MockMvcResponse.invoke(responseDsl: MockMvcResponseDsl.() -> Unit) =
-    MockMvcResponseDsl(this, responseDsl).build()
+fun MockMvcResponse.makeDocument(identifier: String, responseDsl: MockMvcResponseDsl.() -> Unit) =
+    MockMvcResponseDsl(this, identifier, responseDsl).build()
 
 class MockMvcResponseDsl(
     private val mockMvcResponse: MockMvcResponse,
+    private val identifier: String,
     private val init: MockMvcResponseDsl.() -> Unit,
 ) {
-    lateinit var identifier: String
 
     fun headers(vararg pairs: Pair<String, String>) {
         val descriptors = pairs.map { (name, means) -> headerWithName(name).description(means) }
