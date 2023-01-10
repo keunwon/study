@@ -1,4 +1,4 @@
-package com.keunwon.jwt.jwt
+package com.keunwon.jwt.security.jwt
 
 import com.keunwon.jwt.TokenProviderFixture
 import org.assertj.core.api.Assertions.assertThat
@@ -11,7 +11,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.User
 import java.util.*
 
-internal class TokenProviderTest {
+internal class JwtProviderTest {
 
     @Test
     fun `문자열 토큰을 발급`() {

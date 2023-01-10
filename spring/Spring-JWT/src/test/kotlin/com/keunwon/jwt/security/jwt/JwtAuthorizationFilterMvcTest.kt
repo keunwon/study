@@ -1,4 +1,4 @@
-package com.keunwon.jwt.jwt
+package com.keunwon.jwt.security.jwt
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.keunwon.jwt.TokenProviderFixture

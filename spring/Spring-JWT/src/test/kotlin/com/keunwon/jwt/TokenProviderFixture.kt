@@ -1,13 +1,13 @@
 package com.keunwon.jwt
 
-import com.keunwon.jwt.jwt.JwtProperties
-import com.keunwon.jwt.jwt.TokenProvider
+import com.keunwon.jwt.security.jwt.JwtProperties
+import com.keunwon.jwt.security.jwt.JwtProvider
 import io.jsonwebtoken.SignatureAlgorithm
 import io.jsonwebtoken.io.Encoders
 import io.jsonwebtoken.security.Keys
 
 object TokenProviderFixture {
-    val testTokenProvider = TokenProvider("testApp", testJwtProperties())
+    val testTokenProvider = JwtProvider("testApp", testJwtProperties())
 
     init {
         testTokenProvider.afterPropertiesSet()

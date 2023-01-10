@@ -1,16 +1,16 @@
-package com.keunwon.jwt.jwt
+package com.keunwon.jwt.security.jwt
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.keunwon.jwt.common.ErrorDto
-import com.keunwon.jwt.config.CustomUserDetailsServiceImpl
 import com.keunwon.jwt.config.LogSupport
+import com.keunwon.jwt.domain.User
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException
 import org.springframework.security.authentication.AuthenticationManager
-import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.AuthenticationException
@@ -26,7 +26,7 @@ import javax.servlet.FilterChain
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
-class CustomAuthenticationFilter(authenticationManager: AuthenticationManager) :
+class JwtLoginAuthenticationFilter(authenticationManager: AuthenticationManager) :
     UsernamePasswordAuthenticationFilter(authenticationManager) {
 
     init {
@@ -42,9 +42,8 @@ class CustomAuthenticationFilter(authenticationManager: AuthenticationManager) :
         val jsonMap = resolveJsonMap(request)
         val username = jsonMap[SPRING_SECURITY_FORM_USERNAME_KEY] ?: ""
         val password = jsonMap[SPRING_SECURITY_FORM_PASSWORD_KEY] ?: ""
-        return UsernamePasswordAuthenticationToken
-            .unauthenticated(username, password)
-            .also(this::validationWithThrow)
+        return UsernamePasswordAuthenticationToken.unauthenticated(username, password)
+            .also(::validationWithThrow)
     }
 
     private fun validationWithThrow(authentication: Authentication) {
@@ -84,14 +83,10 @@ class CustomAuthenticationFilter(authenticationManager: AuthenticationManager) :
     }
 }
 
-data class TokenIssue(
-    val accessToken: String,
-    val refreshToken: String,
-)
-
-open class CustomAuthenticationSuccessHandler(
-    private val tokenProvider: TokenProvider,
-    private val customUserDetailsService: CustomUserDetailsServiceImpl,
+open class JwtLoginAuthenticationSuccessHandler(
+    private val jwtProvider: JwtProvider,
+    private val customUserDetailsService: JwtUserDetailsService<User, Long>,
+    private val objectMapper: ObjectMapper,
 ) : AuthenticationSuccessHandler {
 
     @Transactional
@@ -100,42 +95,38 @@ open class CustomAuthenticationSuccessHandler(
         response: HttpServletResponse,
         authentication: Authentication
     ) {
-        val id = JwtAuthenticationManager.userContext.get().id as Long
-        customUserDetailsService.successLogin(id)
+        val userToken = jwtProvider.createTokenIssue(authentication)
+        saveUserToken(authentication, userToken)
         response.apply {
             status = HttpStatus.OK.value()
             contentType = MediaType.APPLICATION_JSON_VALUE
-            jacksonObjectMapper().writeValue(this.outputStream, createBody(authentication))
+            objectMapper.writeValue(this.outputStream, userToken)
         }
     }
 
-    private fun createBody(authentication: Authentication) = TokenIssue(
-        accessToken = tokenProvider.generateAccessToken(authentication),
-        refreshToken = tokenProvider.generateRefreshToken(authentication),
-    )
+    private fun saveUserToken(authentication: Authentication, tokenIssue: TokenIssue) {
+        val id = (authentication.principal as User).id!!
+        val user = customUserDetailsService.findLoginUser(id)
+            .apply { successLogin(tokenIssue.toEntity(id)) }
+        customUserDetailsService.save(user)
+    }
 
     companion object : LogSupport
 }
 
-open class CustomAuthenticationFailureHandler(
-    private val customUserDetailsService: CustomUserDetailsServiceImpl,
+open class JwtLoginAuthenticationFailureHandler(
+    private val objectMapper: ObjectMapper,
 ) : AuthenticationFailureHandler {
 
-    @Transactional
     override fun onAuthenticationFailure(
         request: HttpServletRequest,
         response: HttpServletResponse,
         exception: AuthenticationException
     ) {
-        if (exception is BadCredentialsException) {
-            val id = JwtAuthenticationManager.userContext.get().id as Long
-            customUserDetailsService.incFailCount(id)
-        }
         response.apply {
-            val errorBody = createBody(exception.message)
             status = HttpStatus.UNAUTHORIZED.value()
             contentType = MediaType.APPLICATION_JSON_VALUE
-            jacksonObjectMapper().writeValue(this.outputStream, errorBody)
+            objectMapper.writeValue(this.outputStream, createBody(exception.message))
         }
     }
 

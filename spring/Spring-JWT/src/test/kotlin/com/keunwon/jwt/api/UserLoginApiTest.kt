@@ -2,10 +2,10 @@ package com.keunwon.jwt.api
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.keunwon.jwt.STRING
-import com.keunwon.jwt.TokenProviderFixture
-import com.keunwon.jwt.invoke
-import com.keunwon.jwt.jwt.CustomAuthenticationFilter
-import com.keunwon.jwt.jwt.TokenIssue
+import com.keunwon.jwt.TokenProviderFixture.testTokenProvider
+import com.keunwon.jwt.makeDocument
+import com.keunwon.jwt.security.jwt.JwtLoginAuthenticationFilter
+import com.keunwon.jwt.security.jwt.TokenIssue
 import com.keunwon.jwt.type
 import io.mockk.junit5.MockKExtension
 import io.restassured.module.mockmvc.RestAssuredMockMvc
@@ -47,7 +47,7 @@ import javax.servlet.http.HttpServletResponse
 @ContextConfiguration
 class UserLoginApiTest {
     private val authentication = JwtAuthenticationManagerStub()
-    private val customAuthenticationFilter = CustomAuthenticationFilter(authentication).apply {
+    private val customAuthenticationFilter = JwtLoginAuthenticationFilter(authentication).apply {
         setAuthenticationSuccessHandler(LoginSuccessHandlerStub())
     }
 
@@ -66,7 +66,7 @@ class UserLoginApiTest {
                     )
                     .addFilter<DefaultMockMvcBuilder>(customAuthenticationFilter)
                     .build()
-            ).log().all()
+            )
     }
 
     @Test
@@ -86,8 +86,7 @@ class UserLoginApiTest {
             .body("refreshToken", notNullValue())
 
         // doc
-        response {
-            identifier = "사용자 로그인"
+        response.makeDocument("사용자 로그인") {
             requestBody(
                 "username" type STRING means "사용자 아이디",
                 "password" type STRING means "사용자 비밀번호",
@@ -112,9 +111,13 @@ class LoginSuccessHandlerStub : AuthenticationSuccessHandler {
         response: HttpServletResponse,
         authentication: Authentication
     ) {
+        val accessToken = testTokenProvider.generateAccessToken(authentication)
+        val refreshToken = testTokenProvider.generateRefreshToken(authentication)
         val body = TokenIssue(
-            accessToken = TokenProviderFixture.testTokenProvider.generateAccessToken(authentication),
-            refreshToken = TokenProviderFixture.testTokenProvider.generateRefreshToken(authentication),
+            accessToken = accessToken,
+            refreshToken = refreshToken,
+            expirationAccessToken = testTokenProvider.expirationLocalDateTime(accessToken),
+            expirationRefreshToken = testTokenProvider.expirationLocalDateTime(refreshToken)
         )
         response.apply {
             status = HttpStatus.OK.value()

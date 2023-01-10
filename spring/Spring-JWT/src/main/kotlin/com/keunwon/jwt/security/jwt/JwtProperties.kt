@@ -1,4 +1,4 @@
-package com.keunwon.jwt.jwt
+package com.keunwon.jwt.security.jwt
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.context.properties.ConstructorBinding

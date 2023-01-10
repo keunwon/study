@@ -1,4 +1,4 @@
-package com.keunwon.jwt.jwt
+package com.keunwon.jwt.security.jwt
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.keunwon.jwt.common.ErrorDto
@@ -18,7 +18,7 @@ import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
 class JwtAuthorizationFilter(
-    private val jwtProvider: TokenProvider,
+    private val jwtProvider: JwtProvider,
     private val objectMapper: ObjectMapper
 ) : OncePerRequestFilter() {
 
@@ -46,13 +46,13 @@ class JwtAuthorizationFilter(
             }
             filterChain.doFilter(request, response)
         } catch (e: Exception) {
-            log.error("> 토큰 검증 중 오류가 발생하였습니다. Request Url: ${request.servletPath}", e)
-            responseBody(response, e)
+            log.error("> ${e.message}, 요청 url: ${request.servletPath}")
+            errorResponseBody(response, e)
         }
     }
 
     private fun noRequiresAuthorization(request: HttpServletRequest): Boolean {
-        return CustomAuthenticationFilter.LOGIN_URL == request.servletPath
+        return JwtLoginAuthenticationFilter.LOGIN_URL == request.servletPath
     }
 
     private fun registerSecurityContext(token: String) {
@@ -70,7 +70,7 @@ class JwtAuthorizationFilter(
         return if (token.startsWith(AUTHORIZATION_TYPE)) token.substring(AUTHORIZATION_TYPE.length) else token
     }
 
-    private fun responseBody(response: HttpServletResponse, error: Throwable) {
+    private fun errorResponseBody(response: HttpServletResponse, error: Throwable) {
         val httpStatus = HttpStatus.FORBIDDEN.value()
         val defaultErrorMessage = error.message ?: "토큰 검증 중 알 수 없는 오류가 발생하였습니다."
         val body = ErrorDto(

@@ -1,9 +1,9 @@
-package com.keunwon.jwt.jwt
+package com.keunwon.jwt.security.jwt
 
 import com.keunwon.jwt.domain.UserRole
 import org.springframework.security.core.Authentication
 
-interface CustomUserDetailsService<T : AbstractCustomUser<out ID>, ID> {
+interface JwtUserDetailsService<T : AbstractCustomUser<out ID>, ID> {
     fun findLoginUser(id: ID): T
     fun findByAuthentication(authentication: Authentication): T?
     fun save(user: T): T
@@ -25,7 +25,7 @@ interface CustomUserDetailsService<T : AbstractCustomUser<out ID>, ID> {
 }
 
 abstract class AbstractCustomUser<ID> {
-    abstract var id: ID?
+    abstract val id: ID?
     abstract val username: String
     abstract var password: String
     abstract var failCount: Int

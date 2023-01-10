@@ -8,10 +8,15 @@ import org.hamcrest.Matchers.notNullValue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
+import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document
+import org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath
+import org.springframework.restdocs.payload.PayloadDocumentation.requestFields
+import org.springframework.restdocs.payload.PayloadDocumentation.responseFields
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
@@ -24,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional
 @SpringBootTest
 @AutoConfigureMockMvc
+@AutoConfigureRestDocs
 class JwtLoginMvcTest {
     @Autowired lateinit var mockMvc: MockMvc
     @Autowired lateinit var userRepository: UserRepository
@@ -37,13 +43,23 @@ class JwtLoginMvcTest {
         // when, then
         mockMvc.perform(
             post(loginUrl)
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(login))
         ).andExpectAll(
             status().isOk,
             content().contentType(MediaType.APPLICATION_JSON),
             jsonPath("$.accessToken", notNullValue()),
             jsonPath("$.refreshToken", notNullValue()),
-        )
+        ).andDo(document("사용자 로그인-1",
+            requestFields(
+                fieldWithPath("username").description("사용자 아이디"),
+                fieldWithPath("password").description("사용자 비밀번호"),
+            ),
+            responseFields(
+                fieldWithPath("accessToken").description("accessToken"),
+                fieldWithPath("refreshToken").description("refreshToekn"),
+            ),
+        ))
     }
 
     @Test
@@ -154,12 +170,13 @@ class JwtLoginMvcTest {
     companion object {
         private val passwordEncoder = BCryptPasswordEncoder()
         private const val loginUrl = "/auth/login"
-        private const val username = "홍길동"
+        private const val username = "test-id"
         private const val userPassword = "password"
         private const val failUserPassword = "failPassword"
         private val objectMapper = jacksonObjectMapper()
 
         private fun simpleUser() = User(
+            name = "홍길동",
             username = username,
             password = passwordEncoder.encode(userPassword),
             nickname = "닉네임",

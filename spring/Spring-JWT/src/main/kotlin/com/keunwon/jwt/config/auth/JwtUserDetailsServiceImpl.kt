@@ -1,12 +1,14 @@
-package com.keunwon.jwt.config
+package com.keunwon.jwt.config.auth
 
 import com.keunwon.jwt.domain.User
 import com.keunwon.jwt.domain.UserRepository
-import com.keunwon.jwt.jwt.CustomUserDetailsService
+import com.keunwon.jwt.security.jwt.JwtUserDetailsService
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.core.Authentication
+import org.springframework.transaction.annotation.Transactional
 
-class CustomUserDetailsServiceImpl(private val userRepository: UserRepository) : CustomUserDetailsService<User, Long> {
+@Transactional
+class JwtUserDetailsServiceImpl(private val userRepository: UserRepository) : JwtUserDetailsService<User, Long> {
     override fun findLoginUser(id: Long): User = userRepository.findByIdOrNull(id)!!
 
     override fun findByAuthentication(authentication: Authentication): User? =
