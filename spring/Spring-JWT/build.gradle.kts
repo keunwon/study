@@ -39,7 +39,7 @@ noArg {
 extra.apply {
     set("jwtVersion", "0.11.5")
     set("mockkVersion", "1.13.3")
-    set("restAssuredVersion", "4.5.1")
+    set("restAssuredVersion", "5.3.0")
 }
 
 dependencies {
@@ -55,6 +55,9 @@ dependencies {
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")
+
+    // oauth
+    implementation("org.springframework.security:spring-security-oauth2-client")
 
     // jwt
     implementation("io.jsonwebtoken:jjwt-api:${property("jwtVersion")}")

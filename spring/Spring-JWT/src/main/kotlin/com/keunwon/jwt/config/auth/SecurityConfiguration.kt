@@ -1,12 +1,14 @@
-package com.keunwon.jwt.config
+package com.keunwon.jwt.config.auth
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.keunwon.jwt.jwt.CustomAuthenticationFailureHandler
-import com.keunwon.jwt.jwt.CustomAuthenticationFilter
-import com.keunwon.jwt.jwt.CustomAuthenticationSuccessHandler
-import com.keunwon.jwt.jwt.JwtAuthenticationManager
-import com.keunwon.jwt.jwt.JwtAuthorizationFilter
-import com.keunwon.jwt.jwt.TokenProvider
+import com.keunwon.jwt.security.jwt.JwtAuthenticationManager
+import com.keunwon.jwt.security.jwt.JwtAuthorizationFilter
+import com.keunwon.jwt.security.jwt.JwtLoginAuthenticationFailureHandler
+import com.keunwon.jwt.security.jwt.JwtLoginAuthenticationFilter
+import com.keunwon.jwt.security.jwt.JwtLoginAuthenticationSuccessHandler
+import com.keunwon.jwt.security.jwt.JwtProvider
+import com.keunwon.jwt.security.oauth.CustomOAuth2UserService
+import com.keunwon.jwt.security.oauth.OAuthAuthenticationSuccessHandler
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -27,14 +29,17 @@ class SecurityConfiguration {
     fun permitAllFilterChain(
         http: HttpSecurity,
         authenticationManager: JwtAuthenticationManager,
-        customAuthenticationSuccessHandler: CustomAuthenticationSuccessHandler,
-        customAuthenticationFailureHandler: CustomAuthenticationFailureHandler,
+        jwtLoginAuthenticationSuccessHandler: JwtLoginAuthenticationSuccessHandler,
+        jwtLoginAuthenticationFailureHandler: JwtLoginAuthenticationFailureHandler,
+        oAuth2UserService: CustomOAuth2UserService,
+        oAuthAuthenticationSuccessHandler: OAuthAuthenticationSuccessHandler,
     ): SecurityFilterChain {
         http {
             defaultSettings()
 
             securityMatcher("/resources/**")
             securityMatcher("/auth/sign", "/auth/login")
+            securityMatcher("/oauth2/**", "/login/**")
             securityMatcher(PathRequest.toH2Console())
             securityMatcher(PathRequest.toStaticResources().atCommonLocations())
 
@@ -44,10 +49,17 @@ class SecurityConfiguration {
             }
 
             addFilterBefore<UsernamePasswordAuthenticationFilter>(
-                CustomAuthenticationFilter(authenticationManager).apply {
-                    setAuthenticationSuccessHandler(customAuthenticationSuccessHandler)
-                    setAuthenticationFailureHandler(customAuthenticationFailureHandler)
+                JwtLoginAuthenticationFilter(authenticationManager).apply {
+                    setAuthenticationSuccessHandler(jwtLoginAuthenticationSuccessHandler)
+                    setAuthenticationFailureHandler(jwtLoginAuthenticationFailureHandler)
                 })
+
+            oauth2Login {
+                authenticationSuccessHandler = oAuthAuthenticationSuccessHandler
+                userInfoEndpoint {
+                    userService = oAuth2UserService
+                }
+            }
         }
         return http.build()
     }
@@ -56,7 +68,7 @@ class SecurityConfiguration {
     fun jwtFilterChain(
         http: HttpSecurity,
         authenticationManager: JwtAuthenticationManager,
-        tokenProvider: TokenProvider,
+        jwtProvider: JwtProvider,
         objectMapper: ObjectMapper,
     ): SecurityFilterChain {
         http {
@@ -69,7 +81,7 @@ class SecurityConfiguration {
                 }
             }
 
-            addFilterBefore<UsernamePasswordAuthenticationFilter>(JwtAuthorizationFilter(tokenProvider, objectMapper))
+            addFilterBefore<UsernamePasswordAuthenticationFilter>(JwtAuthorizationFilter(jwtProvider, objectMapper))
             authorizeHttpRequests {
                 authorize("/admin/**", hasRole("ADMIN"))
                 authorize("/user/**", hasAnyRole("USER", "ADMIN"))
