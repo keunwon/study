@@ -1,8 +1,11 @@
 package com.keunwon.jwt.common
 
+import com.fasterxml.jackson.databind.exc.InvalidFormatException
+import com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException
 import com.keunwon.jwt.config.LogSupport
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
@@ -29,9 +32,22 @@ class ControllerErrorHandler {
 
     @ExceptionHandler(NoHandlerFoundException::class)
     fun handleNoHandlerFoundException(ex: NoHandlerFoundException, request: WebRequest): ResponseEntity<ErrorDto> {
-        val errorMessage = "지원하지 않는 URL 입니다. URL: ${ex.requestURL}".also { log.warn(it) }
+        val errorMessage = "url: ${ex.requestURL} 은 지원하지 않습니다.".also(log::warn)
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
             .body(ErrorDto(HttpStatus.NOT_FOUND.value(), errorMessage))
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException::class)
+    fun handleHttpMessageNotReadableException(ex: HttpMessageNotReadableException): ResponseEntity<ErrorDto> {
+        val errorMessage = when (val causeException = ex.cause) {
+            is InvalidFormatException ->
+                "${causeException.value}를 ${causeException.targetType}으로 변환 중 오류가 발생하였습니다."
+            is MissingKotlinParameterException ->
+                "${causeException.parameter.name} 파라미터가 존재하지 않습니다."
+            else -> "올바르지 않은 요청 정보입니다."
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST.value())
+            .body(ErrorDto(HttpStatus.BAD_REQUEST.value(), errorMessage))
     }
 
     fun createResponseEntity(status: HttpStatus, exception: Throwable): ResponseEntity<ErrorDto> {
