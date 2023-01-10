@@ -83,6 +83,16 @@ class User(
         this.name = attributes.name
         this.nickname = attributes.nickname
     }
+
+    companion object {
+        fun ofOAuth2(name: String, nickname: String, email: String) = User(
+            name = name,
+            nickname = nickname,
+            email = email,
+            loginType = LoginType.OAUTH,
+            role = UserRole.USER,
+        )
+    }
 }
 
 enum class UserRole(val title: String) {

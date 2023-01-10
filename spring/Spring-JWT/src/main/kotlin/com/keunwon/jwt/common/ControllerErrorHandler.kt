@@ -30,6 +30,11 @@ class ControllerErrorHandler {
         return ResponseEntity.status(httpStatus).body(ErrorDto(httpStatus.value(), unknownErrorMessage))
     }
 
+    @ExceptionHandler(RuntimeException::class)
+    fun handleRuntimeException(ex: RuntimeException): ResponseEntity<ErrorDto> {
+        return createResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, ex)
+    }
+
     @ExceptionHandler(NoHandlerFoundException::class)
     fun handleNoHandlerFoundException(ex: NoHandlerFoundException, request: WebRequest): ResponseEntity<ErrorDto> {
         val errorMessage = "url: ${ex.requestURL} 은 지원하지 않습니다.".also(log::warn)

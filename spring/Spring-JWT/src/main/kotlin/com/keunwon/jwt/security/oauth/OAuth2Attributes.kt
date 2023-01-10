@@ -1,39 +1,47 @@
 package com.keunwon.jwt.security.oauth
 
-import com.keunwon.jwt.domain.LoginType
 import com.keunwon.jwt.domain.User
-import com.keunwon.jwt.domain.UserRole
 
-abstract class OAuth2Attributes(
-    val attributes: Map<String, Any>,
-    val nameAttributeKey: String
-) {
-    open val name: String = getAttributeValue("name")
-    open val email: String = getAttributeValue("email")
-    open val nickname: String = getAttributeValue("nickname")
+abstract class OAuth2Attributes(val attributes: Map<String, Any>, val nameAttributeKey: String) {
+    open val name: String
+        get() = this.getValue("name")
 
-    abstract fun toEntity(): User
+    open val nickname: String
+        get() = this.getValue("nickname")
 
-    fun getAttributeValue(key: String): String {
-        val map = attributes[nameAttributeKey] as Map<*, *>
-        return map[key] as String
-    }
+    open val email: String
+        get() = this.getValue("email")
+
+    abstract fun userProfileAttributes(): Map<String, String>
+
+    fun toEntity(): User = User.ofOAuth2(name, nickname, email)
+
+    fun getValue(key: String): String = userProfileAttributes()[key] as String
 }
 
 class NaverOAuth2Attributes(
     attributes: Map<String, Any>,
     nameAttributeKey: String,
 ) : OAuth2Attributes(attributes, nameAttributeKey) {
-    val id = getAttributeValue("id")
-    val gender = getAttributeValue("gender")
-    val birthday = getAttributeValue("birthday")
-    val birthyear = getAttributeValue("birthyear")
+    val id = getValue("id")
+    val gender = getValue("gender")
+    val birthday = getValue("birthday")
+    val birthyear = getValue("birthyear")
 
-    override fun toEntity(): User = User(
-        name = name,
-        email = email,
-        nickname = nickname,
-        loginType = LoginType.OAUTH,
-        role = UserRole.USER,
-    )
+    @Suppress("UNCHECKED_CAST")
+    override fun userProfileAttributes(): Map<String, String> = attributes[nameAttributeKey] as Map<String, String>
+}
+
+class GoogleOAuth2Attributes(
+    attributes: Map<String, Any>,
+    nameAttributeKey: String,
+) : OAuth2Attributes(attributes, nameAttributeKey) {
+    val sub = getValue("sub")
+    val picture = getValue("picture")
+    val locale = getValue("locale")
+
+    override val nickname = getValue("name")
+
+    @Suppress("UNCHECKED_CAST")
+    override fun userProfileAttributes(): Map<String, String> = attributes as Map<String, String>
 }

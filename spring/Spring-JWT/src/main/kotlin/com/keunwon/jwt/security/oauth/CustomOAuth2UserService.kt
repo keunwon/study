@@ -29,11 +29,12 @@ class CustomOAuth2UserService(private val userRepository: UserRepository)
     @Transactional
     override fun loadUser(userRequest: OAuth2UserRequest): OAuth2User {
         val oAuth2User = defaultOAuth2UserService.loadUser(userRequest)
-        val user = saveOrUpdate(oAuthAttributesFactory(userRequest, oAuth2User))
+        val oAuth2Attributes = oAuthAttributesFactory(userRequest, oAuth2User)
+        val user = saveOrUpdate(oAuth2Attributes)
         return DefaultOAuth2User(
             Collections.singleton(SimpleGrantedAuthority(user.role.name)),
-            oAuth2User.attributes,
-            userRequest.clientRegistration.providerDetails.userInfoEndpoint.userNameAttributeName
+            oAuth2Attributes.userProfileAttributes(),
+            "email",
         )
     }
 
@@ -50,8 +51,9 @@ class CustomOAuth2UserService(private val userRepository: UserRepository)
     ): OAuth2Attributes {
         val registrationId = userRequest.clientRegistration.registrationId
         val nameAttributeKey = userRequest.clientRegistration.providerDetails.userInfoEndpoint.userNameAttributeName
-        return when (registrationId) {
+        return when (registrationId){
             "naver" -> NaverOAuth2Attributes(oAuth2User.attributes, nameAttributeKey)
+            "google" -> GoogleOAuth2Attributes(oAuth2User.attributes, nameAttributeKey)
             else -> throw IllegalArgumentException("지원하지 않습니다. registrationId: $registrationId")
         }
     }
@@ -86,19 +88,8 @@ class OAuthAuthenticationSuccessHandler(
     }
 
     fun saveOrUpdateUserToken(token: TokenIssue, oAuth2User: OAuth2User) {
-        val attributes = getAttributes(oAuth2User)
-        val email = attributes.getValue("email")
-        val user = userRepository.findByEmail(email)!!
-        user.successLogin(token.toEntity(user.id!!))
+        val user = userRepository.findByEmail(oAuth2User.name)!!
+            .apply { successLogin(token.toEntity(id!!)) }
         userRepository.save(user)
-    }
-
-    private fun getAttributes(oAuth2User: OAuth2User): Map<String, String> {
-        return oAuth2User.name.run { substring(1, length - 1) }
-            .split(", ")
-            .associate {
-                val (key, value) = it.split("=")
-                key to value
-            }
     }
 }
