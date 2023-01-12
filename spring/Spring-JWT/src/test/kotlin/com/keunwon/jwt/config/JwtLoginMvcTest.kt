@@ -31,8 +31,10 @@ import org.springframework.transaction.annotation.Transactional
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs
 class JwtLoginMvcTest {
-    @Autowired lateinit var mockMvc: MockMvc
-    @Autowired lateinit var userRepository: UserRepository
+    @Autowired
+    lateinit var mockMvc: MockMvc
+    @Autowired
+    lateinit var userRepository: UserRepository
 
     @Test
     fun `사용자 로그인 성공 시 정상(200) 응답`() {
@@ -50,16 +52,21 @@ class JwtLoginMvcTest {
             content().contentType(MediaType.APPLICATION_JSON),
             jsonPath("$.accessToken", notNullValue()),
             jsonPath("$.refreshToken", notNullValue()),
-        ).andDo(document("사용자 로그인-1",
-            requestFields(
-                fieldWithPath("username").description("사용자 아이디"),
-                fieldWithPath("password").description("사용자 비밀번호"),
-            ),
-            responseFields(
-                fieldWithPath("accessToken").description("accessToken"),
-                fieldWithPath("refreshToken").description("refreshToekn"),
-            ),
-        ))
+        ).andDo(
+            document(
+                "사용자 로그인-1",
+                requestFields(
+                    fieldWithPath("username").description("사용자 아이디"),
+                    fieldWithPath("password").description("사용자 비밀번호"),
+                ),
+                responseFields(
+                    fieldWithPath("accessToken").description("accessToken"),
+                    fieldWithPath("refreshToken").description("refreshToekn"),
+                    fieldWithPath("expirationAccessToken").description("accessToken 유효기간"),
+                    fieldWithPath("expirationRefreshToken").description("refreshToken 유효기간")
+                )
+            )
+        )
     }
 
     @Test
@@ -97,7 +104,7 @@ class JwtLoginMvcTest {
     }
 
     @Test
-    fun`사용자가 존재하지 않는 경우 실패(401) 응답`() {
+    fun `사용자가 존재하지 않는 경우 실패(401) 응답`() {
         // given
         val login = mapOf("username" to username, "password" to userPassword)
 
