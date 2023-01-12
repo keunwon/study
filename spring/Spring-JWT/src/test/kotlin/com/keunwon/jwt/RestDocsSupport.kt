@@ -1,5 +1,9 @@
 package com.keunwon.jwt
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.restassured.module.mockmvc.RestAssuredMockMvc
 import io.restassured.module.mockmvc.specification.MockMvcRequestSpecification
 import org.springframework.restdocs.RestDocumentationContextProvider
@@ -10,16 +14,20 @@ import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.test.web.servlet.setup.StandaloneMockMvcBuilder
 import org.springframework.web.context.WebApplicationContext
+import java.time.format.DateTimeFormatter
 
 abstract class RestDocsSupport {
 
     fun mockMvc(controller: Any, restDocumentation: RestDocumentationContextProvider): MockMvcRequestSpecification {
         return RestAssuredMockMvc.given()
             .mockMvc(createMockMvc(controller, restDocumentation))
-            //.log().all()
+        //.log().all()
     }
 
-    fun mockMvc(context: WebApplicationContext, restDocumentation: RestDocumentationContextProvider): MockMvcRequestSpecification {
+    fun mockMvc(
+        context: WebApplicationContext,
+        restDocumentation: RestDocumentationContextProvider
+    ): MockMvcRequestSpecification {
         return RestAssuredMockMvc.given()
             .mockMvc(createMockMvc(context, restDocumentation))
             .log().all()
@@ -36,7 +44,10 @@ abstract class RestDocsSupport {
             .build()
     }
 
-    private fun createMockMvc(context: WebApplicationContext, restDocumentation: RestDocumentationContextProvider): MockMvc {
+    private fun createMockMvc(
+        context: WebApplicationContext,
+        restDocumentation: RestDocumentationContextProvider
+    ): MockMvc {
         return MockMvcBuilders.webAppContextSetup(context)
             .apply<DefaultMockMvcBuilder>(
                 documentationConfiguration(restDocumentation)
@@ -46,4 +57,10 @@ abstract class RestDocsSupport {
             )
             .build()
     }
+}
+
+val objectMapper: ObjectMapper = run {
+    val serializer = LocalDateTimeSerializer(DateTimeFormatter.ISO_DATE_TIME)
+    val javaTimeModule = JavaTimeModule().apply { addSerializer(serializer) }
+    jacksonObjectMapper().registerModule(javaTimeModule)
 }

@@ -19,9 +19,8 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.http.HttpStatus
 import org.springframework.restdocs.RestDocumentationContextProvider
 import org.springframework.restdocs.RestDocumentationExtension
-import org.springframework.test.context.junit.jupiter.SpringExtension
 
-@ExtendWith(RestDocumentationExtension::class, SpringExtension::class)
+@ExtendWith(RestDocumentationExtension::class)
 class UserApiTest : RestDocsSupport() {
     lateinit var mockMvc: MockMvcRequestSpecification
     val userService = mockk<UserService>()
@@ -61,6 +60,7 @@ class UserApiTest : RestDocsSupport() {
                 "username" type STRING means "사용자 아이디",
                 "password" type STRING means "사용자 비밀번호",
                 "nickname" type STRING means "닉네임",
+                "name" type STRING means "사용자 이름",
             )
             responseBody(
                 "id" type NUMBER means "서버에서 사용하는 사용자 아이디",

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.keunwon.jwt.STRING
 import com.keunwon.jwt.TokenProviderFixture.testTokenProvider
 import com.keunwon.jwt.makeDocument
+import com.keunwon.jwt.objectMapper
 import com.keunwon.jwt.security.jwt.JwtLoginAuthenticationFilter
 import com.keunwon.jwt.security.jwt.TokenIssue
 import com.keunwon.jwt.type
@@ -84,6 +85,8 @@ class UserLoginApiTest {
             .status(HttpStatus.OK)
             .body("accessToken", notNullValue())
             .body("refreshToken", notNullValue())
+            .body("expirationAccessToken", notNullValue())
+            .body("expirationRefreshToken", notNullValue())
 
         // doc
         response.makeDocument("사용자 로그인") {
@@ -94,6 +97,8 @@ class UserLoginApiTest {
             responseBody(
                 "accessToken" type STRING means "API 요청 시 함께 보내야하는 토큰",
                 "refreshToken" type STRING means "토큰 재발급을 위한 토큰",
+                "expirationAccessToken" type STRING means "accessToken 유효시간",
+                "expirationRefreshToken" type STRING means "refreshToken 요효시간",
             )
         }
     }
@@ -122,7 +127,7 @@ class LoginSuccessHandlerStub : AuthenticationSuccessHandler {
         response.apply {
             status = HttpStatus.OK.value()
             contentType = MediaType.APPLICATION_JSON_VALUE
-            jacksonObjectMapper().writeValue(outputStream, body)
+            objectMapper.writeValue(outputStream, body)
         }
     }
 }

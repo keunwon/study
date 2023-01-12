@@ -6,8 +6,8 @@ import com.keunwon.jwt.domain.generatedGrantedAuthorityList
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
+import io.mockk.mockkClass
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Assertions.assertAll
 import org.junit.jupiter.api.Assertions.assertThrowsExactly
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
@@ -23,7 +23,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 @ExtendWith(MockKExtension::class)
 internal class JwtAuthenticationManagerTest {
     lateinit var jwtAuthenticationManager: JwtAuthenticationManager
-    @MockK lateinit var jwtUserDetailsService: JwtUserDetailsService<User, Long>
+
+    @MockK
+    lateinit var jwtUserDetailsService: JwtUserDetailsService<User, Long>
 
     @BeforeAll
     fun setup() {
@@ -38,13 +40,12 @@ internal class JwtAuthenticationManagerTest {
 
         // when
         val authentication = jwtAuthenticationManager.authenticate(authenticationToken)
+        val user = authentication.principal as User
 
         // then
-        assertAll({
-            assertThat(authentication.principal).isEqualTo(authenticationToken.principal)
-            assertThat(authentication.credentials).isEqualTo(authentication.credentials)
-            assertThat(authentication.authorities).isEqualTo(generatedGrantedAuthorityList(UserRole.USER))
-        })
+        assertThat(user.username).isEqualTo(authenticationToken.name)
+        assertThat(user.name).isEqualTo("홍길동")
+        assertThat(authentication.authorities).isEqualTo(generatedGrantedAuthorityList(UserRole.USER))
     }
 
     @Test
@@ -53,9 +54,11 @@ internal class JwtAuthenticationManagerTest {
         every { jwtUserDetailsService.findByAuthentication(authenticationToken) } returns null
 
         // when, then
-        assertThrowsExactly(InternalAuthenticationServiceException::class.java,
+        assertThrowsExactly(
+            InternalAuthenticationServiceException::class.java,
             { jwtAuthenticationManager.authenticate(authenticationToken) },
-             "사용자를 찾을 수 없습니다: 사용자: ${authenticationToken.name}")
+            "사용자를 찾을 수 없습니다: 사용자: ${authenticationToken.name}"
+        )
     }
 
     @Test
@@ -63,11 +66,14 @@ internal class JwtAuthenticationManagerTest {
         // given
         every { jwtUserDetailsService.findByAuthentication(authenticationToken) } returns
                 generatedUser(authenticationToken.name, "trash")
+        every { jwtUserDetailsService.save(any()) } returns mockkClass(User::class, relaxed = true)
 
         // when, then
-        assertThrowsExactly(BadCredentialsException::class.java,
+        assertThrowsExactly(
+            BadCredentialsException::class.java,
             { jwtAuthenticationManager.authenticate(authenticationToken) },
-        "사용자 비밀번호가 일치하지 않습니다. 사용자: ${authenticationToken.name}")
+            "사용자 비밀번호가 일치하지 않습니다. 사용자: ${authenticationToken.name}"
+        )
     }
 
     @Test
@@ -77,14 +83,16 @@ internal class JwtAuthenticationManagerTest {
                 generatedUser(authenticationToken.name, authenticationToken.credentials as String, false)
 
         // when, then
-        assertThrowsExactly(LockedException::class.java,
+        assertThrowsExactly(
+            LockedException::class.java,
             { jwtAuthenticationManager.authenticate(authenticationToken) },
-            "사용자 계정이 잠겨있습니다. 사용자: ${authenticationToken.name}")
+            "사용자 계정이 잠겨있습니다. 사용자: ${authenticationToken.name}"
+        )
     }
 
     companion object {
         val passwordEncoder = BCryptPasswordEncoder()
-        val authenticationToken = UsernamePasswordAuthenticationToken("홍길동", "password")
+        val authenticationToken = UsernamePasswordAuthenticationToken("test-id", "password")
 
         fun generatedUser(username: String, password: String, isActivated: Boolean = true) = User(
             name = "홍길동",

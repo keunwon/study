@@ -18,16 +18,17 @@ import org.springframework.http.HttpStatus
 import org.springframework.restdocs.RestDocumentationContextProvider
 import org.springframework.restdocs.RestDocumentationExtension
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration
-import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.test.web.servlet.setup.StandaloneMockMvcBuilder
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@ExtendWith(RestDocumentationExtension::class, SpringExtension::class, MockKExtension::class)
+@ExtendWith(RestDocumentationExtension::class, MockKExtension::class)
 class UserApiTest2 {
     lateinit var mockMvc: MockMvc
-    @MockK lateinit var userService: UserService
+
+    @MockK
+    lateinit var userService: UserService
 
     private val authentication = JwtAuthenticationManagerStub()
     private val customAuthenticationFilter = JwtLoginAuthenticationFilter(authentication).apply {
@@ -52,7 +53,7 @@ class UserApiTest2 {
             .contentType(ContentType.JSON)
             .body(jacksonObjectMapper().writeValueAsString(login))
             .mockMvc(mockMvc)
-        .`when`()
+            .`when`()
             .post("/auth/login")
 
         response.then()
@@ -68,6 +69,8 @@ class UserApiTest2 {
             responseBody(
                 "accessToken" type STRING means "access-token",
                 "refreshToken" type STRING means "refresh-token",
+                "expirationAccessToken" type STRING means "access-token 유효시간",
+                "expirationRefreshToken" type STRING means "refresh-token 유효시간"
             )
         }
     }
