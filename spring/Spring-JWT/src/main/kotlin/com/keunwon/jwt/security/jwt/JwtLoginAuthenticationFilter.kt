@@ -1,7 +1,6 @@
 package com.keunwon.jwt.security.jwt
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.keunwon.jwt.common.ErrorDto
 import com.keunwon.jwt.config.LogSupport
@@ -26,8 +25,10 @@ import javax.servlet.FilterChain
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
-class JwtLoginAuthenticationFilter(authenticationManager: AuthenticationManager) :
-    UsernamePasswordAuthenticationFilter(authenticationManager) {
+class JwtLoginAuthenticationFilter(
+    authenticationManager: AuthenticationManager,
+    private val objectMapper: ObjectMapper,
+) : UsernamePasswordAuthenticationFilter(authenticationManager) {
 
     init {
         setRequiresAuthenticationRequestMatcher(AntPathRequestMatcher(LOGIN_URL, HttpMethod.POST.name))
@@ -39,33 +40,32 @@ class JwtLoginAuthenticationFilter(authenticationManager: AuthenticationManager)
     }
 
     private fun resolveAuthentication(request: HttpServletRequest): Authentication {
-        val jsonMap = resolveJsonMap(request)
-        val username = jsonMap[SPRING_SECURITY_FORM_USERNAME_KEY] ?: ""
-        val password = jsonMap[SPRING_SECURITY_FORM_PASSWORD_KEY] ?: ""
+        val jsonMap = resolveJsonMap(request).also(this::requiresParams)
+        val username = jsonMap[SPRING_SECURITY_FORM_USERNAME_KEY]!!
+        val password = jsonMap[SPRING_SECURITY_FORM_PASSWORD_KEY]!!
         return UsernamePasswordAuthenticationToken.unauthenticated(username, password)
-            .also(::validationWithThrow)
     }
 
-    private fun validationWithThrow(authentication: Authentication) {
-        val username = authentication.principal as String
-        val password = authentication.credentials as String
-        when {
-            username.isBlank() -> throw UsernameNotFoundException("사용자 명이 비어있거나 존재하지 않습니다.")
-            password.isBlank() -> throw AuthenticationCredentialsNotFoundException("사용자 비밀번호가 비어있거나 존재하지 않습니다.")
+    private fun requiresParams(jsonMap: Map<String, String>) {
+        if (jsonMap[SPRING_SECURITY_FORM_USERNAME_KEY].isNullOrBlank()) {
+            throw UsernameNotFoundException("사용자 명이 비어있거나 존재하지 않습니다.")
+        }
+        if (jsonMap[SPRING_SECURITY_FORM_PASSWORD_KEY].isNullOrBlank()) {
+            throw AuthenticationCredentialsNotFoundException("사용자 비밀번호가 비어있거나 존재하지 않습니다.")
         }
     }
 
     private fun resolveJsonMap(request: HttpServletRequest): Map<String, String> {
         val inputStream = StreamUtils.copyToString(request.inputStream, StandardCharsets.UTF_8)
         val typeRef = jacksonTypeRef<Map<String, String>>()
-        return jacksonObjectMapper().readValue(inputStream, typeRef)
+        return objectMapper.readValue(inputStream, typeRef)
     }
 
     override fun successfulAuthentication(
         request: HttpServletRequest,
         response: HttpServletResponse,
         chain: FilterChain,
-        authResult: Authentication
+        authResult: Authentication,
     ) {
         successHandler.onAuthenticationSuccess(request, response, authResult)
     }
@@ -73,7 +73,7 @@ class JwtLoginAuthenticationFilter(authenticationManager: AuthenticationManager)
     override fun unsuccessfulAuthentication(
         request: HttpServletRequest,
         response: HttpServletResponse,
-        failed: AuthenticationException
+        failed: AuthenticationException,
     ) {
         super.getFailureHandler().onAuthenticationFailure(request, response, failed)
     }
@@ -93,7 +93,7 @@ open class JwtLoginAuthenticationSuccessHandler(
     override fun onAuthenticationSuccess(
         request: HttpServletRequest,
         response: HttpServletResponse,
-        authentication: Authentication
+        authentication: Authentication,
     ) {
         val userToken = jwtProvider.createTokenIssue(authentication)
         saveUserToken(authentication, userToken)
@@ -105,7 +105,7 @@ open class JwtLoginAuthenticationSuccessHandler(
     }
 
     private fun saveUserToken(authentication: Authentication, tokenIssue: TokenIssue) {
-        val id = (authentication.principal as User).id!!
+        val id = (authentication.principal as User).id
         val user = customUserDetailsService.findLoginUser(id)
             .apply { successLogin(tokenIssue.toEntity(id)) }
         customUserDetailsService.save(user)
@@ -121,7 +121,7 @@ open class JwtLoginAuthenticationFailureHandler(
     override fun onAuthenticationFailure(
         request: HttpServletRequest,
         response: HttpServletResponse,
-        exception: AuthenticationException
+        exception: AuthenticationException,
     ) {
         response.apply {
             status = HttpStatus.UNAUTHORIZED.value()

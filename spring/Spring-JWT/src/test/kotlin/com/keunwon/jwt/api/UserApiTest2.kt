@@ -4,9 +4,10 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.keunwon.jwt.STRING
 import com.keunwon.jwt.makeDocument
 import com.keunwon.jwt.security.jwt.JwtLoginAuthenticationFilter
+import com.keunwon.jwt.testObjectMapper
 import com.keunwon.jwt.type
-import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
+import io.mockk.mockkClass
 import io.restassured.http.ContentType
 import io.restassured.module.mockmvc.RestAssuredMockMvc.given
 import org.hamcrest.Matchers.notNullValue
@@ -27,11 +28,10 @@ import org.springframework.test.web.servlet.setup.StandaloneMockMvcBuilder
 class UserApiTest2 {
     lateinit var mockMvc: MockMvc
 
-    @MockK
-    lateinit var userService: UserService
+    private val userService: UserService = mockkClass(UserService::class)
 
     private val authentication = JwtAuthenticationManagerStub()
-    private val customAuthenticationFilter = JwtLoginAuthenticationFilter(authentication).apply {
+    private val customAuthenticationFilter = JwtLoginAuthenticationFilter(authentication, testObjectMapper).apply {
         setAuthenticationSuccessHandler(LoginSuccessHandlerStub())
     }
 

@@ -4,9 +4,9 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.keunwon.jwt.STRING
 import com.keunwon.jwt.TokenProviderFixture.testTokenProvider
 import com.keunwon.jwt.makeDocument
-import com.keunwon.jwt.objectMapper
 import com.keunwon.jwt.security.jwt.JwtLoginAuthenticationFilter
 import com.keunwon.jwt.security.jwt.TokenIssue
+import com.keunwon.jwt.testObjectMapper
 import com.keunwon.jwt.type
 import io.mockk.junit5.MockKExtension
 import io.restassured.module.mockmvc.RestAssuredMockMvc
@@ -48,7 +48,7 @@ import javax.servlet.http.HttpServletResponse
 @ContextConfiguration
 class UserLoginApiTest {
     private val authentication = JwtAuthenticationManagerStub()
-    private val customAuthenticationFilter = JwtLoginAuthenticationFilter(authentication).apply {
+    private val customAuthenticationFilter = JwtLoginAuthenticationFilter(authentication, testObjectMapper).apply {
         setAuthenticationSuccessHandler(LoginSuccessHandlerStub())
     }
 
@@ -114,20 +114,19 @@ class LoginSuccessHandlerStub : AuthenticationSuccessHandler {
     override fun onAuthenticationSuccess(
         request: HttpServletRequest,
         response: HttpServletResponse,
-        authentication: Authentication
+        authentication: Authentication,
     ) {
-        val accessToken = testTokenProvider.generateAccessToken(authentication)
-        val refreshToken = testTokenProvider.generateRefreshToken(authentication)
+        val tokenIssue = testTokenProvider.createTokenIssue(authentication)
         val body = TokenIssue(
-            accessToken = accessToken,
-            refreshToken = refreshToken,
-            expirationAccessToken = testTokenProvider.expirationLocalDateTime(accessToken),
-            expirationRefreshToken = testTokenProvider.expirationLocalDateTime(refreshToken)
+            accessToken = tokenIssue.accessToken,
+            refreshToken = tokenIssue.refreshToken,
+            expirationAccessToken = testTokenProvider.getExpirationLocalDateTime(tokenIssue.accessToken),
+            expirationRefreshToken = testTokenProvider.getExpirationLocalDateTime(tokenIssue.refreshToken)
         )
         response.apply {
             status = HttpStatus.OK.value()
             contentType = MediaType.APPLICATION_JSON_VALUE
-            objectMapper.writeValue(outputStream, body)
+            testObjectMapper.writeValue(outputStream, body)
         }
     }
 }
