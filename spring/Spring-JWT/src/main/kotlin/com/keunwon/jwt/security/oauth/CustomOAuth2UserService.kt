@@ -16,46 +16,36 @@ import org.springframework.security.oauth2.client.userinfo.OAuth2UserService
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User
 import org.springframework.security.oauth2.core.user.OAuth2User
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler
-import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
-import java.util.*
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
-@Component
-class CustomOAuth2UserService(private val userRepository: UserRepository)
-    : OAuth2UserService<OAuth2UserRequest, OAuth2User> {
+open class CustomOAuth2UserService(private val userRepository: UserRepository) :
+    OAuth2UserService<OAuth2UserRequest, OAuth2User> {
 
     @Transactional
     override fun loadUser(userRequest: OAuth2UserRequest): OAuth2User {
         val oAuth2User = defaultOAuth2UserService.loadUser(userRequest)
-        val oAuth2Attributes = oAuthAttributesFactory(userRequest, oAuth2User)
+        val oAuth2Attributes = OAuth2AttributeFactory.create(userRequest, oAuth2User)
         val user = saveOrUpdate(oAuth2Attributes)
         return DefaultOAuth2User(
-            Collections.singleton(SimpleGrantedAuthority(user.role.name)),
+            listOf(SimpleGrantedAuthority(user.role.name)),
             oAuth2Attributes.userProfileAttributes(),
-            "email",
+            "email"
         )
     }
 
     private fun saveOrUpdate(oAuth2Attributes: OAuth2Attributes): User {
         val user = userRepository.findByEmail(oAuth2Attributes.email)
-            ?.apply { this.updateByOauthLogin(oAuth2Attributes) }
+            ?.apply { oAuthLogin(oAuth2Attributes) }
             ?: oAuth2Attributes.toEntity()
         return userRepository.save(user)
     }
 
-    fun oAuthAttributesFactory(
-        userRequest: OAuth2UserRequest,
-        oAuth2User: OAuth2User,
-    ): OAuth2Attributes {
-        val registrationId = userRequest.clientRegistration.registrationId
-        val nameAttributeKey = userRequest.clientRegistration.providerDetails.userInfoEndpoint.userNameAttributeName
-        return when (registrationId){
-            "naver" -> NaverOAuth2Attributes(oAuth2User.attributes, nameAttributeKey)
-            "google" -> GoogleOAuth2Attributes(oAuth2User.attributes, nameAttributeKey)
-            else -> throw IllegalArgumentException("지원하지 않습니다. registrationId: $registrationId")
-        }
+    private fun User.oAuthLogin(oAuth2Attributes: OAuth2Attributes) {
+        this.email = oAuth2Attributes.email
+        this.name = oAuth2Attributes.name
+        this.nickname = oAuth2Attributes.nickname
     }
 
     companion object : LogSupport {
@@ -63,23 +53,21 @@ class CustomOAuth2UserService(private val userRepository: UserRepository)
     }
 }
 
-@Component
-class OAuthAuthenticationSuccessHandler(
-    private val objectMapper: ObjectMapper,
+open class OAuthAuthenticationSuccessHandler(
     private val jwtProvider: JwtProvider,
     private val userRepository: UserRepository,
+    private val objectMapper: ObjectMapper,
 ) : AuthenticationSuccessHandler {
 
     @Transactional
     override fun onAuthenticationSuccess(
         request: HttpServletRequest,
         response: HttpServletResponse,
-        authentication: Authentication
+        authentication: Authentication,
     ) {
         val userToken = jwtProvider.createTokenIssue(authentication)
         val oAuth2User = authentication.principal as OAuth2User
         saveOrUpdateUserToken(userToken, oAuth2User)
-
         response.apply {
             status = HttpStatus.OK.value()
             contentType = MediaType.APPLICATION_JSON_VALUE
@@ -87,9 +75,9 @@ class OAuthAuthenticationSuccessHandler(
         }
     }
 
-    fun saveOrUpdateUserToken(token: TokenIssue, oAuth2User: OAuth2User) {
+    private fun saveOrUpdateUserToken(token: TokenIssue, oAuth2User: OAuth2User) {
         val user = userRepository.findByEmail(oAuth2User.name)!!
-            .apply { successLogin(token.toEntity(id!!)) }
+            .apply { successLogin(token.toEntity(id)) }
         userRepository.save(user)
     }
 }
