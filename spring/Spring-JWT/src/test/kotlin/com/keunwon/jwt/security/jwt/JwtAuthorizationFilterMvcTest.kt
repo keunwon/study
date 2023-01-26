@@ -2,7 +2,9 @@ package com.keunwon.jwt.security.jwt
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.keunwon.jwt.TokenProviderFixture
+import com.keunwon.jwt.TokenProviderFixture.unExpiredDate
 import com.keunwon.jwt.api.UserApi
+import com.keunwon.jwt.domain.UserRole
 import io.mockk.junit5.MockKExtension
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
@@ -11,7 +13,6 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers
@@ -20,7 +21,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPat
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.test.web.servlet.setup.StandaloneMockMvcBuilder
-import java.util.*
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ExtendWith(MockKExtension::class)
@@ -51,13 +51,13 @@ class JwtAuthorizationFilterMvcTest {
     @Test
     fun `토큰 인증 타입(Bearer)을 지정하지 않으면 실패(403) 응답`() {
         // given
-        val authentication = UsernamePasswordAuthenticationToken("홍길동", "password")
-        val token = tokenProvider.generateAccessToken(authentication)
+        val createJwtDto = CreateJwtDto("test-id", UserRole.DEFAULT_ROLES)
+        val accessToken = tokenProvider.generateToken(createJwtDto, unExpiredDate)
 
         // when, then
         mockMvc.perform(
             get("/")
-                .header(HttpHeaders.AUTHORIZATION, token)
+                .header(HttpHeaders.AUTHORIZATION, accessToken)
         ).andExpectAll(
             status().isForbidden,
             content().contentType(MediaType.APPLICATION_JSON),
@@ -86,8 +86,8 @@ class JwtAuthorizationFilterMvcTest {
     @Test
     fun `만료된 토큰을 함께 보내면 실패(403) 응답`() {
         // given
-        val authenticationToken = UsernamePasswordAuthenticationToken("홍길동", "password")
-        val token = tokenProvider.generateToken(authenticationToken, Date((Date().time - 10000)))
+        val createJwtDto = CreateJwtDto("test-id", UserRole.DEFAULT_ROLES)
+        val token = tokenProvider.generateToken(createJwtDto, TokenProviderFixture.expiredDate)
 
         // when, then
         mockMvc.perform(

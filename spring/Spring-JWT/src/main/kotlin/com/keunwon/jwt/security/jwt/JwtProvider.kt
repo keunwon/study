@@ -35,28 +35,22 @@ class JwtProvider(
     }
 
     fun createTokenIssue(authentication: Authentication): TokenIssue {
-        val accessToken = generateAccessToken(authentication)
-        val refreshToken = generateRefreshToken(authentication)
+        val dto = CreateJwtDto(authentication.name, authentication.authorities.map { it.authority })
+        val accessToken = generateToken(dto, jwtProperties.expiredDateByAccessToken)
+        val refreshToken = generateToken(dto, jwtProperties.expirationDateByRefreshToken)
         return TokenIssue(
             accessToken = accessToken,
             refreshToken = refreshToken,
-            expirationAccessToken = expirationLocalDateTime(accessToken),
-            expirationRefreshToken = expirationLocalDateTime(refreshToken),
+            expirationAccessToken = getExpirationLocalDateTime(accessToken),
+            expirationRefreshToken = getExpirationLocalDateTime(refreshToken),
         )
     }
 
-    fun generateAccessToken(authentication: Authentication): String =
-        generateToken(authentication, jwtProperties.expiredDateByAccessToken)
-
-    fun generateRefreshToken(authentication: Authentication): String =
-        generateToken(authentication, jwtProperties.expirationDateByRefreshToken)
-
-    fun generateToken(authentication: Authentication, expiredDate: Date): String {
-        val authorities = authentication.authorities.joinToString(",") { it.authority }
+    fun generateToken(dto: CreateJwtDto, expiredDate: Date): String {
         return Jwts.builder()
             .setIssuer(appName)
-            .setSubject(authentication.name)
-            .claim(ROLE_KEY, authorities)
+            .setSubject(dto.subject)
+            .claim(ROLE_KEY, dto.roles.joinToString(","))
             .signWith(key, SignatureAlgorithm.HS512)
             .setIssuedAt(Date())
             .setExpiration(expiredDate)
@@ -70,19 +64,9 @@ class JwtProvider(
         return UsernamePasswordAuthenticationToken(user, token, authorities)
     }
 
-    fun validationToken(token: String?): Boolean {
-        return try {
-            getJws(token)
-            true
-        } catch (e: Exception) {
-            log.error("> 토큰 검증 중 오류 발생: {}", e.message)
-            false
-        }
-    }
+    fun verifyTokenOrThrownError(token: String?) = getJws(token)
 
-    fun verifyTokenWithThrows(token: String?) = getJws(token)
-
-    fun expirationLocalDateTime(token: String): LocalDateTime {
+    fun getExpirationLocalDateTime(token: String): LocalDateTime {
         return getJws(token)
             .body.expiration.toInstant()
             .atZone(ZoneId.systemDefault())
@@ -100,7 +84,7 @@ class JwtProvider(
         return claims[ROLE_KEY].toString()
             .split(",")
             .dropLastWhile { it.isEmpty() }
-            .map { SimpleGrantedAuthority(it) }
+            .map(::SimpleGrantedAuthority)
             .toList()
     }
 
@@ -108,6 +92,11 @@ class JwtProvider(
         private const val ROLE_KEY = "role"
     }
 }
+
+data class CreateJwtDto(
+    val subject: String,
+    val roles: List<String>,
+)
 
 data class TokenIssue(
     val accessToken: String,

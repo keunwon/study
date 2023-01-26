@@ -59,7 +59,7 @@ abstract class RestDocsSupport {
     }
 }
 
-val objectMapper: ObjectMapper = run {
+val testObjectMapper: ObjectMapper = run {
     val serializer = LocalDateTimeSerializer(DateTimeFormatter.ISO_DATE_TIME)
     val javaTimeModule = JavaTimeModule().apply { addSerializer(serializer) }
     jacksonObjectMapper().registerModule(javaTimeModule)

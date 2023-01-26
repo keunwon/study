@@ -19,64 +19,40 @@ import javax.servlet.http.HttpServletResponse
 
 class JwtAuthorizationFilter(
     private val jwtProvider: JwtProvider,
-    private val objectMapper: ObjectMapper
+    private val objectMapper: ObjectMapper,
 ) : OncePerRequestFilter() {
 
     override fun doFilterInternal(
         request: HttpServletRequest,
         response: HttpServletResponse,
-        filterChain: FilterChain
+        filterChain: FilterChain,
     ) {
-        when (noRequiresAuthorization(request)) {
-            true -> filterChain.doFilter(request, response)
-            false -> process(request, response, filterChain)
-        }
-    }
-
-    private fun process(
-        request: HttpServletRequest,
-        response: HttpServletResponse,
-        filterChain: FilterChain
-    ) {
-        try {
-            verifyHttpHeaders(request)
+        runCatching {
             resolveToken(request).also { token ->
-                jwtProvider.verifyTokenWithThrows(token)
+                jwtProvider.verifyTokenOrThrownError(token)
                 registerSecurityContext(token)
             }
             filterChain.doFilter(request, response)
-        } catch (e: Exception) {
-            log.error("> ${e.message}, 요청 url: ${request.servletPath}")
-            errorResponseBody(response, e)
+        }.onFailure {
+            log.error("> ${it.message}, Request-url: ${request.servletPath}")
+            errorResponseBody(response, it)
         }
-    }
-
-    private fun noRequiresAuthorization(request: HttpServletRequest): Boolean {
-        return JwtLoginAuthenticationFilter.LOGIN_URL == request.servletPath
     }
 
     private fun registerSecurityContext(token: String) {
         SecurityContextHolder.getContext().authentication = jwtProvider.getAuthentication(token)
     }
 
-    private fun verifyHttpHeaders(request: HttpServletRequest) {
-        val headerValue = request.getHeader(HttpHeaders.AUTHORIZATION)
-            ?: throw JwtException("토큰이 비어있거나 존재하지 않습니다.")
-        if (!headerValue.startsWith(AUTHORIZATION_TYPE)) throw JwtException("지원하지 않는 토큰 인가 타입입니다.")
-    }
-
     private fun resolveToken(request: HttpServletRequest): String {
-        val token = request.getHeader(HttpHeaders.AUTHORIZATION) ?: ""
-        return if (token.startsWith(AUTHORIZATION_TYPE)) token.substring(AUTHORIZATION_TYPE.length) else token
+        val token = request.getHeader(HttpHeaders.AUTHORIZATION) ?: throw JwtException("토큰이 비어있거나 존재하지 않습니다.")
+        if (!token.startsWith(AUTHORIZATION_TYPE)) throw JwtException("지원하지 않는 토큰 인가 타입입니다.")
+        return request.getHeader(HttpHeaders.AUTHORIZATION).substring(AUTHORIZATION_TYPE.length)
     }
 
     private fun errorResponseBody(response: HttpServletResponse, error: Throwable) {
         val httpStatus = HttpStatus.FORBIDDEN.value()
         val defaultErrorMessage = error.message ?: "토큰 검증 중 알 수 없는 오류가 발생하였습니다."
-        val body = ErrorDto(
-            code = httpStatus,
-            message = errorMessages[error::class] ?: defaultErrorMessage
-        )
+        val body = ErrorDto(code = httpStatus, message = errorMessages[error::class] ?: defaultErrorMessage)
         response.apply {
             status = httpStatus
             contentType = MediaType.APPLICATION_JSON_VALUE

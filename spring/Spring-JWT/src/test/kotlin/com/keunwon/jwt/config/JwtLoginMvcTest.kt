@@ -4,9 +4,11 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.keunwon.jwt.domain.User
 import com.keunwon.jwt.domain.UserRepository
 import com.keunwon.jwt.domain.UserRole
+import org.assertj.core.api.Assertions.assertThat
 import org.hamcrest.Matchers.notNullValue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
+import org.junit.jupiter.api.assertAll
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
@@ -33,6 +35,7 @@ import org.springframework.transaction.annotation.Transactional
 class JwtLoginMvcTest {
     @Autowired
     lateinit var mockMvc: MockMvc
+
     @Autowired
     lateinit var userRepository: UserRepository
 
@@ -116,7 +119,7 @@ class JwtLoginMvcTest {
             status().isUnauthorized,
             content().contentType(MediaType.APPLICATION_JSON),
             jsonPath("$.code").value("401"),
-            jsonPath("$.message").value("사용자를 찾을 수 없습니다. 사용자: $username")
+            jsonPath("$.message").value("존재하지 않는 사용자입니다. 사용자: $username")
         )
     }
 
@@ -172,6 +175,12 @@ class JwtLoginMvcTest {
             jsonPath("$.code").value("401"),
             jsonPath("$.message").value("사용자 비밀번호가 일치하지 않습니다. 사용자: $username")
         )
+
+        val user = userRepository.findByUsername(username)!!
+        assertAll({
+            assertThat(user.isActivated).isFalse
+            assertThat(user.failCount).isEqualTo(11)
+        })
     }
 
     companion object {
