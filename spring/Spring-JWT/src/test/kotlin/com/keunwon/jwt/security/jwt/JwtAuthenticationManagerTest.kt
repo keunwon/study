@@ -8,15 +8,15 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.mockkClass
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Assertions.assertThrowsExactly
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.security.authentication.BadCredentialsException
-import org.springframework.security.authentication.InternalAuthenticationServiceException
 import org.springframework.security.authentication.LockedException
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -54,11 +54,7 @@ internal class JwtAuthenticationManagerTest {
         every { jwtUserDetailsService.findByAuthentication(authenticationToken) } returns null
 
         // when, then
-        assertThrowsExactly(
-            InternalAuthenticationServiceException::class.java,
-            { jwtAuthenticationManager.authenticate(authenticationToken) },
-            "사용자를 찾을 수 없습니다: 사용자: ${authenticationToken.name}"
-        )
+        thenThrownBy(UsernameNotFoundException::class.java)
     }
 
     @Test
@@ -69,11 +65,7 @@ internal class JwtAuthenticationManagerTest {
         every { jwtUserDetailsService.save(any()) } returns mockkClass(User::class, relaxed = true)
 
         // when, then
-        assertThrowsExactly(
-            BadCredentialsException::class.java,
-            { jwtAuthenticationManager.authenticate(authenticationToken) },
-            "사용자 비밀번호가 일치하지 않습니다. 사용자: ${authenticationToken.name}"
-        )
+        thenThrownBy(BadCredentialsException::class.java)
     }
 
     @Test
@@ -83,11 +75,12 @@ internal class JwtAuthenticationManagerTest {
                 generatedUser(authenticationToken.name, authenticationToken.credentials as String, false)
 
         // when, then
-        assertThrowsExactly(
-            LockedException::class.java,
-            { jwtAuthenticationManager.authenticate(authenticationToken) },
-            "사용자 계정이 잠겨있습니다. 사용자: ${authenticationToken.name}"
-        )
+        thenThrownBy(LockedException::class.java)
+    }
+
+    private fun thenThrownBy(exception: Class<*>) {
+        assertThatThrownBy { jwtAuthenticationManager.authenticate(authenticationToken) }
+            .isInstanceOf(exception)
     }
 
     companion object {
