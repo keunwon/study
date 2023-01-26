@@ -22,8 +22,8 @@ import org.springframework.restdocs.RestDocumentationExtension
 
 @ExtendWith(RestDocumentationExtension::class)
 class UserApiTest : RestDocsSupport() {
-    lateinit var mockMvc: MockMvcRequestSpecification
-    val userService = mockk<UserService>()
+    private lateinit var mockMvc: MockMvcRequestSpecification
+    private val userService = mockk<UserService>()
 
     @BeforeEach
     fun setup(restDocumentation: RestDocumentationContextProvider) {
@@ -38,7 +38,8 @@ class UserApiTest : RestDocsSupport() {
             password = userSignDto.password,
             nickname = userSignDto.nickname,
             role = UserRole.USER,
-        ).apply { id = 1L }
+            id = 1L,
+        )
 
         val response = mockMvc
             .contentType(ContentType.JSON)

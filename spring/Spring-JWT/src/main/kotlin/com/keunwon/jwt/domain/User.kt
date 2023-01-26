@@ -2,7 +2,6 @@ package com.keunwon.jwt.domain
 
 import com.keunwon.jwt.common.jpa.convert.BooleanConverter
 import com.keunwon.jwt.security.jwt.AbstractCustomUser
-import com.keunwon.jwt.security.oauth.OAuth2Attributes
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.LastModifiedDate
 import org.springframework.security.core.GrantedAuthority
@@ -54,44 +53,27 @@ class User(
     @Column(name = "role", length = 10)
     @Enumerated(EnumType.STRING)
     override var role: UserRole,
-) : AbstractCustomUser<Long>() {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    override var id: Long? = null
-
-    @CreatedDate
-    var createdAt = LocalDateTime.now()
-
-    @LastModifiedDate
-    var updateAt = LocalDateTime.now()
+    override val id: Long = 0,
+) : AbstractCustomUser<Long>() {
 
     @OneToOne(fetch = FetchType.LAZY, cascade = [CascadeType.PERSIST, CascadeType.MERGE])
     @JoinColumn(name = "token_id")
     var token: UserToken? = null
 
+    @CreatedDate
+    @Column(nullable = false, updatable = false)
+    var createdAt = LocalDateTime.now()
+
+    @LastModifiedDate
+    @Column(nullable = false)
+    var modifiedAt = LocalDateTime.now()
+
     fun successLogin(userToken: UserToken) {
         this.token = this.token?.apply { updateToken(userToken) } ?: userToken
         this.failCount = 0
-    }
-
-    fun failLogin() {
-        this.failCount++
-        if (10 < failCount) isActivated = false
-    }
-
-    fun updateByOauthLogin(attributes: OAuth2Attributes) {
-        this.name = attributes.name
-        this.nickname = attributes.nickname
-    }
-
-    companion object {
-        fun ofOAuth2(name: String, nickname: String, email: String) = User(
-            name = name,
-            nickname = nickname,
-            email = email,
-            loginType = LoginType.OAUTH,
-            role = UserRole.USER,
-        )
     }
 }
 
@@ -99,6 +81,10 @@ enum class UserRole(val title: String) {
     ADMIN("관리자"),
     USER("사용자"),
     GUEST("게스트");
+
+    companion object {
+        val DEFAULT_ROLES = listOf(USER.name)
+    }
 }
 
 enum class LoginType(val title: String) {
