@@ -9,7 +9,7 @@ Content-Type: application/json
 
 > {%
 client.global.set("accessToken", response.body.accessToken)
-client.global.set("refreshToken", response.body.responseToken)
+client.global.set("refreshToken", response.body.refreshToken)
  %}
 
 ### 2. home 조회
