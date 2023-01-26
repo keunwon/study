@@ -1,5 +1,6 @@
 package com.keunwon.jwt.domain
 
+import com.keunwon.jwt.common.jpa.BaseEntity
 import java.time.LocalDateTime
 import javax.persistence.Column
 import javax.persistence.Entity
@@ -23,11 +24,12 @@ class UserToken(
 
     @Column(name = "expired_refresh_token")
     var expiredRefreshToken: LocalDateTime,
-) {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "token_id")
-    var id: Long? = null
+    val id: Long = 0,
+) : BaseEntity() {
 
     fun updateToken(userToken: UserToken) {
         this.accessToken = userToken.accessToken
