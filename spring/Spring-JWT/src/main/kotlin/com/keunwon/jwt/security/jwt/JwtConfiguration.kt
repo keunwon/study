@@ -1,38 +1,36 @@
 package com.keunwon.jwt.security.jwt
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.keunwon.jwt.config.auth.JwtUserDetailsServiceImpl
 import com.keunwon.jwt.domain.User
 import com.keunwon.jwt.domain.UserRepository
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
+import org.springframework.security.web.authentication.AuthenticationFailureHandler
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler
 
 @Configuration
-class JwtConfiguration {
+class JwtConfiguration(
+    private val userRepository: UserRepository,
+    private val jwtProvider: JwtProvider,
+    private val objectMapper: ObjectMapper,
+) {
 
     @Bean
-    fun customUserDetailsServiceImpl(userRepository: UserRepository) =
-        JwtUserDetailsServiceImpl(userRepository)
+    fun jwtUserDetailsService(): JwtUserDetailsService<User, Long> = JwtUserDetailsServiceImpl(userRepository)
 
     @Bean
-    fun jwtAuthenticationManager(
-        jwtUserDetailsService: JwtUserDetailsService<User, Long>,
-        passwordEncoder: PasswordEncoder,
-    ) : JwtAuthenticationManager = JwtAuthenticationManager(jwtUserDetailsService, passwordEncoder)
+    fun jwtAuthenticationManager(): AuthenticationManager =
+        JwtAuthenticationManager(jwtUserDetailsService(), passwordEncoder())
 
     @Bean
-    fun customAuthenticationSuccessHandler(
-        jwtProvider: JwtProvider,
-        customUserDetailsServiceImpl: JwtUserDetailsServiceImpl,
-        objectMapper: ObjectMapper,
-    ): JwtLoginAuthenticationSuccessHandler =
-        JwtLoginAuthenticationSuccessHandler(jwtProvider, customUserDetailsServiceImpl, objectMapper)
+    fun jwtLoginAuthenticationSuccessHandler(): AuthenticationSuccessHandler =
+        JwtLoginAuthenticationSuccessHandler(jwtProvider, jwtUserDetailsService(), objectMapper)
 
     @Bean
-    fun customAuthenticationFailureHandler(
-        customUserDetailsServiceImpl: JwtUserDetailsServiceImpl, objectMapper: ObjectMapper) =
+    fun jwtLoginAuthenticationFailureHandler(): AuthenticationFailureHandler =
         JwtLoginAuthenticationFailureHandler(objectMapper)
 
     @Bean

@@ -1,14 +1,12 @@
-package com.keunwon.jwt.config.auth
+package com.keunwon.jwt.config.web
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.keunwon.jwt.security.jwt.JwtAuthenticationManager
 import com.keunwon.jwt.security.jwt.JwtAuthorizationFilter
-import com.keunwon.jwt.security.jwt.JwtLoginAuthenticationFailureHandler
+import com.keunwon.jwt.security.jwt.JwtConfiguration
 import com.keunwon.jwt.security.jwt.JwtLoginAuthenticationFilter
-import com.keunwon.jwt.security.jwt.JwtLoginAuthenticationSuccessHandler
 import com.keunwon.jwt.security.jwt.JwtProvider
-import com.keunwon.jwt.security.oauth.CustomOAuth2UserService
-import com.keunwon.jwt.security.oauth.OAuthAuthenticationSuccessHandler
+import com.keunwon.jwt.security.oauth.OAuthConfiguration
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -20,44 +18,39 @@ import org.springframework.security.config.web.servlet.invoke
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 
-
 @EnableWebSecurity
 @Configuration
-class SecurityConfiguration {
-
+class WebSecurityConfiguration(
+    private val jwtConfiguration: JwtConfiguration,
+    private val oAuthConfiguration: OAuthConfiguration,
+    private val objectMapper: ObjectMapper,
+) {
     @Bean
-    fun permitAllFilterChain(
-        http: HttpSecurity,
-        authenticationManager: JwtAuthenticationManager,
-        jwtLoginAuthenticationSuccessHandler: JwtLoginAuthenticationSuccessHandler,
-        jwtLoginAuthenticationFailureHandler: JwtLoginAuthenticationFailureHandler,
-        oAuth2UserService: CustomOAuth2UserService,
-        oAuthAuthenticationSuccessHandler: OAuthAuthenticationSuccessHandler,
-    ): SecurityFilterChain {
+    fun permitAllFilterChain(http: HttpSecurity): SecurityFilterChain {
         http {
             defaultSettings()
 
             securityMatcher("/resources/**")
             securityMatcher("/auth/sign", "/auth/login")
             securityMatcher("/oauth2/**", "/login/**")
+            securityMatcher("/auth/login")
             securityMatcher(PathRequest.toH2Console())
             securityMatcher(PathRequest.toStaticResources().atCommonLocations())
 
             authorizeHttpRequests {
-                authorize("/auth/login", permitAll)
                 authorize(anyRequest, permitAll)
             }
 
             addFilterBefore<UsernamePasswordAuthenticationFilter>(
-                JwtLoginAuthenticationFilter(authenticationManager).apply {
-                    setAuthenticationSuccessHandler(jwtLoginAuthenticationSuccessHandler)
-                    setAuthenticationFailureHandler(jwtLoginAuthenticationFailureHandler)
+                JwtLoginAuthenticationFilter(jwtConfiguration.jwtAuthenticationManager(), objectMapper).apply {
+                    setAuthenticationSuccessHandler(jwtConfiguration.jwtLoginAuthenticationSuccessHandler())
+                    setAuthenticationFailureHandler(jwtConfiguration.jwtLoginAuthenticationFailureHandler())
                 })
 
             oauth2Login {
-                authenticationSuccessHandler = oAuthAuthenticationSuccessHandler
+                authenticationSuccessHandler = oAuthConfiguration.oAuthAuthenticationSuccessHandler()
                 userInfoEndpoint {
-                    userService = oAuth2UserService
+                    userService = oAuthConfiguration.customOAuth2UserService()
                 }
             }
         }
@@ -91,7 +84,7 @@ class SecurityConfiguration {
         return http.build()
     }
 
-    fun HttpSecurityDsl.defaultSettings() {
+    private fun HttpSecurityDsl.defaultSettings() {
         csrf { disable() }
         httpBasic { disable() }
         logout { disable() }
