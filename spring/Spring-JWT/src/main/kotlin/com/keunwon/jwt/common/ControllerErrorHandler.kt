@@ -3,6 +3,7 @@ package com.keunwon.jwt.common
 import com.fasterxml.jackson.databind.exc.InvalidFormatException
 import com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException
 import com.keunwon.jwt.config.LogSupport
+import io.jsonwebtoken.ExpiredJwtException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.http.converter.HttpMessageNotReadableException
@@ -18,9 +19,20 @@ class ControllerErrorHandler {
     @ExceptionHandler(MethodArgumentNotValidException::class)
     fun handleMethodArgumentNotValidException(ex: MethodArgumentNotValidException): ResponseEntity<ErrorDto> {
         val httpStatus = HttpStatus.BAD_REQUEST
-        val errorMessages = ex.fieldErrors.map { "${it.field}: ${it.defaultMessage}" }
+        val errorMessages = ex.fieldErrors.map { "${it.field} ${it.defaultMessage}" }
         return ResponseEntity.status(httpStatus)
-            .body(ErrorDto(httpStatus.value(), "사용자가 요청한 파라미터 정보가 유효하지 않습니다.", errorMessages))
+            .body(ErrorDto(httpStatus.value(), "파라미터가 유효하지 않습니다", errorMessages))
+    }
+
+    @ExceptionHandler(IllegalArgumentException::class)
+    fun handleIllegalArgumentException(ex: IllegalArgumentException): ResponseEntity<ErrorDto> {
+        return createResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, ex)
+    }
+
+    @ExceptionHandler(ExpiredJwtException::class)
+    fun handleExpiredJwtException(ex: ExpiredJwtException): ResponseEntity<ErrorDto> {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body(ErrorDto(HttpStatus.BAD_REQUEST.value(), "만료된 토큰을 사용하였습니다"))
     }
 
     @ExceptionHandler(Exception::class)
