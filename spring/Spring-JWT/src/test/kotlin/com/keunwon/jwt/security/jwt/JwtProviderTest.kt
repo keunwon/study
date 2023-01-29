@@ -11,8 +11,6 @@ import org.junit.jupiter.api.assertAll
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
-import org.springframework.security.core.authority.SimpleGrantedAuthority
-import org.springframework.security.core.userdetails.User
 
 internal class JwtProviderTest {
 
@@ -53,24 +51,21 @@ internal class JwtProviderTest {
     }
 
     @Test
-    fun `문자열 토큰을 Authentication 변환`() {
+    fun `문자열 토큰을 Claims 반환합니다`() {
         // given
         val token = testTokenProvider.generateToken(createJwtDto, unExpiredDate)
 
         // when
-        val auth = testTokenProvider.getAuthentication(token)
+        val claims = testTokenProvider.getBody(token)
 
         // then
         assertAll({
-            assertThat(auth.principal).isEqualTo(user)
-            assertThat(auth.credentials).isEqualTo(token)
-            assertThat(auth.authorities.joinToString { it.authority })
-                .isEqualTo(user.authorities.joinToString { it.authority })
+            assertThat(claims.subject).isEqualTo(createJwtDto.subject)
+            assertThat(testTokenProvider.getRoles(claims)).isEqualTo(createJwtDto.roles)
         })
     }
 
     companion object {
         private val createJwtDto = CreateJwtDto("test-id", UserRole.DEFAULT_ROLES)
-        private val user = User(createJwtDto.subject, "", listOf(SimpleGrantedAuthority("USER")))
     }
 }

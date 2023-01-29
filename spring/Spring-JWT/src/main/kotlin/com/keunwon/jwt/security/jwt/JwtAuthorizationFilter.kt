@@ -11,6 +11,8 @@ import io.jsonwebtoken.security.SignatureException
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.filter.OncePerRequestFilter
 import javax.servlet.FilterChain
@@ -40,7 +42,10 @@ class JwtAuthorizationFilter(
     }
 
     private fun registerSecurityContext(token: String) {
-        SecurityContextHolder.getContext().authentication = jwtProvider.getAuthentication(token)
+        val claims = jwtProvider.getBody(token)
+        val roles = jwtProvider.getRoles(claims).map(::SimpleGrantedAuthority)
+        SecurityContextHolder.getContext().authentication =
+            UsernamePasswordAuthenticationToken.authenticated(claims, "", roles)
     }
 
     private fun resolveToken(request: HttpServletRequest): String {
