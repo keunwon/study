@@ -116,7 +116,7 @@ class LoginSuccessHandlerStub : AuthenticationSuccessHandler {
         response: HttpServletResponse,
         authentication: Authentication,
     ) {
-        val tokenIssue = testTokenProvider.createTokenIssue(authentication)
+        val tokenIssue = testTokenProvider.generateLoginSuccessToken(authentication)
         val body = TokenIssue(
             accessToken = tokenIssue.accessToken,
             refreshToken = tokenIssue.refreshToken,

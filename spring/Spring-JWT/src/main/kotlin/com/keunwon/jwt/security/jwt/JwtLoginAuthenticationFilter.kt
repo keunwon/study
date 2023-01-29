@@ -95,7 +95,7 @@ open class JwtLoginAuthenticationSuccessHandler(
         response: HttpServletResponse,
         authentication: Authentication,
     ) {
-        val userToken = jwtProvider.createTokenIssue(authentication)
+        val userToken = jwtProvider.generateLoginSuccessToken(authentication)
         saveUserToken(authentication, userToken)
         response.apply {
             status = HttpStatus.OK.value()
@@ -106,9 +106,7 @@ open class JwtLoginAuthenticationSuccessHandler(
 
     private fun saveUserToken(authentication: Authentication, tokenIssue: TokenIssue) {
         val id = (authentication.principal as User).id
-        val user = customUserDetailsService.findLoginUser(id)
-            .apply { successLogin(tokenIssue.toEntity(id)) }
-        customUserDetailsService.save(user)
+        customUserDetailsService.findLoginUser(id).apply { successLogin(tokenIssue.toEntity(id)) }
     }
 
     companion object : LogSupport

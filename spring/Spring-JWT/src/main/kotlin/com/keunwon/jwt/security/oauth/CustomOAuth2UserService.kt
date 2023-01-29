@@ -65,7 +65,7 @@ open class OAuthAuthenticationSuccessHandler(
         response: HttpServletResponse,
         authentication: Authentication,
     ) {
-        val userToken = jwtProvider.createTokenIssue(authentication)
+        val userToken = jwtProvider.generateLoginSuccessToken(authentication)
         val oAuth2User = authentication.principal as OAuth2User
         saveOrUpdateUserToken(userToken, oAuth2User)
         response.apply {
