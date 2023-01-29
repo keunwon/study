@@ -13,14 +13,8 @@ class UserToken(
     @Column(name = "user_id")
     val userId: Long,
 
-    @Column(name = "access_token", columnDefinition = "TEXT")
-    var accessToken: String,
-
-    @Column(name = "refresh_token", columnDefinition = "TEXT")
+    @Column(name = "refresh_token")
     var refreshToken: String,
-
-    @Column(name = "expired_access_token")
-    var expiredAccessToken: LocalDateTime,
 
     @Column(name = "expired_refresh_token")
     var expiredRefreshToken: LocalDateTime,
@@ -32,9 +26,7 @@ class UserToken(
 ) : BaseEntity() {
 
     fun updateToken(userToken: UserToken) {
-        this.accessToken = userToken.accessToken
         this.refreshToken = userToken.refreshToken
-        this.expiredAccessToken = userToken.expiredAccessToken
         this.expiredRefreshToken = userToken.expiredRefreshToken
     }
 }
