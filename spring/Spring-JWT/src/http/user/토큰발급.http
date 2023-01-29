@@ -1,0 +1,22 @@
+### 1. 사용자 로그인 토큰 발급(accessToken & refreshToken)
+POST {{host}}/auth/login
+Content-Type: application/json
+
+{
+  "username": "{{username}}",
+  "password": "{{password}}"
+}
+
+> {%
+client.global.set("accessToken", response.body.accessToken)
+client.global.set("refreshToken", response.body.refreshToken)
+ %}
+
+### 2. Refresh Token을 사용하여 AcessToken 발급
+POST {{host}}/auth/refreshToken
+Content-Type: application/json
+
+{
+  "username": "{{username}}",
+  "refreshToken": "{{password}}"
+}
