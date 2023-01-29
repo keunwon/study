@@ -1,7 +1,6 @@
 package com.keunwon.jwt.config.web
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.keunwon.jwt.security.jwt.JwtAuthenticationManager
 import com.keunwon.jwt.security.jwt.JwtAuthorizationFilter
 import com.keunwon.jwt.security.jwt.JwtConfiguration
 import com.keunwon.jwt.security.jwt.JwtLoginAuthenticationFilter
@@ -31,9 +30,8 @@ class WebSecurityConfiguration(
             defaultSettings()
 
             securityMatcher("/resources/**")
-            securityMatcher("/auth/sign", "/auth/login")
+            securityMatcher("/auth/sign", "/auth/login", "/auth/refreshToken")
             securityMatcher("/oauth2/**", "/login/**")
-            securityMatcher("/auth/login")
             securityMatcher(PathRequest.toH2Console())
             securityMatcher(PathRequest.toStaticResources().atCommonLocations())
 
@@ -58,12 +56,7 @@ class WebSecurityConfiguration(
     }
 
     @Bean
-    fun jwtFilterChain(
-        http: HttpSecurity,
-        authenticationManager: JwtAuthenticationManager,
-        jwtProvider: JwtProvider,
-        objectMapper: ObjectMapper,
-    ): SecurityFilterChain {
+    fun jwtFilterChain(http: HttpSecurity, jwtProvider: JwtProvider): SecurityFilterChain {
         http {
             defaultSettings()
 
