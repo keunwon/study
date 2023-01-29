@@ -25,7 +25,7 @@ import org.springframework.test.web.servlet.setup.StandaloneMockMvcBuilder
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ExtendWith(RestDocumentationExtension::class, MockKExtension::class)
-class UserApiTest2 {
+class UserSignApiTest2 {
     lateinit var mockMvc: MockMvc
 
     private val userService: UserService = mockkClass(UserService::class)
@@ -37,7 +37,7 @@ class UserApiTest2 {
 
     @BeforeEach
     fun setup(restDocumentation: RestDocumentationContextProvider) {
-        mockMvc = MockMvcBuilders.standaloneSetup(UserApi(userService))
+        mockMvc = MockMvcBuilders.standaloneSetup(UserSignApi(userService))
             .apply<StandaloneMockMvcBuilder>(
                 documentationConfiguration(restDocumentation)
             )

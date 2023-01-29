@@ -21,13 +21,13 @@ import org.springframework.restdocs.RestDocumentationContextProvider
 import org.springframework.restdocs.RestDocumentationExtension
 
 @ExtendWith(RestDocumentationExtension::class)
-class UserApiTest : RestDocsSupport() {
+class UserSignApiTest : RestDocsSupport() {
     private lateinit var mockMvc: MockMvcRequestSpecification
     private val userService = mockk<UserService>()
 
     @BeforeEach
     fun setup(restDocumentation: RestDocumentationContextProvider) {
-        mockMvc = mockMvc(UserApi(userService), restDocumentation)
+        mockMvc = mockMvc(UserSignApi(userService), restDocumentation)
     }
 
     @Test
