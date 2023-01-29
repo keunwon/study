@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.keunwon.jwt.common.ControllerErrorHandler
 import io.restassured.module.mockmvc.RestAssuredMockMvc
 import io.restassured.module.mockmvc.specification.MockMvcRequestSpecification
 import org.springframework.restdocs.RestDocumentationContextProvider
@@ -41,6 +42,7 @@ abstract class RestDocsSupport {
                     .withRequestDefaults(prettyPrint())
                     .withResponseDefaults(prettyPrint())
             )
+            .setControllerAdvice(ControllerErrorHandler())
             .build()
     }
 
@@ -64,3 +66,5 @@ val testObjectMapper: ObjectMapper = run {
     val javaTimeModule = JavaTimeModule().apply { addSerializer(serializer) }
     jacksonObjectMapper().registerModule(javaTimeModule)
 }
+
+fun <T> toJson(value: T): String = testObjectMapper.writeValueAsString(value)
