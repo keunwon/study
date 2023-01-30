@@ -18,5 +18,5 @@ Content-Type: application/json
 
 {
   "username": "{{username}}",
-  "refreshToken": "{{password}}"
+  "refreshToken": "{{refreshToken}}"
 }

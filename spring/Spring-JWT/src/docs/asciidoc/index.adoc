@@ -87,3 +87,20 @@ include::{snippets}/사용자 로그인/response-fields.adoc[]
 
 Response Body::
 include::{snippets}/사용자 로그인/response-body.adoc[]
+
+=== 2.3. accessToken 재발급
+
+Request Fields::
+include::{snippets}/accessToken 재발급/response-fields.adoc[]
+
+Request CURL::
+include::{snippets}/accessToken 재발급/curl-request.adoc[]
+
+Request HTTP::
+include::{snippets}/accessToken 재발급/http-request.adoc[]
+
+Response Fields::
+include::{snippets}/accessToken 재발급/response-fields.adoc[]
+
+Response Body::
+include::{snippets}/accessToken 재발급/response-body.adoc[]
