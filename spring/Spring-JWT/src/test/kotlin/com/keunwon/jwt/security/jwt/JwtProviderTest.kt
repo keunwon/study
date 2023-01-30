@@ -66,6 +66,6 @@ internal class JwtProviderTest {
     }
 
     companion object {
-        private val createJwtDto = CreateJwtDto("test-id", UserRole.DEFAULT_ROLES)
+        private val createJwtDto = CreateTokenRequest("test-id", UserRole.DEFAULT_ROLES)
     }
 }

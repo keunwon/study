@@ -4,8 +4,9 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.keunwon.jwt.STRING
 import com.keunwon.jwt.TokenProviderFixture.testTokenProvider
 import com.keunwon.jwt.makeDocument
+import com.keunwon.jwt.security.jwt.CreateTokenRequest
 import com.keunwon.jwt.security.jwt.JwtLoginAuthenticationFilter
-import com.keunwon.jwt.security.jwt.TokenIssue
+import com.keunwon.jwt.security.jwt.JwtResult
 import com.keunwon.jwt.testObjectMapper
 import com.keunwon.jwt.type
 import io.mockk.junit5.MockKExtension
@@ -75,7 +76,7 @@ class UserLoginApiTest {
         // given, when
         val login = mapOf("username" to "홍길동", "password" to "password")
         val response = mockMvc
-            .accept(MediaType.APPLICATION_JSON_VALUE)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
             .body(jacksonObjectMapper().writeValueAsString(login))
             .post("/auth/login")
 
@@ -116,8 +117,8 @@ class LoginSuccessHandlerStub : AuthenticationSuccessHandler {
         response: HttpServletResponse,
         authentication: Authentication,
     ) {
-        val tokenIssue = testTokenProvider.generateLoginSuccessToken(authentication)
-        val body = TokenIssue(
+        val tokenIssue = testTokenProvider.generateLoginSuccessToken(authentication.toCreateTokenRequest())
+        val body = JwtResult(
             accessToken = tokenIssue.accessToken,
             refreshToken = tokenIssue.refreshToken,
             expirationAccessToken = testTokenProvider.getExpirationLocalDateTime(tokenIssue.accessToken),
@@ -129,4 +130,7 @@ class LoginSuccessHandlerStub : AuthenticationSuccessHandler {
             testObjectMapper.writeValue(outputStream, body)
         }
     }
+
+    private fun Authentication.toCreateTokenRequest(): CreateTokenRequest =
+        CreateTokenRequest(name, authorities.map { it.authority })
 }

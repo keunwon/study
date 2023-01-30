@@ -80,6 +80,7 @@ class JwtLoginMvcTest {
         // when, then
         mockMvc.perform(
             post(loginUrl)
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(login))
         ).andExpectAll(
             status().isUnauthorized,
@@ -97,6 +98,7 @@ class JwtLoginMvcTest {
         // when, then
         mockMvc.perform(
             post(loginUrl)
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(login))
         ).andExpectAll(
             status().isUnauthorized,
@@ -114,6 +116,7 @@ class JwtLoginMvcTest {
         // when, then
         mockMvc.perform(
             post(loginUrl)
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(login))
         ).andExpectAll(
             status().isUnauthorized,
@@ -132,6 +135,7 @@ class JwtLoginMvcTest {
         // when, then
         mockMvc.perform(
             post(loginUrl)
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(login))
         ).andExpectAll(
             status().isUnauthorized,
@@ -150,6 +154,7 @@ class JwtLoginMvcTest {
         // when, then
         mockMvc.perform(
             post(loginUrl)
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(login))
         ).andExpectAll(
             status().isUnauthorized,
@@ -168,6 +173,7 @@ class JwtLoginMvcTest {
         // when, then
         mockMvc.perform(
             post(loginUrl)
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(login))
         ).andExpectAll(
             status().isUnauthorized,

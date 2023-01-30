@@ -4,8 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.keunwon.jwt.config.LogSupport
 import com.keunwon.jwt.domain.User
 import com.keunwon.jwt.domain.UserRepository
+import com.keunwon.jwt.domain.UserTokenRepository
+import com.keunwon.jwt.security.jwt.CreateTokenRequest
 import com.keunwon.jwt.security.jwt.JwtProvider
-import com.keunwon.jwt.security.jwt.TokenIssue
+import com.keunwon.jwt.security.jwt.JwtResult
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.security.core.Authentication
@@ -16,14 +18,12 @@ import org.springframework.security.oauth2.client.userinfo.OAuth2UserService
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User
 import org.springframework.security.oauth2.core.user.OAuth2User
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler
-import org.springframework.transaction.annotation.Transactional
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
-open class CustomOAuth2UserService(private val userRepository: UserRepository) :
+class CustomOAuth2UserService(private val userRepository: UserRepository) :
     OAuth2UserService<OAuth2UserRequest, OAuth2User> {
 
-    @Transactional
     override fun loadUser(userRequest: OAuth2UserRequest): OAuth2User {
         val oAuth2User = defaultOAuth2UserService.loadUser(userRequest)
         val oAuth2Attributes = OAuth2AttributeFactory.create(userRequest, oAuth2User)
@@ -53,31 +53,33 @@ open class CustomOAuth2UserService(private val userRepository: UserRepository) :
     }
 }
 
-open class OAuthAuthenticationSuccessHandler(
+class OAuthAuthenticationSuccessHandler(
     private val jwtProvider: JwtProvider,
     private val userRepository: UserRepository,
+    private val userTokenRepository: UserTokenRepository,
     private val objectMapper: ObjectMapper,
 ) : AuthenticationSuccessHandler {
 
-    @Transactional
     override fun onAuthenticationSuccess(
         request: HttpServletRequest,
         response: HttpServletResponse,
         authentication: Authentication,
     ) {
-        val userToken = jwtProvider.generateLoginSuccessToken(authentication)
+        val jwtResult = jwtProvider.generateLoginSuccessToken(CreateTokenRequest.from(authentication))
         val oAuth2User = authentication.principal as OAuth2User
-        saveOrUpdateUserToken(userToken, oAuth2User)
+        saveOrUpdateUserToken(jwtResult, oAuth2User)
         response.apply {
             status = HttpStatus.OK.value()
             contentType = MediaType.APPLICATION_JSON_VALUE
-            objectMapper.writeValue(outputStream, userToken)
+            objectMapper.writeValue(outputStream, jwtResult)
         }
     }
 
-    private fun saveOrUpdateUserToken(token: TokenIssue, oAuth2User: OAuth2User) {
+    private fun saveOrUpdateUserToken(token: JwtResult, oAuth2User: OAuth2User) {
         val user = userRepository.findByEmail(oAuth2User.name)!!
-            .apply { successLogin(token.toEntity(id)) }
-        userRepository.save(user)
+        val userToken = userTokenRepository.findByUserId(user.id)
+            ?.apply { updateToken(token.toEntity(user.id)) }
+            ?: token.toEntity(user.id)
+        userTokenRepository.save(userToken)
     }
 }

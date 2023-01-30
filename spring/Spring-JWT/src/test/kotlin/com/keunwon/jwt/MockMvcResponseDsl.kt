@@ -109,7 +109,5 @@ class MockMvcResponseDsl(
         mockMvcResponse.then().apply(document(identifier, responseFields(descriptors)))
     }
 
-    fun build() {
-        init()
-    }
+    fun build() = init()
 }

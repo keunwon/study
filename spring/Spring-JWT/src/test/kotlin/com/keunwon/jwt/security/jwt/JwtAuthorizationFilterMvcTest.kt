@@ -51,7 +51,7 @@ class JwtAuthorizationFilterMvcTest {
     @Test
     fun `토큰 인증 타입(Bearer)을 지정하지 않으면 실패(403) 응답`() {
         // given
-        val createJwtDto = CreateJwtDto("test-id", UserRole.DEFAULT_ROLES)
+        val createJwtDto = CreateTokenRequest("test-id", UserRole.DEFAULT_ROLES)
         val accessToken = tokenProvider.generateToken(createJwtDto, unExpiredDate)
 
         // when, then
@@ -86,7 +86,7 @@ class JwtAuthorizationFilterMvcTest {
     @Test
     fun `만료된 토큰을 함께 보내면 실패(403) 응답`() {
         // given
-        val createJwtDto = CreateJwtDto("test-id", UserRole.DEFAULT_ROLES)
+        val createJwtDto = CreateTokenRequest("test-id", UserRole.DEFAULT_ROLES)
         val token = tokenProvider.generateToken(createJwtDto, TokenProviderFixture.expiredDate)
 
         // when, then

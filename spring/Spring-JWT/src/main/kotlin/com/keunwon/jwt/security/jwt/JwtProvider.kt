@@ -1,5 +1,6 @@
 package com.keunwon.jwt.security.jwt
 
+import com.fasterxml.jackson.annotation.JsonFormat
 import com.keunwon.jwt.config.LogSupport
 import com.keunwon.jwt.domain.UserToken
 import io.jsonwebtoken.Claims
@@ -30,11 +31,10 @@ class JwtProvider(
         key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtProperties.secret))
     }
 
-    fun generateLoginSuccessToken(authentication: Authentication): TokenIssue {
-        val dto = CreateJwtDto(authentication.name, authentication.authorities.map { it.authority })
-        val accessToken = generateToken(dto, jwtProperties.expiredDateByAccessToken)
-        val refreshToken = generateToken(dto, jwtProperties.expirationDateByRefreshToken)
-        return TokenIssue(
+    fun generateLoginSuccessToken(tokenRequest: CreateTokenRequest): JwtResult {
+        val accessToken = generateToken(tokenRequest, jwtProperties.expiredDateByAccessToken)
+        val refreshToken = generateToken(tokenRequest, jwtProperties.expirationDateByRefreshToken)
+        return JwtResult(
             accessToken = accessToken,
             refreshToken = refreshToken,
             expirationAccessToken = getExpirationLocalDateTime(accessToken),
@@ -45,14 +45,14 @@ class JwtProvider(
     fun generateAccessTokenBy(refreshToken: String): String {
         verifyTokenOrThrownError(refreshToken)
         val claims = getJws(refreshToken).body
-        return generateToken(CreateJwtDto(claims), jwtProperties.expiredDateByAccessToken)
+        return generateToken(CreateTokenRequest.from(claims), jwtProperties.expiredDateByAccessToken)
     }
 
-    fun generateToken(dto: CreateJwtDto, expiredDate: Date): String {
+    fun generateToken(tokenRequest: CreateTokenRequest, expiredDate: Date): String {
         return Jwts.builder()
             .setIssuer(appName)
-            .setSubject(dto.subject)
-            .claim(ROLE_KEY, dto.roles.joinToString(","))
+            .setSubject(tokenRequest.subject)
+            .claim(ROLE_KEY, tokenRequest.roles.joinToString(","))
             .signWith(key, SignatureAlgorithm.HS512)
             .setIssuedAt(Date())
             .setExpiration(expiredDate)
@@ -69,7 +69,7 @@ class JwtProvider(
             .atZone(ZoneId.systemDefault())
             .toLocalDateTime()
     }
-   
+
     fun getRoles(claims: Claims): List<String> {
         return claims[ROLE_KEY].toString()
             .split(",")
@@ -89,22 +89,27 @@ class JwtProvider(
     }
 }
 
-data class CreateJwtDto(
+data class CreateTokenRequest(
     val subject: String,
     val roles: List<String>,
 ) {
-    constructor(claims: Claims) : this(claims.subject, claims["role", String::class.java].split(","))
+    companion object {
+        fun from(authentication: Authentication) =
+            CreateTokenRequest(authentication.name, authentication.authorities.map { it.authority })
+
+        fun from(claims: Claims) =
+            CreateTokenRequest(claims.subject, claims["role", String::class.java].split(","))
+    }
 }
 
-data class TokenIssue(
+data class JwtResult(
     val accessToken: String,
     val refreshToken: String,
-    val expirationAccessToken: LocalDateTime,
-    val expirationRefreshToken: LocalDateTime,
+    @field:JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss") val expirationAccessToken: LocalDateTime,
+    @field:JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss") val expirationRefreshToken: LocalDateTime,
 ) {
-
-    fun toEntity(userId: Long) = UserToken(
-        userId = userId,
+    fun toEntity(userid: Long) = UserToken(
+        userId = userid,
         refreshToken = refreshToken,
         expiredRefreshToken = expirationRefreshToken,
     )

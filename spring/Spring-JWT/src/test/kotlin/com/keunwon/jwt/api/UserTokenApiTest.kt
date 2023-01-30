@@ -4,9 +4,9 @@ import com.keunwon.jwt.RestDocsSupport
 import com.keunwon.jwt.STRING
 import com.keunwon.jwt.TokenProviderFixture.testTokenProvider
 import com.keunwon.jwt.domain.UserRole
-import com.keunwon.jwt.domain.generatedGrantedAuthorityList
 import com.keunwon.jwt.makeDocument
-import com.keunwon.jwt.security.jwt.TokenIssue
+import com.keunwon.jwt.security.jwt.CreateTokenRequest
+import com.keunwon.jwt.security.jwt.JwtResult
 import com.keunwon.jwt.toJson
 import com.keunwon.jwt.type
 import io.mockk.every
@@ -21,28 +21,27 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.restdocs.RestDocumentationContextProvider
 import org.springframework.restdocs.RestDocumentationExtension
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 
 @ExtendWith(RestDocumentationExtension::class)
 class UserTokenApiTest : RestDocsSupport() {
     private lateinit var mockMvc: MockMvcRequestSpecification
-    private lateinit var tokenIssue: TokenIssue
+    private lateinit var jwtResult: JwtResult
     private val userTokenService = mockkClass(UserTokenService::class)
 
     @BeforeEach
     fun setup(restDocumentation: RestDocumentationContextProvider) {
         mockMvc = mockMvc(UserTokenApi(userTokenService), restDocumentation)
-        tokenIssue = testTokenProvider.generateLoginSuccessToken(authentication)
+        jwtResult = testTokenProvider.generateLoginSuccessToken(CreateTokenRequest(username, UserRole.DEFAULT_ROLES))
     }
 
     @Test
     fun `refreshToken 이용하여 accessToken 새로 발급합니다`() {
         // given
         every { userTokenService.refreshAccessToken(any()) } returns AccessToken(
-            tokenIssue.accessToken, testTokenProvider.getExpirationLocalDateTime(tokenIssue.accessToken))
+            jwtResult.accessToken, testTokenProvider.getExpirationLocalDateTime(jwtResult.accessToken))
         val response = mockMvc
             .contentType(MediaType.APPLICATION_JSON)
-            .body(toJson(AccessTokenIssue("test-id", tokenIssue.refreshToken)))
+            .body(toJson(AccessTokenIssue(username, jwtResult.refreshToken)))
             .post("/auth/refreshToken")
             .also { it.prettyPrint() }
 
@@ -68,7 +67,7 @@ class UserTokenApiTest : RestDocsSupport() {
     fun `username 값이 비어있으면 오류 응답을 반환합니다`() {
         val response = mockMvc
             .contentType(ContentType.JSON)
-            .body(toJson(AccessTokenIssue("", tokenIssue.refreshToken)))
+            .body(toJson(AccessTokenIssue("", jwtResult.refreshToken)))
             .post("/auth/refreshToken")
             .also { it.prettyPrint() }
 
@@ -84,7 +83,7 @@ class UserTokenApiTest : RestDocsSupport() {
     fun `refreshToken 값이 비어있으면 오류 응답을 반환합니다`() {
         val response = mockMvc
             .contentType(ContentType.JSON)
-            .body(toJson(AccessTokenIssue("test-id", "")))
+            .body(toJson(AccessTokenIssue(username, "")))
             .post("/auth/refreshToken")
             .also { it.prettyPrint() }
 
@@ -97,7 +96,6 @@ class UserTokenApiTest : RestDocsSupport() {
     }
 
     companion object {
-        val authentication = UsernamePasswordAuthenticationToken(
-            "test-id", "password", generatedGrantedAuthorityList(UserRole.USER))
+        private const val username = "test-id"
     }
 }

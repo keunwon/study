@@ -4,12 +4,14 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.keunwon.jwt.common.ErrorDto
 import com.keunwon.jwt.config.LogSupport
-import com.keunwon.jwt.domain.User
+import com.keunwon.jwt.domain.UserToken
+import com.keunwon.jwt.domain.UserTokenRepository
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException
 import org.springframework.security.authentication.AuthenticationManager
+import org.springframework.security.authentication.AuthenticationServiceException
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.AuthenticationException
@@ -25,6 +27,17 @@ import javax.servlet.FilterChain
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
+/**
+ * 사용자 로그인 필터
+ * ```
+ * POST /auth/login
+ * Content-Type: application/json
+ * - username: 사용자 아이디
+ * - password: 사용자 비밀번호
+ * ```
+ *
+ * @param authenticationManager [JwtAuthenticationManager] 구현
+ */
 class JwtLoginAuthenticationFilter(
     authenticationManager: AuthenticationManager,
     private val objectMapper: ObjectMapper,
@@ -35,6 +48,7 @@ class JwtLoginAuthenticationFilter(
     }
 
     override fun attemptAuthentication(request: HttpServletRequest, response: HttpServletResponse): Authentication {
+        contentTypeCheck(request)
         val authentication = resolveAuthentication(request)
         return authenticationManager.authenticate(authentication)
     }
@@ -52,6 +66,12 @@ class JwtLoginAuthenticationFilter(
         }
         if (jsonMap[SPRING_SECURITY_FORM_PASSWORD_KEY].isNullOrBlank()) {
             throw AuthenticationCredentialsNotFoundException("사용자 비밀번호가 비어있거나 존재하지 않습니다.")
+        }
+    }
+
+    private fun contentTypeCheck(request: HttpServletRequest) {
+        if (request.contentType != MediaType.APPLICATION_JSON_VALUE) {
+            throw AuthenticationServiceException("지원하지 않는 contentType 입니다. ${request.contentType}")
         }
     }
 
@@ -85,7 +105,7 @@ class JwtLoginAuthenticationFilter(
 
 open class JwtLoginAuthenticationSuccessHandler(
     private val jwtProvider: JwtProvider,
-    private val customUserDetailsService: JwtUserDetailsService<User, Long>,
+    private val userTokenRepository: UserTokenRepository,
     private val objectMapper: ObjectMapper,
 ) : AuthenticationSuccessHandler {
 
@@ -95,7 +115,7 @@ open class JwtLoginAuthenticationSuccessHandler(
         response: HttpServletResponse,
         authentication: Authentication,
     ) {
-        val userToken = jwtProvider.generateLoginSuccessToken(authentication)
+        val userToken = jwtProvider.generateLoginSuccessToken(CreateTokenRequest.from(authentication))
         saveUserToken(authentication, userToken)
         response.apply {
             status = HttpStatus.OK.value()
@@ -104,9 +124,15 @@ open class JwtLoginAuthenticationSuccessHandler(
         }
     }
 
-    private fun saveUserToken(authentication: Authentication, tokenIssue: TokenIssue) {
-        val id = (authentication.principal as User).id
-        customUserDetailsService.findLoginUser(id).apply { successLogin(tokenIssue.toEntity(id)) }
+    private fun saveUserToken(authentication: Authentication, jwtResult: JwtResult) {
+        val userId = authentication.name.toLong()
+        userTokenRepository.save(getUserToken(userId, jwtResult))
+    }
+
+    private fun getUserToken(userId: Long, jwtResult: JwtResult): UserToken {
+        return userTokenRepository.findByUserId(userId)
+            ?.apply { updateToken(jwtResult.toEntity(userId)) }
+            ?: jwtResult.toEntity(userId)
     }
 
     companion object : LogSupport

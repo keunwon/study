@@ -2,6 +2,7 @@ package com.keunwon.jwt.security.oauth
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.keunwon.jwt.domain.UserRepository
+import com.keunwon.jwt.domain.UserTokenRepository
 import com.keunwon.jwt.security.jwt.JwtProvider
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -13,6 +14,7 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 @Configuration
 class OAuthConfiguration(
     private val userRepository: UserRepository,
+    private val userTokenRepository: UserTokenRepository,
     private val jwtProvider: JwtProvider,
     private val objectMapper: ObjectMapper,
 ) {
@@ -22,5 +24,5 @@ class OAuthConfiguration(
 
     @Bean
     fun oAuthAuthenticationSuccessHandler(): AuthenticationSuccessHandler =
-        OAuthAuthenticationSuccessHandler(jwtProvider, userRepository, objectMapper)
+        OAuthAuthenticationSuccessHandler(jwtProvider, userRepository, userTokenRepository, objectMapper)
 }

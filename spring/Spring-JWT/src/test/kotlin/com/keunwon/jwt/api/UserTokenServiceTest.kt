@@ -8,7 +8,8 @@ import com.keunwon.jwt.domain.User
 import com.keunwon.jwt.domain.UserRepository
 import com.keunwon.jwt.domain.UserRole
 import com.keunwon.jwt.domain.UserToken
-import com.keunwon.jwt.security.jwt.CreateJwtDto
+import com.keunwon.jwt.domain.UserTokenRepository
+import com.keunwon.jwt.security.jwt.CreateTokenRequest
 import io.jsonwebtoken.ExpiredJwtException
 import io.mockk.every
 import io.mockk.junit5.MockKExtension
@@ -20,22 +21,21 @@ import org.junit.jupiter.api.assertAll
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.extension.ExtendWith
 import java.time.LocalDateTime
+import java.time.ZoneId
 
 @ExtendWith(MockKExtension::class)
 class UserTokenServiceTest {
     private val userRepository = mockkClass(UserRepository::class)
-    private val userTokenService = UserTokenService(userRepository, testTokenProvider)
+    private val userTokenRepository = mockkClass(UserTokenRepository::class)
+    private val userTokenService = UserTokenService(userRepository, userTokenRepository, testTokenProvider)
 
     @Test
     fun `refreshToken 이용하여 accessToken 재발행합니다`() {
         // given
-        val userId = "test-id"
-        val refreshToken = testTokenProvider.generateToken(CreateJwtDto(userId, listOf("USER")), unExpiredDate)
-        val user = loginUser(refreshToken)
-        every { userRepository.findByUsername(userId) } returns user
+        val refreshToken = givenLoginUserAndGetRefreshToken(expired = false)
 
         // when
-        val token = userTokenService.refreshAccessToken(AccessTokenIssue(userId, user.token!!.refreshToken))
+        val token = userTokenService.refreshAccessToken(AccessTokenIssue(user.username, refreshToken))
 
         // then
         assertAll({
@@ -47,13 +47,10 @@ class UserTokenServiceTest {
     @Test
     fun `refreshToken 값이 db와 다른 경우 오류가 발생합니다`() {
         // given
-        val userId = "test-id"
-        val refreshToken = testTokenProvider.generateToken(CreateJwtDto(userId, listOf("USER")), unExpiredDate)
-        val user = loginUser(refreshToken)
-        every { userRepository.findByUsername("test-id") } returns user
+        givenLoginUserAndGetRefreshToken(expired = false)
 
         // when, then
-        assertThatThrownBy { userTokenService.refreshAccessToken(AccessTokenIssue(userId, "")) }
+        assertThatThrownBy { userTokenService.refreshAccessToken(AccessTokenIssue(user.username, "")) }
             .isInstanceOf(IllegalArgumentException::class.java)
             .hasMessage("refreshToken 일치하지 않습니다")
     }
@@ -61,30 +58,35 @@ class UserTokenServiceTest {
     @Test
     fun `만료된 refreshToken 으로 재발급을 요청하면 오류가 발생합니다`() {
         // given
-        val userId = "test-id"
-        val refreshToken = testTokenProvider.generateToken(CreateJwtDto(userId, listOf("USER")), expiredDate)
-        val user = loginUser(refreshToken)
-        every { userRepository.findByUsername(userId) } returns user
+        val refreshToken = givenLoginUserAndGetRefreshToken(expired = true)
 
         // when, then
-        assertThatThrownBy { userTokenService.refreshAccessToken(AccessTokenIssue(userId, refreshToken)) }
+        assertThatThrownBy { userTokenService.refreshAccessToken(AccessTokenIssue(user.username, refreshToken)) }
             .isInstanceOf(ExpiredJwtException::class.java)
     }
 
-    private fun loginUser(refreshToken: String): User {
-        val userToken = UserToken(
-            userId = 1L,
-            refreshToken = refreshToken,
-            expiredRefreshToken = LocalDateTime.now().plusHours(2L),
-        )
-        return User(
-            id = 1L,
-            username = "test-id",
-            password = "password",
-            name = "홍길동",
-            nickname = "닉네임",
-            role = UserRole.USER,
-            loginType = LoginType.SIMPLE,
-        ).apply { successLogin(userToken) }
+    private fun givenLoginUserAndGetRefreshToken(expired: Boolean): String {
+        val targetDate = if (expired) expiredDate else unExpiredDate
+        val refreshToken = testTokenProvider.generateToken(CreateTokenRequest(user.username, listOf("USER")), targetDate)
+        every { userRepository.findByUsername(user.username) } returns user
+        every { userTokenRepository.findByUserId(user.id) } returns
+                userToken(refreshToken, LocalDateTime.ofInstant(targetDate.toInstant(), ZoneId.systemDefault()))
+        return refreshToken
     }
+
+    private val user = User(
+        id = 1L,
+        username = "test-id",
+        password = "password",
+        name = "홍길동",
+        nickname = "닉네임",
+        role = UserRole.USER,
+        loginType = LoginType.SIMPLE,
+    )
+
+    private fun userToken(refreshToken: String, dateTime: LocalDateTime) = UserToken(
+        userId = user.id,
+        refreshToken = refreshToken,
+        expiredRefreshToken = dateTime,
+    )
 }
