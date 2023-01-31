@@ -69,8 +69,8 @@ class UserSignApiTest2 {
             responseBody(
                 "accessToken" type STRING means "access-token",
                 "refreshToken" type STRING means "refresh-token",
-                "expirationAccessToken" type STRING means "access-token 유효시간",
-                "expirationRefreshToken" type STRING means "refresh-token 유효시간"
+                //"expirationAccessToken" type STRING means "access-token 유효시간",
+                //"expirationRefreshToken" type STRING means "refresh-token 유효시간"
             )
         }
     }

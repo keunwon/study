@@ -6,7 +6,7 @@ import com.keunwon.jwt.TokenProviderFixture.testTokenProvider
 import com.keunwon.jwt.makeDocument
 import com.keunwon.jwt.security.jwt.CreateTokenRequest
 import com.keunwon.jwt.security.jwt.JwtLoginAuthenticationFilter
-import com.keunwon.jwt.security.jwt.JwtResult
+import com.keunwon.jwt.security.jwt.LoginTokenResponse
 import com.keunwon.jwt.testObjectMapper
 import com.keunwon.jwt.type
 import io.mockk.junit5.MockKExtension
@@ -86,8 +86,8 @@ class UserLoginApiTest {
             .status(HttpStatus.OK)
             .body("accessToken", notNullValue())
             .body("refreshToken", notNullValue())
-            .body("expirationAccessToken", notNullValue())
-            .body("expirationRefreshToken", notNullValue())
+        //.body("expirationAccessToken", notNullValue())
+        //.body("expirationRefreshToken", notNullValue())
 
         // doc
         response.makeDocument("사용자 로그인") {
@@ -98,8 +98,8 @@ class UserLoginApiTest {
             responseBody(
                 "accessToken" type STRING means "API 요청 시 함께 보내야하는 토큰",
                 "refreshToken" type STRING means "토큰 재발급을 위한 토큰",
-                "expirationAccessToken" type STRING means "accessToken 유효시간",
-                "expirationRefreshToken" type STRING means "refreshToken 요효시간",
+                //"expirationAccessToken" type STRING means "accessToken 유효시간",
+                //"expirationRefreshToken" type STRING means "refreshToken 요효시간",
             )
         }
     }
@@ -117,13 +117,8 @@ class LoginSuccessHandlerStub : AuthenticationSuccessHandler {
         response: HttpServletResponse,
         authentication: Authentication,
     ) {
-        val tokenIssue = testTokenProvider.generateLoginSuccessToken(authentication.toCreateTokenRequest())
-        val body = JwtResult(
-            accessToken = tokenIssue.accessToken,
-            refreshToken = tokenIssue.refreshToken,
-            expirationAccessToken = testTokenProvider.getExpirationLocalDateTime(tokenIssue.accessToken),
-            expirationRefreshToken = testTokenProvider.getExpirationLocalDateTime(tokenIssue.refreshToken)
-        )
+        val loginToken = testTokenProvider.generateLoginSuccessToken(authentication.toCreateTokenRequest())
+        val body = LoginTokenResponse.from(loginToken)
         response.apply {
             status = HttpStatus.OK.value()
             contentType = MediaType.APPLICATION_JSON_VALUE

@@ -64,9 +64,9 @@ class JwtLoginMvcTest {
                 ),
                 responseFields(
                     fieldWithPath("accessToken").description("accessToken"),
-                    fieldWithPath("refreshToken").description("refreshToekn"),
-                    fieldWithPath("expirationAccessToken").description("accessToken 유효기간"),
-                    fieldWithPath("expirationRefreshToken").description("refreshToken 유효기간")
+                    fieldWithPath("refreshToken").description("refreshToken"),
+                    //fieldWithPath("expirationAccessToken").description("accessToken 유효기간"),
+                    //fieldWithPath("expirationRefreshToken").description("refreshToken 유효기간")
                 )
             )
         )
