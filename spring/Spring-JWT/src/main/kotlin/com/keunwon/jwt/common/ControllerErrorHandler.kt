@@ -3,7 +3,9 @@ package com.keunwon.jwt.common
 import com.fasterxml.jackson.databind.exc.InvalidFormatException
 import com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException
 import com.keunwon.jwt.config.LogSupport
+import com.keunwon.jwt.security.jwt.JwtProvider
 import io.jsonwebtoken.ExpiredJwtException
+import io.jsonwebtoken.JwtException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.http.converter.HttpMessageNotReadableException
@@ -29,10 +31,16 @@ class ControllerErrorHandler {
         return createResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, ex)
     }
 
-    @ExceptionHandler(ExpiredJwtException::class)
+    @ExceptionHandler(IllegalStateException::class)
+    fun handleIllegalStateException(ex: IllegalStateException): ResponseEntity<ErrorDto> {
+        return createResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, ex)
+    }
+
+    @ExceptionHandler(JwtException::class)
     fun handleExpiredJwtException(ex: ExpiredJwtException): ResponseEntity<ErrorDto> {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-            .body(ErrorDto(HttpStatus.BAD_REQUEST.value(), "만료된 토큰을 사용하였습니다"))
+        val message = JwtProvider.validationErrorMessages[ex::class] ?: "토큰이 유효하지 않습니다"
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body(ErrorDto(HttpStatus.INTERNAL_SERVER_ERROR.value(), message))
     }
 
     @ExceptionHandler(Exception::class)
@@ -69,8 +77,12 @@ class ControllerErrorHandler {
 
     fun createResponseEntity(status: HttpStatus, exception: Throwable): ResponseEntity<ErrorDto> {
         val message = exception.message ?: unknownErrorMessage
-        val errorDto = ErrorDto(status.value(), message)
+        val errorDto = ErrorDto(status.value(), message).also { it.logging() }
         return ResponseEntity.status(status).body(errorDto)
+    }
+
+    fun ErrorDto.logging() {
+        log.error("> code: $code, message: $message")
     }
 
     companion object : LogSupport {

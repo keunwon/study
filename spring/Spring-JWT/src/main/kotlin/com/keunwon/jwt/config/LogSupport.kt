@@ -1,9 +1,9 @@
 package com.keunwon.jwt.config
 
-import org.apache.logging.log4j.LogManager
-import org.apache.logging.log4j.Logger
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 interface LogSupport {
     val log: Logger
-        get() = LogManager.getLogger(this::class.java)
+        get() = LoggerFactory.getLogger(this::class.java)
 }

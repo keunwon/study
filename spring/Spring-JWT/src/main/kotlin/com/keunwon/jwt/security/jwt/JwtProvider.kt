@@ -2,11 +2,15 @@ package com.keunwon.jwt.security.jwt
 
 import com.keunwon.jwt.config.LogSupport
 import io.jsonwebtoken.Claims
+import io.jsonwebtoken.ExpiredJwtException
 import io.jsonwebtoken.Jws
 import io.jsonwebtoken.Jwts
+import io.jsonwebtoken.MalformedJwtException
 import io.jsonwebtoken.SignatureAlgorithm
+import io.jsonwebtoken.UnsupportedJwtException
 import io.jsonwebtoken.io.Decoders
 import io.jsonwebtoken.security.Keys
+import io.jsonwebtoken.security.SignatureException
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.security.core.Authentication
@@ -74,6 +78,13 @@ class JwtProvider(
 
     companion object : LogSupport {
         private const val ROLE_KEY = "role"
+        val validationErrorMessages = mapOf(
+            UnsupportedJwtException::class to "토큰 형식이 올바르지 않습니다.",
+            MalformedJwtException::class to "토큰이 유효하지 않습니다.",
+            SignatureException::class to "시그니처 연산에 실패하였습니다.",
+            ExpiredJwtException::class to "유효기간이 만료된 토큰입니다.",
+            IllegalArgumentException::class to "토큰이 비어있거나 존재하지 않습니다.",
+        )
     }
 }
 
