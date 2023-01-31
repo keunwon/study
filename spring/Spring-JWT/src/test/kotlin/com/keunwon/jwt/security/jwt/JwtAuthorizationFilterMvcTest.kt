@@ -44,7 +44,7 @@ class JwtAuthorizationFilterMvcTest {
             status().isForbidden,
             content().contentType(MediaType.APPLICATION_JSON),
             jsonPath("$.code").value(HttpStatus.FORBIDDEN.value()),
-            jsonPath("$.message").value("토큰이 비어있거나 존재하지 않습니다."),
+            jsonPath("$.message").value("Authorization 헤더가 비어있습니다"),
         ).andDo { MockMvcResultHandlers.print() }
     }
 
@@ -62,14 +62,14 @@ class JwtAuthorizationFilterMvcTest {
             status().isForbidden,
             content().contentType(MediaType.APPLICATION_JSON),
             jsonPath("$.code").value(HttpStatus.FORBIDDEN.value()),
-            jsonPath("$.message").value("지원하지 않는 토큰 인가 타입입니다."),
+            jsonPath("$.message").value("Authorization 헤더 구성이 올바르지 않습니다"),
         )
     }
 
     @Test
     fun `토큰의 값이 유효하지 않을 경우 실패(403) 응답`() {
         // given
-        val token = "dump string"
+        val token = "dump"
 
         // when, then
         mockMvc.perform(
