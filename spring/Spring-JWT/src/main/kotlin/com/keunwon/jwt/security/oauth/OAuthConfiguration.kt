@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService
 import org.springframework.security.oauth2.core.user.OAuth2User
+import org.springframework.security.web.authentication.AuthenticationFailureHandler
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler
 
 @Configuration
@@ -25,4 +26,8 @@ class OAuthConfiguration(
     @Bean
     fun oAuthAuthenticationSuccessHandler(): AuthenticationSuccessHandler =
         OAuthAuthenticationSuccessHandler(jwtProvider, userRepository, userTokenRepository, objectMapper)
+
+    @Bean
+    fun oAuthAuthenticationFailureHandler(): AuthenticationFailureHandler =
+        OAuthAuthenticationFailureHandler(objectMapper)
 }

@@ -1,71 +1,69 @@
 package com.keunwon.jwt.security.oauth
 
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.keunwon.jwt.domain.LoginType
 import com.keunwon.jwt.domain.User
 import com.keunwon.jwt.domain.UserRole
+import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest
+import org.springframework.security.oauth2.core.user.DefaultOAuth2User
 import org.springframework.security.oauth2.core.user.OAuth2User
 
-abstract class OAuth2Attributes(val attributes: Map<String, Any>, val nameAttributeKey: String) {
+sealed class Oauth2Attributes {
+    abstract val email: String
     abstract val name: String
     abstract val nickname: String
-    abstract val email: String
 
-    abstract fun userProfileAttributes(): Map<String, String>
+    abstract fun toOAuth2User(role: String, oAuth2User: OAuth2User): OAuth2User
 
-    fun toEntity(): User = User(
-        name = this.name,
-        nickname = this.nickname,
-        email = this.email,
-        loginType = LoginType.OAUTH,
+    fun toUserEntity() = User(
+        name = name,
+        nickname = nickname,
+        email = email,
+        loginType = LoginType.OAUTH2,
         role = UserRole.USER,
     )
-
-    fun getValue(key: String): String = userProfileAttributes()[key] as String
 }
 
-object OAuth2AttributeFactory {
-    fun create(userRequest: OAuth2UserRequest, oAuth2User: OAuth2User): OAuth2Attributes {
-        val registrationId = userRequest.clientRegistration.registrationId
-        val userNameAttributeName =
-            userRequest.clientRegistration.providerDetails.userInfoEndpoint.userNameAttributeName
-        return when (registrationId.uppercase()) {
-            "NAVER" -> NaverOAuth2Attributes(oAuth2User.attributes, userNameAttributeName)
-            "GOOGLE" -> GoogleOAuth2Attributes(oAuth2User.attributes, userNameAttributeName)
-            else -> throw IllegalArgumentException("지원하지 않습니다. id=$registrationId")
-        }
+data class GoogleOAuth2Attributes(
+    override val email: String,
+    override val name: String,
+    override val nickname: String = email,
+    val sub: String,
+    val picture: String,
+    val locale: String,
+) : Oauth2Attributes() {
+
+    override fun toOAuth2User(role: String, oAuth2User: OAuth2User): OAuth2User {
+        return DefaultOAuth2User(listOf(SimpleGrantedAuthority(role)), oAuth2User.attributes, "email")
     }
 }
 
-class NaverOAuth2Attributes(
-    attributes: Map<String, Any>,
-    nameAttributeKey: String,
-) : OAuth2Attributes(attributes, nameAttributeKey) {
-    override val name: String = getValue("name")
-    override val nickname: String = getValue("nickname")
-    override val email: String = getValue("email")
+data class NaverOAuth2Attributes(
+    override val email: String,
+    override val name: String,
+    override val nickname: String,
+) : Oauth2Attributes() {
 
-    val id = getValue("id")
-    val gender = getValue("gender")
-    val birthday = getValue("birthday")
-    val birthyear = getValue("birthyear")
-
-    @Suppress("UNCHECKED_CAST")
-    override fun userProfileAttributes(): Map<String, String> = attributes[nameAttributeKey] as Map<String, String>
+    override fun toOAuth2User(role: String, oAuth2User: OAuth2User): OAuth2User {
+        return DefaultOAuth2User(listOf(SimpleGrantedAuthority(role)), oAuth2User.getAttribute("response"), "email")
+    }
 }
 
-class GoogleOAuth2Attributes(
-    attributes: Map<String, Any>,
-    nameAttributeKey: String,
-) : OAuth2Attributes(attributes, nameAttributeKey) {
-    override val name: String = getValue("name")
-    override val email: String = getValue("email")
-    override val nickname = getValue("name")
+object OAuth2AttributeFactory {
+    private val objectMapper = jacksonObjectMapper()
+        .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 
-    val sub = getValue("sub")
-    val picture = getValue("picture")
-    val locale = getValue("locale")
-
-    @Suppress("UNCHECKED_CAST")
-    override fun userProfileAttributes(): Map<String, String> = attributes as Map<String, String>
+    fun factory(
+        oAuth2UserRequest: OAuth2UserRequest,
+        oAuth2User: OAuth2User,
+    ): Oauth2Attributes {
+        return when (oAuth2UserRequest.registrationId().uppercase()) {
+            "GOOGLE" -> objectMapper.convertValue(oAuth2User.attributes, GoogleOAuth2Attributes::class.java)
+            "NAVER" -> objectMapper.convertValue(
+                oAuth2User.getAttribute(oAuth2UserRequest.userNameAttributeName()), NaverOAuth2Attributes::class.java)
+            else -> throw IllegalArgumentException("")
+        }
+    }
 }
