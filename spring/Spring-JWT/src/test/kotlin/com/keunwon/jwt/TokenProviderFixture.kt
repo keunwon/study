@@ -16,7 +16,7 @@ object TokenProviderFixture {
         refreshTokenValiditySeconds = 60,
     )
 
-    val testTokenProvider = JwtProvider("test-app", properties).apply { afterPropertiesSet() }
+    val testTokenProvider = JwtProvider("test-app", properties)
 
     val unExpiredDate: Date = run {
         val dateTime = LocalDateTime.of(2030, 12, 31, 0, 0)

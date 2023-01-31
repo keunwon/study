@@ -35,7 +35,7 @@ class UserTokenServiceTest {
         val refreshToken = givenLoginUserAndGetRefreshToken(expired = false)
 
         // when
-        val token = userTokenService.refreshAccessToken(AccessTokenIssue(user.username, refreshToken))
+        val token = userTokenService.refreshAccessToken(AccessTokenIssue(user.username!!, refreshToken))
 
         // then
         assertAll({
@@ -47,10 +47,11 @@ class UserTokenServiceTest {
     @Test
     fun `refreshToken 값이 db와 다른 경우 오류가 발생합니다`() {
         // given
-        givenLoginUserAndGetRefreshToken(expired = false)
+        val refreshToken = givenLoginUserAndGetRefreshToken(expired = false)
+        val newRefreshToken = testTokenProvider.generateAccessTokenWith(refreshToken).value
 
         // when, then
-        assertThatThrownBy { userTokenService.refreshAccessToken(AccessTokenIssue(user.username, "")) }
+        assertThatThrownBy { userTokenService.refreshAccessToken(AccessTokenIssue(user.username!!, newRefreshToken)) }
             .isInstanceOf(IllegalArgumentException::class.java)
             .hasMessage("refreshToken 일치하지 않습니다")
     }
@@ -61,14 +62,15 @@ class UserTokenServiceTest {
         val refreshToken = givenLoginUserAndGetRefreshToken(expired = true)
 
         // when, then
-        assertThatThrownBy { userTokenService.refreshAccessToken(AccessTokenIssue(user.username, refreshToken)) }
+        assertThatThrownBy { userTokenService.refreshAccessToken(AccessTokenIssue(user.username!!, refreshToken)) }
             .isInstanceOf(ExpiredJwtException::class.java)
     }
 
     private fun givenLoginUserAndGetRefreshToken(expired: Boolean): String {
         val targetDate = if (expired) expiredDate else unExpiredDate
-        val refreshToken = testTokenProvider.generateToken(CreateTokenRequest(user.username, listOf("USER")), targetDate)
-        every { userRepository.findByUsername(user.username) } returns user
+        val refreshToken =
+            testTokenProvider.generateToken(CreateTokenRequest(user.username!!, listOf("USER")), targetDate)
+        every { userRepository.findByUsername(user.username!!) } returns user
         every { userTokenRepository.findByUserId(user.id) } returns
                 userToken(refreshToken, LocalDateTime.ofInstant(targetDate.toInstant(), ZoneId.systemDefault()))
         return refreshToken

@@ -1,22 +1,17 @@
 package com.keunwon.jwt.security.jwt
 
-import com.fasterxml.jackson.annotation.JsonFormat
 import com.keunwon.jwt.config.LogSupport
-import com.keunwon.jwt.domain.UserToken
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jws
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import io.jsonwebtoken.io.Decoders
 import io.jsonwebtoken.security.Keys
-import org.springframework.beans.factory.InitializingBean
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Component
 import java.security.Key
-import java.time.LocalDateTime
-import java.time.ZoneId
 import java.util.*
 
 @Component
@@ -24,28 +19,28 @@ import java.util.*
 class JwtProvider(
     @Value("\${spring.application.name}") private val appName: String,
     private val jwtProperties: JwtProperties,
-) : InitializingBean {
-    private lateinit var key: Key
+) {
+    private var key: Key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtProperties.secret))
 
-    override fun afterPropertiesSet() {
-        key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtProperties.secret))
+    fun generateLoginSuccessToken(tokenRequest: CreateTokenRequest): JwtLoginToken {
+        return JwtLoginToken(generateAccessToken(tokenRequest), generateRefreshToken(tokenRequest))
     }
 
-    fun generateLoginSuccessToken(tokenRequest: CreateTokenRequest): JwtResult {
-        val accessToken = generateToken(tokenRequest, jwtProperties.expiredDateByAccessToken)
-        val refreshToken = generateToken(tokenRequest, jwtProperties.expirationDateByRefreshToken)
-        return JwtResult(
-            accessToken = accessToken,
-            refreshToken = refreshToken,
-            expirationAccessToken = getExpirationLocalDateTime(accessToken),
-            expirationRefreshToken = getExpirationLocalDateTime(refreshToken),
-        )
+    fun generateAccessToken(tokenRequest: CreateTokenRequest): JwtAccessToken {
+        val tokenValue = generateToken(tokenRequest, jwtProperties.expiredDateByAccessToken)
+        val claims = getBody(tokenValue)
+        return JwtAccessToken(tokenValue, claims.issuedAt.toInstant(), claims.expiration.toInstant())
     }
 
-    fun generateAccessTokenBy(refreshToken: String): String {
-        verifyTokenOrThrownError(refreshToken)
-        val claims = getJws(refreshToken).body
-        return generateToken(CreateTokenRequest.from(claims), jwtProperties.expiredDateByAccessToken)
+    fun generateRefreshToken(tokenRequest: CreateTokenRequest): JwtRefreshToken {
+        val tokenValue = generateToken(tokenRequest, jwtProperties.expirationDateByRefreshToken)
+        val claims = getBody(tokenValue)
+        return JwtRefreshToken(tokenValue, claims.issuedAt.toInstant(), claims.expiration.toInstant())
+    }
+
+    fun generateAccessTokenWith(refreshToken: String): JwtAccessToken {
+        val claims = getBody(refreshToken)
+        return generateAccessToken(CreateTokenRequest(claims.subject, getRoles(claims)))
     }
 
     fun generateToken(tokenRequest: CreateTokenRequest, expiredDate: Date): String {
@@ -62,13 +57,6 @@ class JwtProvider(
     fun getBody(token: String): Claims = getJws(token).body
 
     fun verifyTokenOrThrownError(token: String?) = getJws(token)
-
-    fun getExpirationLocalDateTime(token: String): LocalDateTime {
-        return getJws(token)
-            .body.expiration.toInstant()
-            .atZone(ZoneId.systemDefault())
-            .toLocalDateTime()
-    }
 
     fun getRoles(claims: Claims): List<String> {
         return claims[ROLE_KEY].toString()
@@ -100,17 +88,4 @@ data class CreateTokenRequest(
         fun from(claims: Claims) =
             CreateTokenRequest(claims.subject, claims["role", String::class.java].split(","))
     }
-}
-
-data class JwtResult(
-    val accessToken: String,
-    val refreshToken: String,
-    @field:JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss") val expirationAccessToken: LocalDateTime,
-    @field:JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss") val expirationRefreshToken: LocalDateTime,
-) {
-    fun toEntity(userid: Long) = UserToken(
-        userId = userid,
-        refreshToken = refreshToken,
-        expiredRefreshToken = expirationRefreshToken,
-    )
 }

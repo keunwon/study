@@ -2,12 +2,7 @@ package com.keunwon.jwt.security.jwt
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
-import com.keunwon.jwt.common.ErrorDto
-import com.keunwon.jwt.config.LogSupport
-import com.keunwon.jwt.domain.UserToken
-import com.keunwon.jwt.domain.UserTokenRepository
 import org.springframework.http.HttpMethod
-import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException
 import org.springframework.security.authentication.AuthenticationManager
@@ -16,11 +11,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.AuthenticationException
 import org.springframework.security.core.userdetails.UsernameNotFoundException
-import org.springframework.security.web.authentication.AuthenticationFailureHandler
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher
-import org.springframework.transaction.annotation.Transactional
 import org.springframework.util.StreamUtils
 import java.nio.charset.StandardCharsets
 import javax.servlet.FilterChain
@@ -36,7 +28,9 @@ import javax.servlet.http.HttpServletResponse
  * - password: 사용자 비밀번호
  * ```
  *
- * @param authenticationManager [JwtAuthenticationManager] 구현
+ * @param authenticationManager [JwtAuthenticationManager]
+ * @see [JwtLoginAuthenticationSuccessHandler]
+ * @see [JwtLoginAuthenticationFailureHandler]
  */
 class JwtLoginAuthenticationFilter(
     authenticationManager: AuthenticationManager,
@@ -77,8 +71,7 @@ class JwtLoginAuthenticationFilter(
 
     private fun resolveJsonMap(request: HttpServletRequest): Map<String, String> {
         val inputStream = StreamUtils.copyToString(request.inputStream, StandardCharsets.UTF_8)
-        val typeRef = jacksonTypeRef<Map<String, String>>()
-        return objectMapper.readValue(inputStream, typeRef)
+        return objectMapper.readValue(inputStream, loginBodyTypeRef)
     }
 
     override fun successfulAuthentication(
@@ -100,62 +93,6 @@ class JwtLoginAuthenticationFilter(
 
     companion object {
         const val LOGIN_URL = "/auth/login"
+        private val loginBodyTypeRef = jacksonTypeRef<Map<String, String>>()
     }
-}
-
-open class JwtLoginAuthenticationSuccessHandler(
-    private val jwtProvider: JwtProvider,
-    private val userTokenRepository: UserTokenRepository,
-    private val objectMapper: ObjectMapper,
-) : AuthenticationSuccessHandler {
-
-    @Transactional
-    override fun onAuthenticationSuccess(
-        request: HttpServletRequest,
-        response: HttpServletResponse,
-        authentication: Authentication,
-    ) {
-        val userToken = jwtProvider.generateLoginSuccessToken(CreateTokenRequest.from(authentication))
-        saveUserToken(authentication, userToken)
-        response.apply {
-            status = HttpStatus.OK.value()
-            contentType = MediaType.APPLICATION_JSON_VALUE
-            objectMapper.writeValue(this.outputStream, userToken)
-        }
-    }
-
-    private fun saveUserToken(authentication: Authentication, jwtResult: JwtResult) {
-        val userId = authentication.name.toLong()
-        userTokenRepository.save(getUserToken(userId, jwtResult))
-    }
-
-    private fun getUserToken(userId: Long, jwtResult: JwtResult): UserToken {
-        return userTokenRepository.findByUserId(userId)
-            ?.apply { updateToken(jwtResult.toEntity(userId)) }
-            ?: jwtResult.toEntity(userId)
-    }
-
-    companion object : LogSupport
-}
-
-open class JwtLoginAuthenticationFailureHandler(
-    private val objectMapper: ObjectMapper,
-) : AuthenticationFailureHandler {
-
-    override fun onAuthenticationFailure(
-        request: HttpServletRequest,
-        response: HttpServletResponse,
-        exception: AuthenticationException,
-    ) {
-        response.apply {
-            status = HttpStatus.UNAUTHORIZED.value()
-            contentType = MediaType.APPLICATION_JSON_VALUE
-            objectMapper.writeValue(this.outputStream, createBody(exception.message))
-        }
-    }
-
-    private fun createBody(errorMessage: String?) = ErrorDto(
-        code = HttpStatus.UNAUTHORIZED.value(),
-        message = errorMessage ?: "로그인을 실패하였습니다."
-    )
 }
