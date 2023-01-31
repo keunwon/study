@@ -23,7 +23,7 @@ open class JwtAuthenticationManager(
             ?: throw UsernameNotFoundException("존재하지 않는 사용자입니다. 사용자: ${authentication.name}")
         return user.run {
             preAuthenticationCheck()
-            passwordCheckAndUpdateLogin(authentication)
+            passwordCheckAndUpdateUser(authentication)
             generateAuthenticationToken()
         }
     }
@@ -32,7 +32,7 @@ open class JwtAuthenticationManager(
         if (isActivated.not()) throw LockedException("사용자 계정이 잠겨있습니다. 사용자: $username")
     }
 
-    private fun User.passwordCheckAndUpdateLogin(authentication: Authentication) {
+    private fun User.passwordCheckAndUpdateUser(authentication: Authentication) {
         val password = authentication.credentials as String
         if (passwordEncoder.matches(password, this.password)) return successLogin()
         failedLogin()

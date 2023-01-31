@@ -25,8 +25,8 @@ class UserToken(
     val id: Long = 0,
 ) : BaseEntity() {
 
-    fun updateToken(userToken: UserToken) {
-        this.refreshToken = userToken.refreshToken
-        this.expiredRefreshToken = userToken.expiredRefreshToken
+    fun updateRefreshToken(refreshToken: String, expiredRefreshToken: LocalDateTime) {
+        this.refreshToken = refreshToken
+        this.expiredRefreshToken = expiredRefreshToken
     }
 }
