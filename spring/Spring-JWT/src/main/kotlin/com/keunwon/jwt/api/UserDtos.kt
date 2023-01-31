@@ -35,7 +35,7 @@ data class UserSignResponseDto(
     val username: String,
     val nickname: String,
 ) {
-    constructor(user: User) : this(user.id, user.username, user.nickname)
+    constructor(user: User) : this(user.id, user.username!!, user.nickname)
 }
 
 data class AccessTokenIssue(

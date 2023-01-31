@@ -18,10 +18,10 @@ import javax.persistence.Table
 @Table(name = "users")
 class User(
     @Column(name = "username", length = 20)
-    var username: String = "",
+    var username: String? = null,
 
     @Column(name = "password", length = 255)
-    var password: String = "",
+    var password: String? = null,
 
     @Column(name = "name", length = 10)
     var name: String,
@@ -62,10 +62,10 @@ enum class UserRole(val title: String) {
     }
 }
 
-enum class LoginType(val title: String) {
-    SIMPLE("기본 방식"),
-    OAUTH("소셜 로그인 방식");
-}
-
 fun generatedGrantedAuthorityList(vararg roles: UserRole): List<GrantedAuthority> =
     roles.map { SimpleGrantedAuthority(it.name) }.toList()
+
+enum class LoginType(val title: String) {
+    SIMPLE("기본 방식"),
+    OAUTH2("소셜 로그인 방식");
+}
