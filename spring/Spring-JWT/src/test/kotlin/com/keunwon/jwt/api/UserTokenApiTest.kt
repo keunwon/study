@@ -13,13 +13,13 @@ import com.keunwon.jwt.type
 import io.mockk.every
 import io.mockk.mockkClass
 import io.restassured.http.ContentType
+import io.restassured.module.mockmvc.response.MockMvcResponse
 import io.restassured.module.mockmvc.specification.MockMvcRequestSpecification
 import org.hamcrest.Matchers
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.http.HttpStatus
-import org.springframework.http.MediaType
 import org.springframework.restdocs.RestDocumentationContextProvider
 import org.springframework.restdocs.RestDocumentationExtension
 
@@ -41,11 +41,7 @@ class UserTokenApiTest : RestDocsSupport() {
         // given
         every { userTokenService.refreshAccessToken(any()) } returns AccessToken(
             jwtLoginToken.accessToken.value, jwtLoginToken.accessToken.expiredAt.toLocalDateTime())
-        val response = mockMvc
-            .contentType(MediaType.APPLICATION_JSON)
-            .body(toJson(AccessTokenIssue(username, jwtLoginToken.refreshToken.value)))
-            .post("/auth/refreshToken")
-            .also { it.prettyPrint() }
+        val response = givenMockMvc(username, jwtLoginToken.refreshToken.value)
 
         // when, then
         response.then()
@@ -67,13 +63,7 @@ class UserTokenApiTest : RestDocsSupport() {
 
     @Test
     fun `username 값이 비어있으면 오류 응답을 반환합니다`() {
-        val response = mockMvc
-            .contentType(ContentType.JSON)
-            .body(toJson(AccessTokenIssue("", jwtLoginToken.refreshToken.value)))
-            .post("/auth/refreshToken")
-            .also { it.prettyPrint() }
-
-        response.then()
+        givenMockMvc("", jwtLoginToken.refreshToken.value).then()
             .status(HttpStatus.BAD_REQUEST)
             .contentType(ContentType.JSON)
             .body("code", Matchers.equalTo(400))
@@ -83,18 +73,20 @@ class UserTokenApiTest : RestDocsSupport() {
 
     @Test
     fun `refreshToken 값이 비어있으면 오류 응답을 반환합니다`() {
-        val response = mockMvc
-            .contentType(ContentType.JSON)
-            .body(toJson(AccessTokenIssue(username, "")))
-            .post("/auth/refreshToken")
-            .also { it.prettyPrint() }
-
-        response.then()
+        givenMockMvc(username, "").then()
             .status(HttpStatus.BAD_REQUEST)
             .contentType(ContentType.JSON)
             .body("code", Matchers.equalTo(400))
             .body("message", Matchers.equalTo("파라미터가 유효하지 않습니다"))
             .body("errors", Matchers.equalTo(listOf("refreshToken 필수 파라미터 입니다")))
+    }
+
+    private fun givenMockMvc(username: String, refreshToken: String): MockMvcResponse {
+        return mockMvc
+            .contentType(ContentType.JSON)
+            .body(toJson(AccessTokenIssue(username, refreshToken)))
+            .post("/auth/refreshToken")
+            .also { it.prettyPrint() }
     }
 
     companion object {

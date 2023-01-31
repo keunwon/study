@@ -11,6 +11,7 @@ import com.keunwon.jwt.domain.UserToken
 import com.keunwon.jwt.domain.UserTokenRepository
 import com.keunwon.jwt.security.jwt.CreateTokenRequest
 import io.jsonwebtoken.ExpiredJwtException
+import io.jsonwebtoken.JwtException
 import io.mockk.every
 import io.mockk.junit5.MockKExtension
 import io.mockk.mockkClass
@@ -20,6 +21,8 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertAll
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.extension.ExtendWith
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
 import java.time.LocalDateTime
 import java.time.ZoneId
 
@@ -64,6 +67,17 @@ class UserTokenServiceTest {
         // when, then
         assertThatThrownBy { userTokenService.refreshAccessToken(AccessTokenIssue(user.username!!, refreshToken)) }
             .isInstanceOf(ExpiredJwtException::class.java)
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = ["dump", "dump1234"])
+    fun `유효하지 않는 refreshToken 으로 재발급 요청을 하면 오류가 발생합니다`(refreshToken: String) {
+        // given
+        givenLoginUserAndGetRefreshToken(expired = false)
+
+        // when ,then
+        assertThatThrownBy { userTokenService.refreshAccessToken(AccessTokenIssue(user.username!!, refreshToken)) }
+            .isInstanceOf(JwtException::class.java)
     }
 
     private fun givenLoginUserAndGetRefreshToken(expired: Boolean): String {
