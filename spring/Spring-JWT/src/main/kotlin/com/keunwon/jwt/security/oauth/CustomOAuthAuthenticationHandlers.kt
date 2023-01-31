@@ -8,9 +8,9 @@ import com.keunwon.jwt.domain.UserRepository
 import com.keunwon.jwt.domain.UserToken
 import com.keunwon.jwt.domain.UserTokenRepository
 import com.keunwon.jwt.security.jwt.CreateTokenRequest
-import com.keunwon.jwt.security.jwt.JwtLoginToken
 import com.keunwon.jwt.security.jwt.JwtProvider
 import com.keunwon.jwt.security.jwt.JwtRefreshToken
+import com.keunwon.jwt.security.jwt.LoginTokenResponse
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.security.core.Authentication
@@ -34,10 +34,10 @@ class OAuthAuthenticationSuccessHandler(
     ) {
         val loginToken = jwtProvider.generateLoginSuccessToken(CreateTokenRequest.from(authentication))
         saveOrUpdateRefreshToken(authentication, loginToken.refreshToken)
-        response.writeLoginToken(loginToken)
+        response.writeLoginToken(LoginTokenResponse.from(loginToken))
     }
 
-    private fun HttpServletResponse.writeLoginToken(body: JwtLoginToken) = apply {
+    private fun HttpServletResponse.writeLoginToken(body: LoginTokenResponse) = apply {
         status = HttpStatus.OK.value()
         contentType = MediaType.APPLICATION_JSON_VALUE
         objectMapper.writeValue(outputStream, body)
