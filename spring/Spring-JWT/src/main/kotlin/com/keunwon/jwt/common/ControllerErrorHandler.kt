@@ -49,7 +49,7 @@ class ControllerErrorHandler {
 
     @ExceptionHandler(NoHandlerFoundException::class)
     fun handleNoHandlerFoundException(ex: NoHandlerFoundException, request: WebRequest): ResponseEntity<ErrorDto> {
-        val errorMessage = "url: ${ex.requestURL} 은 지원하지 않습니다.".also(log::warn)
+        val errorMessage = "${ex.requestURL} 은 지원하지 않습니다.".also(log::warn)
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
             .body(ErrorDto(HttpStatus.NOT_FOUND.value(), errorMessage))
     }
