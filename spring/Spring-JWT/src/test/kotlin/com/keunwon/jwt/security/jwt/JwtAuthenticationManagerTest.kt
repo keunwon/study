@@ -32,10 +32,11 @@ internal class JwtAuthenticationManagerTest {
 
         // when
         val authentication = jwtAuthenticationManager.authenticate(authenticationToken)
+        val principal = authentication.principal as User
 
         // then
         assertAll({
-            assertThat(authentication.name.toLong()).isEqualTo(user.id)
+            assertThat((principal.username)).isEqualTo(user.username)
             assertThat(authentication.authorities.map { UserRole.valueOf(it.authority) })
                 .containsExactly(UserRole.USER)
         })

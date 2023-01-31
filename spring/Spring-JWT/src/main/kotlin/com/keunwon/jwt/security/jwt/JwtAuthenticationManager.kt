@@ -1,5 +1,6 @@
 package com.keunwon.jwt.security.jwt
 
+import com.keunwon.jwt.config.LogSupport
 import com.keunwon.jwt.domain.User
 import com.keunwon.jwt.domain.UserRepository
 import com.keunwon.jwt.domain.generatedGrantedAuthorityList
@@ -50,5 +51,7 @@ open class JwtAuthenticationManager(
     }
 
     private fun User.generateAuthenticationToken() =
-        UsernamePasswordAuthenticationToken.authenticated(id, "", generatedGrantedAuthorityList(role))
+        UsernamePasswordAuthenticationToken.authenticated(this, "", generatedGrantedAuthorityList(role))
+
+    companion object : LogSupport
 }
