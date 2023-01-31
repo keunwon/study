@@ -16,8 +16,8 @@ class UserTokenService(
     @Transactional
     fun refreshAccessToken(accessTokenIssue: AccessTokenIssue): AccessToken {
         validationRefreshToken(accessTokenIssue)
-        val accessToken = jwtProvider.generateAccessTokenWith(accessTokenIssue.refreshToken)
-        return AccessToken(accessToken.value, accessToken.expiredAt.toLocalDateTime())
+        return jwtProvider.generateAccessTokenWith(accessTokenIssue.refreshToken)
+            .run { AccessToken(value, expiredAt.toLocalDateTime()) }
     }
 
     private fun validationRefreshToken(accessTokenIssue: AccessTokenIssue) {
