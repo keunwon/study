@@ -1,5 +1,6 @@
 package com.keunwon.jwt.api
 
+import com.keunwon.jwt.common.util.toLocalDateTime
 import com.keunwon.jwt.domain.UserRepository
 import com.keunwon.jwt.domain.UserTokenRepository
 import com.keunwon.jwt.security.jwt.JwtProvider
@@ -14,13 +15,13 @@ class UserTokenService(
 ) {
     @Transactional
     fun refreshAccessToken(accessTokenIssue: AccessTokenIssue): AccessToken {
-        return validationRefreshToken(accessTokenIssue).run {
-            val token = jwtProvider.generateAccessTokenBy(accessTokenIssue.refreshToken)
-            AccessToken(token, jwtProvider.getExpirationLocalDateTime(token))
-        }
+        validationRefreshToken(accessTokenIssue)
+        val accessToken = jwtProvider.generateAccessTokenWith(accessTokenIssue.refreshToken)
+        return AccessToken(accessToken.value, accessToken.expiredAt.toLocalDateTime())
     }
 
     private fun validationRefreshToken(accessTokenIssue: AccessTokenIssue) {
+        jwtProvider.verifyTokenOrThrownError(accessTokenIssue.refreshToken)
         val user = userRepository.findByUsername(accessTokenIssue.username)
             ?: throw IllegalArgumentException("사용자가 존재하지 않습니다.")
         val userToken = userTokenRepository.findByUserId(user.id)
