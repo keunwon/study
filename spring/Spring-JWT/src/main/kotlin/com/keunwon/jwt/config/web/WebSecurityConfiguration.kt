@@ -46,6 +46,7 @@ class WebSecurityConfiguration(
                 })
 
             oauth2Login {
+                authenticationFailureHandler = oAuthConfiguration.oAuthAuthenticationFailureHandler()
                 authenticationSuccessHandler = oAuthConfiguration.oAuthAuthenticationSuccessHandler()
                 userInfoEndpoint {
                     userService = oAuthConfiguration.customOAuth2UserService()
