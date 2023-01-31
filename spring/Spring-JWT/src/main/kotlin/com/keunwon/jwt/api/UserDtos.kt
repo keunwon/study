@@ -30,7 +30,7 @@ data class UserSignDto(
     )
 }
 
-data class UserSignResponseDto(
+data class UserSignResponse(
     val id: Long,
     val username: String,
     val nickname: String,
