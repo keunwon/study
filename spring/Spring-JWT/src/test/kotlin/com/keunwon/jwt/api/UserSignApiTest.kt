@@ -1,18 +1,16 @@
 package com.keunwon.jwt.api
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.keunwon.jwt.NUMBER
 import com.keunwon.jwt.RestDocsSupport
 import com.keunwon.jwt.STRING
-import com.keunwon.jwt.domain.User
-import com.keunwon.jwt.domain.UserRole
 import com.keunwon.jwt.makeDocument
 import com.keunwon.jwt.type
+import io.mockk.Runs
 import io.mockk.every
+import io.mockk.just
 import io.mockk.mockk
 import io.restassured.http.ContentType
 import io.restassured.module.mockmvc.specification.MockMvcRequestSpecification
-import org.hamcrest.Matchers
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -32,14 +30,7 @@ class UserSignApiTest : RestDocsSupport() {
 
     @Test
     fun `사용자 회원가입`() {
-        every { userService.sign(userSignDto) } returns User(
-            name = "홍길동",
-            username = userSignDto.username,
-            password = userSignDto.password,
-            nickname = userSignDto.nickname,
-            role = UserRole.USER,
-            id = 1L,
-        )
+        every { userService.sign(userSignDto) } just Runs
 
         val response = mockMvc
             .contentType(ContentType.JSON)
@@ -50,10 +41,7 @@ class UserSignApiTest : RestDocsSupport() {
 
         // then
         response.then()
-            .status(HttpStatus.OK)
-            .body("id", Matchers.notNullValue())
-            .body("username", Matchers.equalTo(userSignDto.username))
-            .body("nickname", Matchers.equalTo(userSignDto.nickname))
+            .status(HttpStatus.NO_CONTENT)
 
         // doc
         response.makeDocument("사용자 회원가입") {
@@ -63,16 +51,11 @@ class UserSignApiTest : RestDocsSupport() {
                 "nickname" type STRING means "닉네임",
                 "name" type STRING means "사용자 이름",
             )
-            responseBody(
-                "id" type NUMBER means "서버에서 사용하는 사용자 아이디",
-                "username" type STRING means "생성된 사용자가 아이디",
-                "nickname" type STRING means "생성된 사용자 닉네임",
-            )
         }
     }
 
     companion object {
-        val userSignDto = UserSignDto(
+        val userSignDto = UserSignRequest(
             name = "홍길동",
             username = "test-id",
             password = "password",
