@@ -21,8 +21,9 @@ class UserTokenService(
     }
 
     private fun validateRefreshToken(accessTokenIssue: AccessTokenIssue) = with(accessTokenIssue) {
+        jwtProvider.verifyTokenOrThrownError(accessTokenIssue.refreshToken)
         val user = userRepository.getByUsername(accessTokenIssue.username)
         val userToken = userTokenRepository.getByUserId(user.id)
-        require(refreshToken == userToken.refreshToken) { "refreshToken 일치하지 않습니다." }
+        require(refreshToken == userToken.refreshToken) { "refreshToken 일치하지 않습니다" }
     }
 }
