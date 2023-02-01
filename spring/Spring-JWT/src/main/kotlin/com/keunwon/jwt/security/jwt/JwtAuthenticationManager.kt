@@ -4,12 +4,12 @@ import com.keunwon.jwt.config.LogSupport
 import com.keunwon.jwt.domain.User
 import com.keunwon.jwt.domain.UserRepository
 import com.keunwon.jwt.domain.generatedGrantedAuthorityList
+import com.keunwon.jwt.domain.getByUsername
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.authentication.LockedException
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
-import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.transaction.annotation.Transactional
 
@@ -20,9 +20,7 @@ open class JwtAuthenticationManager(
 
     @Transactional(noRollbackFor = [BadCredentialsException::class])
     override fun authenticate(authentication: Authentication): Authentication {
-        val user = userRepository.findByUsername(authentication.name)
-            ?: throw UsernameNotFoundException("존재하지 않는 사용자입니다. 사용자: ${authentication.name}")
-        return user.run {
+        return userRepository.getByUsername(authentication.name).run {
             preAuthenticationCheck()
             passwordCheckAndUpdateUser(authentication)
             generateAuthenticationToken()
