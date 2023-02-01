@@ -1,6 +1,8 @@
 package com.keunwon.jwt.domain
 
 import com.keunwon.jwt.common.jpa.BaseEntity
+import com.keunwon.jwt.common.util.toLocalDateTime
+import com.keunwon.jwt.security.jwt.JwtRefreshToken
 import java.time.LocalDateTime
 import javax.persistence.Column
 import javax.persistence.Entity
@@ -24,9 +26,14 @@ class UserToken(
     @Column(name = "token_id")
     val id: Long = 0,
 ) : BaseEntity() {
+    constructor(userId: Long, jwtRefreshToken: JwtRefreshToken) : this(
+        userId,
+        jwtRefreshToken.value,
+        jwtRefreshToken.expiredAt.toLocalDateTime(),
+    )
 
-    fun updateRefreshToken(refreshToken: String, expiredRefreshToken: LocalDateTime) {
-        this.refreshToken = refreshToken
-        this.expiredRefreshToken = expiredRefreshToken
+    fun updateRefreshToken(jwtRefreshToken: JwtRefreshToken) {
+        refreshToken = jwtRefreshToken.value
+        expiredRefreshToken = jwtRefreshToken.expiredAt.toLocalDateTime()
     }
 }

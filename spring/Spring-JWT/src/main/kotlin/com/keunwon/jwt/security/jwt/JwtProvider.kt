@@ -33,13 +33,13 @@ class JwtProvider(
     fun generateAccessToken(tokenRequest: CreateTokenRequest): JwtAccessToken {
         val tokenValue = generateToken(tokenRequest, jwtProperties.expiredDateByAccessToken)
         val claims = getBody(tokenValue)
-        return JwtAccessToken(tokenValue, claims.issuedAt.toInstant(), claims.expiration.toInstant())
+        return JwtAccessToken(tokenValue, claims)
     }
 
     fun generateRefreshToken(tokenRequest: CreateTokenRequest): JwtRefreshToken {
         val tokenValue = generateToken(tokenRequest, jwtProperties.expirationDateByRefreshToken)
         val claims = getBody(tokenValue)
-        return JwtRefreshToken(tokenValue, claims.issuedAt.toInstant(), claims.expiration.toInstant())
+        return JwtRefreshToken(tokenValue, claims)
     }
 
     fun generateAccessTokenWith(refreshToken: String): JwtAccessToken {
@@ -58,9 +58,9 @@ class JwtProvider(
             .compact()
     }
 
-    fun getBody(token: String): Claims = getJws(token).body
+    fun getBody(token: String): Claims = getJwsClaims(token).body
 
-    fun verifyTokenOrThrownError(token: String?) = getJws(token)
+    fun verifyTokenOrThrownError(token: String?) = getJwsClaims(token)
 
     fun getRoles(claims: Claims): List<String> {
         return claims[ROLE_KEY].toString()
@@ -69,7 +69,7 @@ class JwtProvider(
             .toList()
     }
 
-    private fun getJws(token: String?): Jws<Claims> {
+    private fun getJwsClaims(token: String?): Jws<Claims> {
         return Jwts.parserBuilder()
             .setSigningKey(key)
             .build()

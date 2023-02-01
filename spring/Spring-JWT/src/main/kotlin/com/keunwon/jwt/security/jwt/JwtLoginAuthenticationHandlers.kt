@@ -28,10 +28,11 @@ class JwtLoginAuthenticationSuccessHandler(
         authentication: Authentication,
     ) {
         val user = authentication.principal as User
-        val loginToken = generateJwtLoginToken(user)
-        saveOrUpdateRefreshToken(user, loginToken.refreshToken)
-        response.writeLoginToken(LoginTokenResponse.from(loginToken))
-        loggingLogin(loginToken)
+        generateJwtLoginToken(user).also { loginToken ->
+            saveOrUpdateRefreshToken(user, loginToken.refreshToken)
+            response.writeLoginToken(LoginTokenResponse(loginToken))
+            loggingLogin(loginToken)
+        }
     }
 
     private fun generateJwtLoginToken(user: User): JwtLoginToken {
@@ -46,16 +47,9 @@ class JwtLoginAuthenticationSuccessHandler(
     }
 
     private fun saveOrUpdateRefreshToken(user: User, refreshToken: JwtRefreshToken) {
-        val userToken = loadUserToken(user.id, refreshToken)
+        val userToken = userTokenRepository.findByUserId(user.id)?.apply { updateRefreshToken(refreshToken) }
+            ?: UserToken(user.id, refreshToken)
         userTokenRepository.save(userToken)
-    }
-
-    private fun loadUserToken(userId: Long, refreshToken: JwtRefreshToken): UserToken {
-        val tokenValue = refreshToken.value
-        val expiresAt = refreshToken.expiredAt.toLocalDateTime()
-        return userTokenRepository.findByUserId(userId)
-            ?.apply { updateRefreshToken(tokenValue, expiresAt) }
-            ?: UserToken(userId, tokenValue, expiresAt)
     }
 
     private fun loggingLogin(jwtLoginToken: JwtLoginToken) {
@@ -79,7 +73,7 @@ class JwtLoginAuthenticationFailureHandler(
         response: HttpServletResponse,
         exception: AuthenticationException,
     ) {
-        val errorDto = generateErrorDto(exception.message)
+        val errorDto = createErrorDto(exception.message)
         response.writeErrorBody(errorDto)
     }
 
@@ -89,7 +83,7 @@ class JwtLoginAuthenticationFailureHandler(
         objectMapper.writeValue(outputStream, errorDto)
     }
 
-    private fun generateErrorDto(errorMessage: String?) = ErrorDto(
+    private fun createErrorDto(errorMessage: String?) = ErrorDto(
         code = HttpStatus.UNAUTHORIZED.value(),
         message = errorMessage ?: "로그인을 실패하였습니다."
     )

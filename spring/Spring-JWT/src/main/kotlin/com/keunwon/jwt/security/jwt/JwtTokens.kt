@@ -1,5 +1,6 @@
 package com.keunwon.jwt.security.jwt
 
+import io.jsonwebtoken.Claims
 import java.time.Instant
 
 data class JwtLoginToken(
@@ -17,13 +18,25 @@ data class JwtAccessToken(
     override val value: String,
     override val issuedAt: Instant,
     override val expiredAt: Instant,
-) : AbstractJwtToken()
+) : AbstractJwtToken() {
+    constructor(token: String, claims: Claims) : this(
+        token,
+        claims.issuedAt.toInstant(),
+        claims.expiration.toInstant()
+    )
+}
 
 data class JwtRefreshToken(
     override val value: String,
     override val issuedAt: Instant,
     override val expiredAt: Instant,
-) : AbstractJwtToken()
+) : AbstractJwtToken() {
+    constructor(token: String, claims: Claims) : this(
+        token,
+        claims.issuedAt.toInstant(),
+        claims.expiration.toInstant(),
+    )
+}
 
 /**
  * 로그인 성공 응답
@@ -32,10 +45,8 @@ data class LoginTokenResponse(
     val accessToken: String,
     val refreshToken: String,
 ) {
-    companion object {
-        fun from(loginToken: JwtLoginToken) = LoginTokenResponse(
-            accessToken = loginToken.accessToken.value,
-            refreshToken = loginToken.refreshToken.value,
-        )
-    }
+    constructor(jwtLoginToken: JwtLoginToken) : this(
+        jwtLoginToken.accessToken.value,
+        jwtLoginToken.refreshToken.value,
+    )
 }
