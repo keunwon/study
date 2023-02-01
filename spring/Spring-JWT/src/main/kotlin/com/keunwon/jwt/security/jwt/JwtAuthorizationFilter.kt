@@ -19,7 +19,6 @@ class JwtAuthorizationFilter(
     private val jwtProvider: JwtProvider,
     private val objectMapper: ObjectMapper,
 ) : OncePerRequestFilter() {
-
     override fun doFilterInternal(
         request: HttpServletRequest,
         response: HttpServletResponse,
@@ -31,9 +30,9 @@ class JwtAuthorizationFilter(
                 registerSecurityContext(it.credentials)
             }
             filterChain.doFilter(request, response)
-        }.onFailure {
-            log.error("> 요청 URL: ${request.pathInfo}, 내용: ${it.message}")
-            response.writeErrorResponse(generateErrorDto(it))
+        }.onFailure { ex ->
+            log.error("> 요청 URL: ${request.pathInfo}, 내용: ${ex.message}")
+            response.writeErrorResponse(createErrorDto(ex))
         }
     }
 
@@ -44,7 +43,7 @@ class JwtAuthorizationFilter(
             UsernamePasswordAuthenticationToken.authenticated(claims, "", roles)
     }
 
-    private fun generateErrorDto(ex: Throwable): ErrorDto {
+    private fun createErrorDto(ex: Throwable): ErrorDto {
         val message = run {
             val defaultMessage = ex.message ?: "토큰 검증을 실패하였습니다"
             JwtProvider.validationErrorMessages[ex::class] ?: defaultMessage
@@ -68,19 +67,19 @@ class AuthorizationHeader(httpServletRequest: HttpServletRequest) {
     val credentials: String
 
     init {
-        validateAuthorizationHeader()
+        verifyAuthorizationHeader()
         val (type, credentials) = authorizationValue.split(" ")
         this.type = type
         this.credentials = credentials
-        validateProperties()
+        verifyProperties()
     }
 
-    private fun validateAuthorizationHeader() {
+    private fun verifyAuthorizationHeader() {
         val value = authorizationValue ?: throw JwtException("Authorization 헤더가 비어있습니다")
         if (value.split(" ").size != 2) throw JwtException("Authorization 헤더 구성이 올바르지 않습니다")
     }
 
-    private fun validateProperties() {
+    private fun verifyProperties() {
         if (type != AUTHORIZATION_PREFIX) throw JwtException("지원하지 않는 토큰 타입입니다")
         if (credentials.isBlank()) throw JwtException("토큰이 비어있거나 존재하지 않습니다")
     }

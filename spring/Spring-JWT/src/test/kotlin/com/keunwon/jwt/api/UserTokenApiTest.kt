@@ -46,7 +46,7 @@ class UserTokenApiTest : RestDocsSupport() {
         // when, then
         response.then()
             .status(HttpStatus.OK)
-            .body("accessToken", Matchers.notNullValue())
+            .body("value", Matchers.notNullValue())
             .body("expirationAccessToken", Matchers.notNullValue())
 
         response.makeDocument("accessToken 재발급") {
@@ -55,7 +55,7 @@ class UserTokenApiTest : RestDocsSupport() {
                 "refreshToken" type STRING means "로그인 시 발급 받은 refreshToken",
             )
             responseBody(
-                "accessToken" type STRING means "새로 발급한 accessToken",
+                "value" type STRING means "새로 발급한 accessToken",
                 "expirationAccessToken" type STRING means "발급 된 accessToken 유효만료 기간",
             )
         }

@@ -116,7 +116,7 @@ class LoginSuccessHandlerStub : AuthenticationSuccessHandler {
         authentication: Authentication,
     ) {
         val loginToken = testTokenProvider.generateLoginSuccessToken(authentication.toCreateTokenRequest())
-        val body = LoginTokenResponse.from(loginToken)
+        val body = LoginTokenResponse(loginToken)
         response.apply {
             status = HttpStatus.OK.value()
             contentType = MediaType.APPLICATION_JSON_VALUE

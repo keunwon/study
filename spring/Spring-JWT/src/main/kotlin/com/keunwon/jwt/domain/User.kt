@@ -4,6 +4,7 @@ import com.keunwon.jwt.common.jpa.BaseEntity
 import com.keunwon.jwt.common.jpa.convert.BooleanConverter
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
+import org.springframework.security.crypto.password.PasswordEncoder
 import javax.persistence.Column
 import javax.persistence.Convert
 import javax.persistence.Entity
@@ -37,7 +38,7 @@ class User(
     val loginType: LoginType = LoginType.SIMPLE,
 
     @Column(name = "fail_count")
-    var failCount: Int = 0,
+    var failureCount: Int = 0,
 
     @Column(name = "activated", length = 1)
     @Convert(converter = BooleanConverter::class)
@@ -50,7 +51,24 @@ class User(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
-) : BaseEntity()
+) : BaseEntity() {
+    fun matchPassword(password: String, passwordEncoder: PasswordEncoder): Boolean =
+        passwordEncoder.matches(password, this.password)
+
+    fun reset() {
+        failureCount = 0
+        isActivated = true
+    }
+
+    fun incrementFailures() {
+        failureCount++
+        isActivated = failureCount < MAX_LOGIN_FAIL
+    }
+
+    companion object {
+        private const val MAX_LOGIN_FAIL = 10
+    }
+}
 
 enum class UserRole(val title: String) {
     ADMIN("관리자"),
