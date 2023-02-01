@@ -5,6 +5,7 @@ import com.keunwon.jwt.common.ErrorDto
 import com.keunwon.jwt.domain.UserRepository
 import com.keunwon.jwt.domain.UserToken
 import com.keunwon.jwt.domain.UserTokenRepository
+import com.keunwon.jwt.domain.getByUsername
 import com.keunwon.jwt.security.jwt.CreateTokenRequest
 import com.keunwon.jwt.security.jwt.JwtProvider
 import com.keunwon.jwt.security.jwt.JwtRefreshToken
@@ -24,7 +25,6 @@ class OAuthAuthenticationSuccessHandler(
     private val userTokenRepository: UserTokenRepository,
     private val objectMapper: ObjectMapper,
 ) : AuthenticationSuccessHandler {
-
     override fun onAuthenticationSuccess(
         request: HttpServletRequest,
         response: HttpServletResponse,
@@ -42,7 +42,7 @@ class OAuthAuthenticationSuccessHandler(
     }
 
     private fun saveOrUpdateRefreshToken(authentication: Authentication, refreshToken: JwtRefreshToken) {
-        val user = userRepository.findByEmail(authentication.name)!!
+        val user = userRepository.getByUsername(authentication.name)
         val userToken = userTokenRepository.findByUserId(user.id)?.apply { updateRefreshToken(refreshToken) }
             ?: UserToken(user.id, refreshToken)
         userTokenRepository.save(userToken)
@@ -52,7 +52,6 @@ class OAuthAuthenticationSuccessHandler(
 class OAuthAuthenticationFailureHandler(
     private val objectMapper: ObjectMapper,
 ) : AuthenticationFailureHandler {
-
     override fun onAuthenticationFailure(
         request: HttpServletRequest,
         response: HttpServletResponse,

@@ -18,7 +18,6 @@ class JwtConfiguration(
     private val jwtProvider: JwtProvider,
     private val objectMapper: ObjectMapper,
 ) {
-
     @Bean
     fun jwtAuthenticationManager(): AuthenticationManager = JwtAuthenticationManager(userRepository, passwordEncoder())
 

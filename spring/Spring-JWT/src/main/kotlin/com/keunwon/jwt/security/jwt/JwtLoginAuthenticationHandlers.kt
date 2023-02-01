@@ -21,7 +21,6 @@ class JwtLoginAuthenticationSuccessHandler(
     private val userTokenRepository: UserTokenRepository,
     private val objectMapper: ObjectMapper,
 ) : AuthenticationSuccessHandler {
-
     override fun onAuthenticationSuccess(
         request: HttpServletRequest,
         response: HttpServletResponse,

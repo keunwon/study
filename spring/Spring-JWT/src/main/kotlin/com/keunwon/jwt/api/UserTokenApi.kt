@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class UserTokenApi(private val userTokenService: UserTokenService) {
-
     @PostMapping("/auth/refreshToken")
     fun refreshToken(@Validated @RequestBody dto: AccessTokenIssue): ResponseEntity<AccessToken> {
         val response = userTokenService.refreshAccessToken(dto)

@@ -17,7 +17,6 @@ import org.springframework.web.servlet.NoHandlerFoundException
 
 @ControllerAdvice
 class ControllerErrorHandler {
-
     @ExceptionHandler(MethodArgumentNotValidException::class)
     fun handleMethodArgumentNotValidException(ex: MethodArgumentNotValidException): ResponseEntity<ErrorDto> {
         val httpStatus = HttpStatus.BAD_REQUEST

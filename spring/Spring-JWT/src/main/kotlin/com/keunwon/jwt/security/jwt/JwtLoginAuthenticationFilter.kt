@@ -36,7 +36,6 @@ class JwtLoginAuthenticationFilter(
     authenticationManager: AuthenticationManager,
     private val objectMapper: ObjectMapper,
 ) : UsernamePasswordAuthenticationFilter(authenticationManager) {
-
     init {
         setRequiresAuthenticationRequestMatcher(AntPathRequestMatcher(LOGIN_URL, HttpMethod.POST.name))
     }
