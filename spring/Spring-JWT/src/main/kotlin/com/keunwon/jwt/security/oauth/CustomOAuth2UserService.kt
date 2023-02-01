@@ -13,15 +13,13 @@ class CustomOAuth2UserService(private val userRepository: UserRepository) :
 
     override fun loadUser(userRequest: OAuth2UserRequest): OAuth2User {
         val oAuth2User = defaultOAuth2UserService.loadUser(userRequest)
-        return OAuth2AttributeFactory.factory(userRequest, oAuth2User).run {
-            val user = saveOrUpdate(this)
-            toOAuth2User(user.role.name, oAuth2User)
-        }
+        val oAuth2Attributes = OAuth2AttributeFactory.create(userRequest, oAuth2User)
+        val user = saveOrUpdate(oAuth2Attributes)
+        return oAuth2Attributes.toOAuth2User(user.role.name, oAuth2User)
     }
 
     private fun saveOrUpdate(oAuth2Attributes: Oauth2Attributes): User {
-        val user = userRepository.findByEmail(oAuth2Attributes.email)
-            ?.apply { oAuthLogin(oAuth2Attributes) }
+        val user = userRepository.findByEmail(oAuth2Attributes.email)?.apply { oAuthLogin(oAuth2Attributes) }
             ?: oAuth2Attributes.toUserEntity()
         return userRepository.save(user)
     }
