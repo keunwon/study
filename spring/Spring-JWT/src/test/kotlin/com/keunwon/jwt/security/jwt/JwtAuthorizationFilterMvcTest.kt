@@ -87,12 +87,12 @@ class JwtAuthorizationFilterMvcTest {
     fun `만료된 토큰을 함께 보내면 실패(403) 응답`() {
         // given
         val createJwtDto = CreateTokenRequest("test-id", UserRole.DEFAULT_ROLES)
-        val token = tokenProvider.generateToken(createJwtDto, TokenProviderFixture.expiredDate)
+        val expiredToken = tokenProvider.generateToken(createJwtDto, TokenProviderFixture.expiredDate)
 
         // when, then
         mockMvc.perform(
             get("/")
-                .header(HttpHeaders.AUTHORIZATION, "Bearer $token")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer $expiredToken")
         ).andExpectAll(
             status().isForbidden,
             content().contentType(MediaType.APPLICATION_JSON),

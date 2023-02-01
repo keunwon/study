@@ -95,8 +95,5 @@ data class CreateTokenRequest(
     companion object {
         fun from(authentication: Authentication) =
             CreateTokenRequest(authentication.name, authentication.authorities.map { it.authority })
-
-        fun from(claims: Claims) =
-            CreateTokenRequest(claims.subject, claims["role", String::class.java].split(","))
     }
 }

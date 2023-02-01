@@ -26,13 +26,13 @@ class JwtAuthorizationFilter(
         filterChain: FilterChain,
     ) {
         runCatching {
-            JwtHeaderToken(request).also {
+            AuthorizationHeader(request).also {
                 jwtProvider.verifyTokenOrThrownError(it.credentials)
                 registerSecurityContext(it.credentials)
             }
             filterChain.doFilter(request, response)
         }.onFailure {
-            log.error("> ${it.message}, Request-url: ${request.servletPath}")
+            log.error("> 요청 URL: ${request.pathInfo}, 내용: ${it.message}")
             response.writeErrorResponse(generateErrorDto(it))
         }
     }
@@ -61,21 +61,22 @@ class JwtAuthorizationFilter(
     companion object : LogSupport
 }
 
-class JwtHeaderToken(httpServletRequest: HttpServletRequest) {
+class AuthorizationHeader(httpServletRequest: HttpServletRequest) {
+    private val authorizationValue = httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION)
+
     val type: String
     val credentials: String
 
     init {
-        validateHeaderPattern(httpServletRequest)
-        val (type, credentials) = httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION).split(" ")
+        validateAuthorizationHeader()
+        val (type, credentials) = authorizationValue.split(" ")
         this.type = type
         this.credentials = credentials
         validateProperties()
     }
 
-    private fun validateHeaderPattern(httpServletRequest: HttpServletRequest) {
-        val value = httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION)
-            ?: throw JwtException("Authorization 헤더가 비어있습니다")
+    private fun validateAuthorizationHeader() {
+        val value = authorizationValue ?: throw JwtException("Authorization 헤더가 비어있습니다")
         if (value.split(" ").size != 2) throw JwtException("Authorization 헤더 구성이 올바르지 않습니다")
     }
 
@@ -88,3 +89,4 @@ class JwtHeaderToken(httpServletRequest: HttpServletRequest) {
         private const val AUTHORIZATION_PREFIX = "Bearer"
     }
 }
+

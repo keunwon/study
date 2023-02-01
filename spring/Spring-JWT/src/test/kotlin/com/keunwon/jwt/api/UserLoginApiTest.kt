@@ -31,7 +31,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler
 import org.springframework.stereotype.Controller
-import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.bind.annotation.RestController
@@ -46,7 +45,6 @@ import javax.servlet.http.HttpServletResponse
         ComponentScan.Filter(type = FilterType.ANNOTATION, classes = [Controller::class, RestController::class])
     ]
 )
-@ContextConfiguration
 class UserLoginApiTest {
     private val authentication = JwtAuthenticationManagerStub()
     private val customAuthenticationFilter = JwtLoginAuthenticationFilter(authentication, testObjectMapper).apply {
