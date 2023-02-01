@@ -122,7 +122,7 @@ class JwtLoginMvcTest {
             status().isUnauthorized,
             content().contentType(MediaType.APPLICATION_JSON),
             jsonPath("$.code").value("401"),
-            jsonPath("$.message").value("존재하지 않는 사용자입니다. 사용자: $username")
+            jsonPath("$.message").value("$username 찾을 수 없습니다")
         )
     }
 
@@ -141,7 +141,7 @@ class JwtLoginMvcTest {
             status().isUnauthorized,
             content().contentType(MediaType.APPLICATION_JSON),
             jsonPath("$.code").value("401"),
-            jsonPath("$.message").value("사용자 비밀번호가 일치하지 않습니다. 사용자: $username")
+            jsonPath("$.message").value("$username 비밀번호가 일치하지 않습니다")
         )
     }
 
@@ -168,7 +168,7 @@ class JwtLoginMvcTest {
     fun `사용자 로그인 실패 횟수가 10회 이상인 경우, 계정이 잠김`() {
         // given
         val login = mapOf("username" to username, "password" to failUserPassword)
-        userRepository.save(simpleUser().apply { failCount = 10 })
+        userRepository.save(simpleUser().apply { failureCount = 10 })
 
         // when, then
         mockMvc.perform(
@@ -179,13 +179,13 @@ class JwtLoginMvcTest {
             status().isUnauthorized,
             content().contentType(MediaType.APPLICATION_JSON),
             jsonPath("$.code").value("401"),
-            jsonPath("$.message").value("사용자 비밀번호가 일치하지 않습니다. 사용자: $username")
+            jsonPath("$.message").value("$username 비밀번호가 일치하지 않습니다")
         )
 
         val user = userRepository.findByUsername(username)!!
         assertAll({
             assertThat(user.isActivated).isFalse
-            assertThat(user.failCount).isEqualTo(11)
+            assertThat(user.failureCount).isEqualTo(11)
         })
     }
 
