@@ -15,12 +15,12 @@ class UserTokenService(
 ) {
     @Transactional
     fun refreshAccessToken(accessTokenIssue: AccessTokenIssue): AccessToken {
-        validationRefreshToken(accessTokenIssue)
+        validateRefreshToken(accessTokenIssue)
         return jwtProvider.generateAccessTokenWith(accessTokenIssue.refreshToken)
             .run { AccessToken(value, expiredAt.toLocalDateTime()) }
     }
 
-    private fun validationRefreshToken(accessTokenIssue: AccessTokenIssue) {
+    private fun validateRefreshToken(accessTokenIssue: AccessTokenIssue) {
         jwtProvider.verifyTokenOrThrownError(accessTokenIssue.refreshToken)
         val user = userRepository.findByUsername(accessTokenIssue.username)
             ?: throw IllegalArgumentException("사용자가 존재하지 않습니다.")

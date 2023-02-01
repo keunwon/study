@@ -47,7 +47,7 @@ data class AccessTokenIssue(
 )
 
 data class AccessToken(
-    val accessToken: String,
+    val value: String,
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     val expirationAccessToken: LocalDateTime,
