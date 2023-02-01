@@ -9,13 +9,11 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class UserSignApi(private val userService: UserService) {
-
     @PostMapping("/auth/sign")
-    fun sing(@Validated @RequestBody userSignSignDto: UserSignDto): ResponseEntity<UserSignResponse> {
-        return userService.sign(userSignSignDto).run {
-            log.info("> 회원 가입 성공, 사용자명: $username")
-            ResponseEntity.ok(UserSignResponse(this))
-        }
+    fun sing(@Validated @RequestBody request: UserSignRequest): ResponseEntity<Void> {
+        userService.sign(request)
+        log.info("> ${request.username} 회원가입 완료")
+        return ResponseEntity.noContent().build()
     }
 
     companion object : LogSupport

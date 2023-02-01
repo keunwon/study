@@ -12,10 +12,9 @@ class UserTokenApi(private val userTokenService: UserTokenService) {
 
     @PostMapping("/auth/refreshToken")
     fun refreshToken(@Validated @RequestBody dto: AccessTokenIssue): ResponseEntity<AccessToken> {
-        return userTokenService.refreshAccessToken(dto).run {
-            log.info("> accessToken 재발급, 사용자명: ${dto.username}")
-            ResponseEntity.ok(this)
-        }
+        val response = userTokenService.refreshAccessToken(dto)
+        log.info("> ${dto.username} accessToken 재발급")
+        return ResponseEntity.ok(response)
     }
 
     companion object : LogSupport
