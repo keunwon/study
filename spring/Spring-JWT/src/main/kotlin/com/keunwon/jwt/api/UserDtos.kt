@@ -27,7 +27,7 @@ data class UserSignRequest(
         username = username,
         password = passwordEncoder.encode(password),
         nickname = nickname,
-        isActivated = true,
+        isAccountNonLocked = true,
         role = UserRole.USER,
     )
 }
@@ -46,5 +46,8 @@ data class AccessToken(
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     val expirationAccessToken: LocalDateTime,
 ) {
-    constructor(jwtAccessToken: JwtAccessToken) : this(jwtAccessToken.value, jwtAccessToken.expiredAt.toLocalDateTime())
+    constructor(jwtAccessToken: JwtAccessToken) : this(
+        jwtAccessToken.value,
+        jwtAccessToken.expiredAt.toLocalDateTime()
+    )
 }

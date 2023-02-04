@@ -29,7 +29,7 @@ open class JwtAuthenticationManager(
     }
 
     private fun User.preAuthenticationCheck() {
-        if (isActivated.not()) throw LockedException("사용자 계정이 잠겨있습니다. 사용자: $username")
+        if (!isAccountNonLocked) throw LockedException("사용자 계정이 잠겨있습니다. 사용자: $username")
     }
 
     private fun User.matchPasswordAndUpdate(authentication: Authentication, passwordEncoder: PasswordEncoder) {

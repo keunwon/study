@@ -10,16 +10,13 @@ import javax.persistence.Convert
 import javax.persistence.Entity
 import javax.persistence.EnumType
 import javax.persistence.Enumerated
-import javax.persistence.GeneratedValue
-import javax.persistence.GenerationType
-import javax.persistence.Id
 import javax.persistence.Table
 
 @Entity
 @Table(name = "users")
 class User(
     @Column(name = "username", length = 20)
-    var username: String? = null,
+    val username: String? = null,
 
     @Column(name = "password", length = 255)
     var password: String? = null,
@@ -40,29 +37,27 @@ class User(
     @Column(name = "fail_count")
     var failureCount: Int = 0,
 
-    @Column(name = "activated", length = 1)
+    @Column(name = "accountNonLocked", length = 1)
     @Convert(converter = BooleanConverter::class)
-    var isActivated: Boolean = true,
+    var isAccountNonLocked: Boolean = true,
 
     @Column(name = "role", length = 10)
     @Enumerated(EnumType.STRING)
     var role: UserRole,
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long = 0,
-) : BaseEntity() {
+    id: Long = 0,
+) : BaseEntity(id) {
     fun matchPassword(password: String, passwordEncoder: PasswordEncoder): Boolean =
         passwordEncoder.matches(password, this.password)
 
     fun reset() {
         failureCount = 0
-        isActivated = true
+        isAccountNonLocked = true
     }
 
     fun incrementFailures() {
         failureCount++
-        isActivated = failureCount < MAX_LOGIN_FAIL
+        isAccountNonLocked = failureCount < MAX_LOGIN_FAIL
     }
 
     companion object {
