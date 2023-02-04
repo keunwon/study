@@ -1,12 +1,16 @@
 package com.keunwon.jwt.api
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.keunwon.jwt.InmemoryAuthenticationCodeRepository
 import com.keunwon.jwt.InmemoryUserRepository
 import com.keunwon.jwt.RestDocsSupport
 import com.keunwon.jwt.STRING
 import com.keunwon.jwt.TestPasswordEncoder
+import com.keunwon.jwt.USERNAME
+import com.keunwon.jwt.USER_FULL_NAME
+import com.keunwon.jwt.USER_NICKNAME
+import com.keunwon.jwt.USER_PASSWORD
 import com.keunwon.jwt.makeDocument
+import com.keunwon.jwt.toJson
 import com.keunwon.jwt.type
 import io.restassured.http.ContentType
 import io.restassured.module.mockmvc.specification.MockMvcRequestSpecification
@@ -35,9 +39,10 @@ class UserAuthenticationApiTest : RestDocsSupport() {
     @Test
     fun `사용자 회원가입`() {
         // given
+        val request = UserSignRequest(USERNAME, USER_PASSWORD, USER_FULL_NAME, USER_NICKNAME)
         val response = mockMvc
             .contentType(ContentType.JSON)
-            .body(jacksonObjectMapper().writeValueAsString(userSignDto))
+            .body(toJson(request))
             .post("/auth/sign")
 
         response.prettyPrint()
@@ -55,14 +60,5 @@ class UserAuthenticationApiTest : RestDocsSupport() {
                 "name" type STRING means "사용자 이름",
             )
         }
-    }
-
-    companion object {
-        val userSignDto = UserSignRequest(
-            name = "홍길동",
-            username = "test-id",
-            password = "password",
-            nickname = "닉네임",
-        )
     }
 }

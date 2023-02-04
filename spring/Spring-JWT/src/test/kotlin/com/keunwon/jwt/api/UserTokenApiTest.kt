@@ -4,7 +4,6 @@ import com.keunwon.jwt.InmemoryUserRepository
 import com.keunwon.jwt.InmemoryUserTokenRepository
 import com.keunwon.jwt.RestDocsSupport
 import com.keunwon.jwt.STRING
-import com.keunwon.jwt.TokenProviderFixture.testTokenProvider
 import com.keunwon.jwt.USERNAME
 import com.keunwon.jwt.common.util.toLocalDateTime
 import com.keunwon.jwt.createUser
@@ -13,12 +12,14 @@ import com.keunwon.jwt.domain.UserRole
 import com.keunwon.jwt.makeDocument
 import com.keunwon.jwt.security.jwt.CreateTokenRequest
 import com.keunwon.jwt.security.jwt.JwtLoginToken
+import com.keunwon.jwt.testTokenProvider
 import com.keunwon.jwt.toJson
 import com.keunwon.jwt.type
 import io.restassured.http.ContentType
 import io.restassured.module.mockmvc.response.MockMvcResponse
 import io.restassured.module.mockmvc.specification.MockMvcRequestSpecification
-import org.hamcrest.Matchers
+import org.hamcrest.Matchers.equalTo
+import org.hamcrest.Matchers.notNullValue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -62,8 +63,8 @@ class UserTokenApiTest : RestDocsSupport() {
         // when, then
         response.then()
             .status(HttpStatus.OK)
-            .body("value", Matchers.notNullValue())
-            .body("expirationAccessToken", Matchers.notNullValue())
+            .body("value", notNullValue())
+            .body("expirationAccessToken", notNullValue())
 
         response.makeDocument("accessToken 재발급") {
             requestBody(
@@ -82,9 +83,9 @@ class UserTokenApiTest : RestDocsSupport() {
         givenMockMvc("", jwtLoginToken.refreshToken.value).then()
             .status(HttpStatus.BAD_REQUEST)
             .contentType(ContentType.JSON)
-            .body("code", Matchers.equalTo(400))
-            .body("message", Matchers.equalTo("파라미터가 유효하지 않습니다"))
-            .body("errors", Matchers.equalTo(listOf("username 필수 파라미터 입니다")))
+            .body("code", equalTo(400))
+            .body("message", equalTo("파라미터가 유효하지 않습니다"))
+            .body("errors", equalTo(listOf("username 필수 파라미터 입니다")))
     }
 
     @Test
@@ -92,9 +93,9 @@ class UserTokenApiTest : RestDocsSupport() {
         givenMockMvc(username, "").then()
             .status(HttpStatus.BAD_REQUEST)
             .contentType(ContentType.JSON)
-            .body("code", Matchers.equalTo(400))
-            .body("message", Matchers.equalTo("파라미터가 유효하지 않습니다"))
-            .body("errors", Matchers.equalTo(listOf("refreshToken 필수 파라미터 입니다")))
+            .body("code", equalTo(400))
+            .body("message", equalTo("파라미터가 유효하지 않습니다"))
+            .body("errors", equalTo(listOf("refreshToken 필수 파라미터 입니다")))
     }
 
     private fun givenMockMvc(username: String, refreshToken: String): MockMvcResponse {

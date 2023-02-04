@@ -1,9 +1,9 @@
 package com.keunwon.jwt.security.jwt
 
-import com.keunwon.jwt.TokenProviderFixture.expiredDate
-import com.keunwon.jwt.TokenProviderFixture.testTokenProvider
-import com.keunwon.jwt.TokenProviderFixture.unExpiredDate
+import com.keunwon.jwt.createToken
 import com.keunwon.jwt.domain.UserRole
+import com.keunwon.jwt.testTokenProvider
+import io.jsonwebtoken.ExpiredJwtException
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
@@ -17,7 +17,7 @@ internal class JwtProviderTest {
     @Test
     fun `문자열 토큰을 발급`() {
         // given
-        val token = testTokenProvider.generateToken(createJwtDto, unExpiredDate)
+        val token = createToken(expired = false).value
 
         // when, then
         assertAll({
@@ -29,7 +29,7 @@ internal class JwtProviderTest {
     @Test
     fun `정상적인 토큰 검증 시 exception 발생하지 않습니다`() {
         // given
-        val token = testTokenProvider.generateToken(createJwtDto, unExpiredDate)
+        val token = createToken(expired = false).value
 
         // when, then
         assertDoesNotThrow { testTokenProvider.verifyTokenOrThrownError(token) }
@@ -38,10 +38,11 @@ internal class JwtProviderTest {
     @Test
     fun `기간이 지난 토큰 검증 시 exception 발생합니다`() {
         // given
-        val token = testTokenProvider.generateToken(createJwtDto, expiredDate)
+        val token = createToken(expired = true).value
 
         // when, then
         assertThatThrownBy { testTokenProvider.verifyTokenOrThrownError(token) }
+            .isInstanceOf(ExpiredJwtException::class.java)
     }
 
     @ParameterizedTest
@@ -53,7 +54,7 @@ internal class JwtProviderTest {
     @Test
     fun `문자열 토큰을 Claims 반환합니다`() {
         // given
-        val token = testTokenProvider.generateToken(createJwtDto, unExpiredDate)
+        val token = createToken(expired = false).value
 
         // when
         val claims = testTokenProvider.getBody(token)

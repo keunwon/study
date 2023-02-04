@@ -4,12 +4,12 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.keunwon.jwt.JwtAuthenticationManagerStub
 import com.keunwon.jwt.RestDocsSupport
 import com.keunwon.jwt.STRING
-import com.keunwon.jwt.TokenProviderFixture.testTokenProvider
 import com.keunwon.jwt.makeDocument
 import com.keunwon.jwt.security.jwt.CreateTokenRequest
 import com.keunwon.jwt.security.jwt.JwtLoginAuthenticationFilter
 import com.keunwon.jwt.security.jwt.LoginTokenResponse
 import com.keunwon.jwt.testObjectMapper
+import com.keunwon.jwt.testTokenProvider
 import com.keunwon.jwt.type
 import io.restassured.module.mockmvc.specification.MockMvcRequestSpecification
 import org.hamcrest.Matchers.notNullValue
