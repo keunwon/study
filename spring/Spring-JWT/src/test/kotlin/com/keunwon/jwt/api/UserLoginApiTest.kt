@@ -1,6 +1,8 @@
 package com.keunwon.jwt.api
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.keunwon.jwt.JwtAuthenticationManagerStub
+import com.keunwon.jwt.RestDocsSupport
 import com.keunwon.jwt.STRING
 import com.keunwon.jwt.TokenProviderFixture.testTokenProvider
 import com.keunwon.jwt.makeDocument
@@ -9,64 +11,36 @@ import com.keunwon.jwt.security.jwt.JwtLoginAuthenticationFilter
 import com.keunwon.jwt.security.jwt.LoginTokenResponse
 import com.keunwon.jwt.testObjectMapper
 import com.keunwon.jwt.type
-import io.mockk.junit5.MockKExtension
-import io.restassured.module.mockmvc.RestAssuredMockMvc
 import io.restassured.module.mockmvc.specification.MockMvcRequestSpecification
 import org.hamcrest.Matchers.notNullValue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.extension.ExtendWith
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
-import org.springframework.context.annotation.ComponentScan
-import org.springframework.context.annotation.FilterType
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
 import org.springframework.restdocs.RestDocumentationContextProvider
 import org.springframework.restdocs.RestDocumentationExtension
-import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration
-import org.springframework.restdocs.operation.preprocess.Preprocessors
-import org.springframework.security.authentication.AuthenticationManager
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler
-import org.springframework.stereotype.Controller
-import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder
-import org.springframework.test.web.servlet.setup.MockMvcBuilders
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
-import org.springframework.web.context.WebApplicationContext
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@ExtendWith(RestDocumentationExtension::class, MockKExtension::class)
-@WebMvcTest(
-    excludeFilters = [
-        ComponentScan.Filter(type = FilterType.ANNOTATION, classes = [Controller::class, RestController::class])
-    ]
-)
-class UserLoginApiTest {
-    private val authentication = JwtAuthenticationManagerStub()
-    private val customAuthenticationFilter = JwtLoginAuthenticationFilter(authentication, testObjectMapper).apply {
-        setAuthenticationSuccessHandler(LoginSuccessHandlerStub())
-    }
+@ExtendWith(RestDocumentationExtension::class)
+class UserLoginApiTest : RestDocsSupport() {
+    private val authenticationManager = JwtAuthenticationManagerStub
+    private val customAuthenticationFilter =
+        JwtLoginAuthenticationFilter(authenticationManager, testObjectMapper).apply {
+            setAuthenticationSuccessHandler(LoginSuccessHandlerStub())
+        }
 
     lateinit var mockMvc: MockMvcRequestSpecification
 
     @BeforeEach
-    fun setup(restDocumentation: RestDocumentationContextProvider, webApplicationContext: WebApplicationContext) {
-        mockMvc = RestAssuredMockMvc.given()
-            .mockMvc(
-                MockMvcBuilders.webAppContextSetup(webApplicationContext)
-                    .apply<DefaultMockMvcBuilder>(
-                        documentationConfiguration(restDocumentation)
-                            .operationPreprocessors()
-                            .withRequestDefaults(Preprocessors.prettyPrint())
-                            .withResponseDefaults(Preprocessors.prettyPrint())
-                    )
-                    .addFilter<DefaultMockMvcBuilder>(customAuthenticationFilter)
-                    .build()
-            )
+    fun setup(restDocumentation: RestDocumentationContextProvider) {
+        mockMvc = mockMvc(TestHomeController(), restDocumentation, listOf(customAuthenticationFilter))
     }
 
     @Test
@@ -84,8 +58,6 @@ class UserLoginApiTest {
             .status(HttpStatus.OK)
             .body("accessToken", notNullValue())
             .body("refreshToken", notNullValue())
-        //.body("expirationAccessToken", notNullValue())
-        //.body("expirationRefreshToken", notNullValue())
 
         // doc
         response.makeDocument("사용자 로그인") {
@@ -96,17 +68,15 @@ class UserLoginApiTest {
             responseBody(
                 "accessToken" type STRING means "API 요청 시 함께 보내야하는 토큰",
                 "refreshToken" type STRING means "토큰 재발급을 위한 토큰",
-                //"expirationAccessToken" type STRING means "accessToken 유효시간",
-                //"expirationRefreshToken" type STRING means "refreshToken 요효시간",
             )
         }
     }
 }
 
-class JwtAuthenticationManagerStub : AuthenticationManager {
-    override fun authenticate(authentication: Authentication?): Authentication {
-        return UsernamePasswordAuthenticationToken.unauthenticated("홍길동", "password")
-    }
+@RestController("/")
+class TestHomeController {
+    @GetMapping
+    fun home(): ResponseEntity<String> = ResponseEntity.ok("ok")
 }
 
 class LoginSuccessHandlerStub : AuthenticationSuccessHandler {
