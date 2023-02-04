@@ -10,7 +10,6 @@ import org.springframework.security.oauth2.core.user.OAuth2User
 
 class CustomOAuth2UserService(private val userRepository: UserRepository) :
     OAuth2UserService<OAuth2UserRequest, OAuth2User> {
-
     override fun loadUser(userRequest: OAuth2UserRequest): OAuth2User {
         val oAuth2User = defaultOAuth2UserService.loadUser(userRequest)
         val oAuth2Attributes = OAuth2AttributeFactory.create(userRequest, oAuth2User)

@@ -149,7 +149,7 @@ class JwtLoginMvcTest {
     fun `사용자 계정이 잠긴 경우 실패(401) 응답`() {
         // given
         val login = mapOf("username" to username, "password" to userPassword)
-        userRepository.save(simpleUser().apply { isActivated = false })
+        userRepository.save(simpleUser().apply { isAccountNonLocked = false })
 
         // when, then
         mockMvc.perform(
@@ -184,7 +184,7 @@ class JwtLoginMvcTest {
 
         val user = userRepository.findByUsername(username)!!
         assertAll({
-            assertThat(user.isActivated).isFalse
+            assertThat(user.isAccountNonLocked).isFalse
             assertThat(user.failureCount).isEqualTo(11)
         })
     }
@@ -202,7 +202,7 @@ class JwtLoginMvcTest {
             username = username,
             password = passwordEncoder.encode(userPassword),
             nickname = "닉네임",
-            isActivated = true,
+            isAccountNonLocked = true,
             role = UserRole.USER
         )
     }

@@ -16,25 +16,24 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.test.web.servlet.setup.StandaloneMockMvcBuilder
 import org.springframework.web.context.WebApplicationContext
 import java.time.format.DateTimeFormatter
+import javax.servlet.Filter
 
 abstract class RestDocsSupport {
-
-    fun mockMvc(controller: Any, restDocumentation: RestDocumentationContextProvider): MockMvcRequestSpecification {
+    fun mockMvc(
+        controller: Any,
+        restDocumentation: RestDocumentationContextProvider,
+        filters: List<Filter> = emptyList(),
+    ): MockMvcRequestSpecification {
         return RestAssuredMockMvc.given()
-            .mockMvc(createMockMvc(controller, restDocumentation))
+            .mockMvc(createMockMvc(controller, restDocumentation, filters))
         //.log().all()
     }
 
-    fun mockMvc(
-        context: WebApplicationContext,
-        restDocumentation: RestDocumentationContextProvider
-    ): MockMvcRequestSpecification {
-        return RestAssuredMockMvc.given()
-            .mockMvc(createMockMvc(context, restDocumentation))
-            .log().all()
-    }
-
-    private fun createMockMvc(controller: Any, restDocumentation: RestDocumentationContextProvider): MockMvc {
+    private fun createMockMvc(
+        controller: Any,
+        restDocumentation: RestDocumentationContextProvider,
+        filters: List<Filter>,
+    ): MockMvc {
         return MockMvcBuilders.standaloneSetup(controller)
             .apply<StandaloneMockMvcBuilder>(
                 documentationConfiguration(restDocumentation)
@@ -42,13 +41,14 @@ abstract class RestDocsSupport {
                     .withRequestDefaults(prettyPrint())
                     .withResponseDefaults(prettyPrint())
             )
+            .addFilters<StandaloneMockMvcBuilder>(*filters.toTypedArray())
             .setControllerAdvice(ControllerErrorHandler())
             .build()
     }
 
     private fun createMockMvc(
         context: WebApplicationContext,
-        restDocumentation: RestDocumentationContextProvider
+        restDocumentation: RestDocumentationContextProvider,
     ): MockMvc {
         return MockMvcBuilders.webAppContextSetup(context)
             .apply<DefaultMockMvcBuilder>(

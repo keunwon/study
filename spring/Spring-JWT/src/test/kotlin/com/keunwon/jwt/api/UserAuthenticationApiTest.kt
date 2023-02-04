@@ -1,14 +1,13 @@
 package com.keunwon.jwt.api
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.keunwon.jwt.InmemoryAuthenticationCodeRepository
+import com.keunwon.jwt.InmemoryUserRepository
 import com.keunwon.jwt.RestDocsSupport
 import com.keunwon.jwt.STRING
+import com.keunwon.jwt.TestPasswordEncoder
 import com.keunwon.jwt.makeDocument
 import com.keunwon.jwt.type
-import io.mockk.Runs
-import io.mockk.every
-import io.mockk.just
-import io.mockk.mockk
 import io.restassured.http.ContentType
 import io.restassured.module.mockmvc.specification.MockMvcRequestSpecification
 import org.junit.jupiter.api.BeforeEach
@@ -19,19 +18,23 @@ import org.springframework.restdocs.RestDocumentationContextProvider
 import org.springframework.restdocs.RestDocumentationExtension
 
 @ExtendWith(RestDocumentationExtension::class)
-class UserSignApiTest : RestDocsSupport() {
+class UserAuthenticationApiTest : RestDocsSupport() {
     private lateinit var mockMvc: MockMvcRequestSpecification
-    private val userService = mockk<UserService>()
+
+    private val userAuthenticationService = UserAuthenticationService(
+        InmemoryUserRepository(),
+        InmemoryAuthenticationCodeRepository(),
+        TestPasswordEncoder(),
+    )
 
     @BeforeEach
     fun setup(restDocumentation: RestDocumentationContextProvider) {
-        mockMvc = mockMvc(UserSignApi(userService), restDocumentation)
+        mockMvc = mockMvc(UserAuthenticationApi(userAuthenticationService), restDocumentation)
     }
 
     @Test
     fun `사용자 회원가입`() {
-        every { userService.sign(userSignDto) } just Runs
-
+        // given
         val response = mockMvc
             .contentType(ContentType.JSON)
             .body(jacksonObjectMapper().writeValueAsString(userSignDto))

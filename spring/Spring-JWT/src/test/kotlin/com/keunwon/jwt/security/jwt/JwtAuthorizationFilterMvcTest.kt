@@ -3,7 +3,7 @@ package com.keunwon.jwt.security.jwt
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.keunwon.jwt.TokenProviderFixture
 import com.keunwon.jwt.TokenProviderFixture.unExpiredDate
-import com.keunwon.jwt.api.UserSignApi
+import com.keunwon.jwt.api.UserAuthenticationApi
 import com.keunwon.jwt.domain.UserRole
 import io.mockk.junit5.MockKExtension
 import org.junit.jupiter.api.BeforeAll
@@ -30,7 +30,7 @@ class JwtAuthorizationFilterMvcTest {
 
     @BeforeAll
     fun setup() {
-        mockMvc = MockMvcBuilders.standaloneSetup(UserSignApi::class)
+        mockMvc = MockMvcBuilders.standaloneSetup(UserAuthenticationApi::class)
             .addFilter<StandaloneMockMvcBuilder>(JwtAuthorizationFilter(tokenProvider, jacksonObjectMapper()))
             .build()
     }

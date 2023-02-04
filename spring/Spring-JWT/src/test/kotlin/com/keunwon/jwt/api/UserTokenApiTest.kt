@@ -1,17 +1,20 @@
 package com.keunwon.jwt.api
 
+import com.keunwon.jwt.InmemoryUserRepository
+import com.keunwon.jwt.InmemoryUserTokenRepository
 import com.keunwon.jwt.RestDocsSupport
 import com.keunwon.jwt.STRING
 import com.keunwon.jwt.TokenProviderFixture.testTokenProvider
+import com.keunwon.jwt.USERNAME
 import com.keunwon.jwt.common.util.toLocalDateTime
+import com.keunwon.jwt.createUser
+import com.keunwon.jwt.createUserToken
 import com.keunwon.jwt.domain.UserRole
 import com.keunwon.jwt.makeDocument
 import com.keunwon.jwt.security.jwt.CreateTokenRequest
 import com.keunwon.jwt.security.jwt.JwtLoginToken
 import com.keunwon.jwt.toJson
 import com.keunwon.jwt.type
-import io.mockk.every
-import io.mockk.mockkClass
 import io.restassured.http.ContentType
 import io.restassured.module.mockmvc.response.MockMvcResponse
 import io.restassured.module.mockmvc.specification.MockMvcRequestSpecification
@@ -27,20 +30,33 @@ import org.springframework.restdocs.RestDocumentationExtension
 class UserTokenApiTest : RestDocsSupport() {
     private lateinit var mockMvc: MockMvcRequestSpecification
     private lateinit var jwtLoginToken: JwtLoginToken
-    private val userTokenService = mockkClass(UserTokenService::class)
+
+    private val userRepository = InmemoryUserRepository()
+    private val userTokenRepository = InmemoryUserTokenRepository()
+    private val userTokenService = UserTokenService(userRepository, userTokenRepository, testTokenProvider)
 
     @BeforeEach
     fun setup(restDocumentation: RestDocumentationContextProvider) {
         mockMvc = mockMvc(UserTokenApi(userTokenService), restDocumentation)
-        jwtLoginToken =
-            testTokenProvider.generateLoginSuccessToken(CreateTokenRequest(username, UserRole.DEFAULT_ROLES))
+        jwtLoginToken = testTokenProvider.generateLoginSuccessToken(
+            CreateTokenRequest(username, UserRole.DEFAULT_ROLES)
+        )
     }
 
     @Test
     fun `refreshToken 이용하여 accessToken 새로 발급합니다`() {
         // given
-        every { userTokenService.refreshAccessToken(any()) } returns AccessToken(
-            jwtLoginToken.accessToken.value, jwtLoginToken.accessToken.expiredAt.toLocalDateTime())
+        userRepository.save(createUser(id = 1L))
+        val loginToken = testTokenProvider.generateLoginSuccessToken(
+            CreateTokenRequest(USERNAME, UserRole.DEFAULT_ROLES)
+        )
+        userTokenRepository.save(
+            createUserToken(
+                userId = 1L,
+                refreshToken = loginToken.refreshToken.value,
+                expirationRefreshToken = loginToken.refreshToken.expiredAt.toLocalDateTime()
+            )
+        )
         val response = givenMockMvc(username, jwtLoginToken.refreshToken.value)
 
         // when, then
