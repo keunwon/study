@@ -42,7 +42,7 @@ class UserLoginApiTest : RestDocsSupport() {
 
     @BeforeEach
     fun setup(restDocumentation: RestDocumentationContextProvider) {
-        mockMvc = createMockMvc(TestHomeController(), restDocumentation, listOf(customAuthenticationFilter))
+        mockMvc = createMockMvc(TestHomeController, restDocumentation, listOf(customAuthenticationFilter))
     }
 
     @Test

@@ -7,18 +7,10 @@ import com.keunwon.jwt.security.jwt.JwtProvider
 import io.jsonwebtoken.SignatureAlgorithm
 import io.jsonwebtoken.io.Encoders
 import io.jsonwebtoken.security.Keys
-import org.springframework.security.authentication.AuthenticationManager
-import org.springframework.security.core.Authentication
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.util.*
-
-object JwtAuthenticationManagerStub : AuthenticationManager {
-    override fun authenticate(authentication: Authentication?): Authentication {
-        return createPostAuthenticationToken()
-    }
-}
 
 val testTokenProvider: JwtProvider = run {
     val key = Keys.secretKeyFor(SignatureAlgorithm.HS512)

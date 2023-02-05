@@ -26,7 +26,7 @@ class JwtAuthorizationFilterMvcTest {
 
     @BeforeAll
     fun setup() {
-        mockMvc = MockMvcBuilders.standaloneSetup(TestHomeController())
+        mockMvc = MockMvcBuilders.standaloneSetup(TestHomeController)
             .addFilter<StandaloneMockMvcBuilder>(JwtAuthorizationFilter(testTokenProvider, testObjectMapper))
             .build()
     }

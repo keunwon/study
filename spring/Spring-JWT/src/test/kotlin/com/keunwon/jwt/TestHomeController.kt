@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @ActiveProfiles("test")
 @RestController
-class TestHomeController {
+object TestHomeController {
     @GetMapping("/")
     fun home() = ResponseEntity.ok("ok")
 }
