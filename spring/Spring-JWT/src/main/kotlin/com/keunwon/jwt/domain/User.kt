@@ -34,8 +34,8 @@ class User(
     @Enumerated(EnumType.STRING)
     val loginType: LoginType = LoginType.SIMPLE,
 
-    @Column(name = "fail_count")
-    var failureCount: Int = 0,
+    @Column(name = "failed_password_count")
+    var failedPasswordCount: Int = 0,
 
     @Column(name = "accountNonLocked", length = 1)
     @Convert(converter = BooleanConverter::class)
@@ -51,17 +51,17 @@ class User(
         passwordEncoder.matches(password, this.password)
 
     fun reset() {
-        failureCount = 0
+        failedPasswordCount = 0
         isAccountNonLocked = true
     }
 
     fun incrementFailures() {
-        failureCount++
-        isAccountNonLocked = failureCount < MAX_LOGIN_FAIL
+        failedPasswordCount++
+        isAccountNonLocked = failedPasswordCount < MAX_PASSWORD_FAILURED_COUNT
     }
 
     companion object {
-        private const val MAX_LOGIN_FAIL = 10
+        const val MAX_PASSWORD_FAILURED_COUNT = 10
     }
 }
 
