@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
     id("org.springframework.boot") version "2.7.7"
     id("io.spring.dependency-management") version "1.1.0"
@@ -66,18 +64,8 @@ dependencies {
 
     // mock
     testImplementation("io.mockk:mockk:${property("mockkVersion")}")
-    testImplementation("io.rest-assured:spring-mock-mvc:${property("restAssuredVersion")}")
-}
-
-tasks.withType<KotlinCompile> {
-    kotlinOptions {
-        freeCompilerArgs = listOf("-Xjsr305=strict")
-        jvmTarget = "17"
-    }
-}
-
-tasks.withType<Test> {
-    useJUnitPlatform()
+    //testImplementation("io.rest-assured:spring-mock-mvc:${property("restAssuredVersion")}")
+    testImplementation("io.rest-assured:spring-mock-mvc-kotlin-extensions:${property("restAssuredVersion")}")
 }
 
 // spring rest-doc
@@ -88,7 +76,18 @@ dependencies {
     testImplementation("org.springframework.restdocs:spring-restdocs-mockmvc")
 }
 tasks {
+    compileKotlin {
+        kotlinOptions {
+            freeCompilerArgs = listOf("-Xjsr305=strict")
+            jvmTarget = "17"
+        }
+    }
+
     test {
+        useJUnitPlatform()
+        testLogging {
+            showCauses = true
+        }
         outputs.dir(snippetsDir)
     }
 

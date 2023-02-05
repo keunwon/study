@@ -7,7 +7,6 @@ import com.keunwon.jwt.USER_WRONG_PASSWORD
 import com.keunwon.jwt.createPreAuthenticationToken
 import com.keunwon.jwt.createUser
 import com.keunwon.jwt.domain.User
-import com.keunwon.jwt.domain.UserRepository
 import com.keunwon.jwt.domain.UserRole
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
@@ -16,11 +15,10 @@ import org.junit.jupiter.api.assertAll
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.authentication.LockedException
 import org.springframework.security.core.userdetails.UsernameNotFoundException
-import org.springframework.security.crypto.password.PasswordEncoder
 
 class JwtAuthenticationManagerTest {
-    private val userRepository: UserRepository = InmemoryUserRepository()
-    private val passwordEncoder: PasswordEncoder = TestPasswordEncoder()
+    private val userRepository = InmemoryUserRepository()
+    private val passwordEncoder = TestPasswordEncoder
     private val jwtAuthenticationManager = JwtAuthenticationManager(userRepository, passwordEncoder)
 
     @Test

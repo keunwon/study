@@ -1,30 +1,32 @@
 package com.keunwon.jwt.api
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.keunwon.jwt.JwtAuthenticationManagerStub
 import com.keunwon.jwt.RestDocsSupport
 import com.keunwon.jwt.STRING
+import com.keunwon.jwt.TestHomeController
 import com.keunwon.jwt.makeDocument
 import com.keunwon.jwt.security.jwt.CreateTokenRequest
 import com.keunwon.jwt.security.jwt.JwtLoginAuthenticationFilter
 import com.keunwon.jwt.security.jwt.LoginTokenResponse
 import com.keunwon.jwt.testObjectMapper
 import com.keunwon.jwt.testTokenProvider
+import com.keunwon.jwt.toJson
 import com.keunwon.jwt.type
-import io.restassured.module.mockmvc.specification.MockMvcRequestSpecification
+import io.restassured.module.mockmvc.kotlin.extensions.Extract
+import io.restassured.module.mockmvc.kotlin.extensions.Given
+import io.restassured.module.mockmvc.kotlin.extensions.Then
+import io.restassured.module.mockmvc.kotlin.extensions.When
 import org.hamcrest.Matchers.notNullValue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
-import org.springframework.http.ResponseEntity
 import org.springframework.restdocs.RestDocumentationContextProvider
 import org.springframework.restdocs.RestDocumentationExtension
 import org.springframework.security.core.Authentication
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.test.web.servlet.MockMvc
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
@@ -36,47 +38,41 @@ class UserLoginApiTest : RestDocsSupport() {
             setAuthenticationSuccessHandler(LoginSuccessHandlerStub())
         }
 
-    lateinit var mockMvc: MockMvcRequestSpecification
+    lateinit var mockMvc: MockMvc
 
     @BeforeEach
     fun setup(restDocumentation: RestDocumentationContextProvider) {
-        mockMvc = mockMvc(TestHomeController(), restDocumentation, listOf(customAuthenticationFilter))
+        mockMvc = createMockMvc(TestHomeController(), restDocumentation, listOf(customAuthenticationFilter))
     }
 
     @Test
     fun `사용자 로그인`() {
         // given, when
-        val login = mapOf("username" to "홍길동", "password" to "password")
-        val response = mockMvc
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .body(jacksonObjectMapper().writeValueAsString(login))
-            .post("/auth/login")
+        val request = mapOf("username" to "홍길동", "password" to "password")
 
-        // then
-        response.then()
-            .assertThat()
-            .status(HttpStatus.OK)
-            .body("accessToken", notNullValue())
-            .body("refreshToken", notNullValue())
-
-        // doc
-        response.makeDocument("사용자 로그인") {
-            requestBody(
-                "username" type STRING means "사용자 아이디",
-                "password" type STRING means "사용자 비밀번호",
-            )
-            responseBody(
-                "accessToken" type STRING means "API 요청 시 함께 보내야하는 토큰",
-                "refreshToken" type STRING means "토큰 재발급을 위한 토큰",
-            )
+        Given {
+            mockMvc(mockMvc)
+            contentType(MediaType.APPLICATION_JSON_VALUE)
+            body(toJson(request))
+        } When {
+            post("/auth/login")
+        } Then {
+            status(HttpStatus.OK)
+            body("accessToken", notNullValue())
+            body("refreshToken", notNullValue())
+        } Extract {
+            response().makeDocument("사용자 로그인") {
+                requestBody(
+                    "username" type STRING means "사용자 아이디",
+                    "password" type STRING means "사용자 비밀번호",
+                )
+                responseBody(
+                    "accessToken" type STRING means "API 요청 시 함께 보내야하는 토큰",
+                    "refreshToken" type STRING means "토큰 재발급을 위한 토큰",
+                )
+            }
         }
     }
-}
-
-@RestController("/")
-class TestHomeController {
-    @GetMapping
-    fun home(): ResponseEntity<String> = ResponseEntity.ok("ok")
 }
 
 class LoginSuccessHandlerStub : AuthenticationSuccessHandler {

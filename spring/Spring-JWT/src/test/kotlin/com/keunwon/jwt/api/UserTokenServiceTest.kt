@@ -79,7 +79,7 @@ class UserTokenServiceTest {
     }
 
     private fun givenLoginUserAndGetRefreshToken(expired: Boolean): AbstractJwtToken {
-        createUser(id = 1L).let { userRepository.save(it) }
+        userRepository.save(createUser(id = 1L))
         return createToken(expired).also {
             val userToken = createUserToken(
                 userId = 1L,

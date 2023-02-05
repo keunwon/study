@@ -24,6 +24,7 @@ fun createUser(
     loginType: LoginType = LoginType.SIMPLE,
     isAccountNonLocked: Boolean = true,
     role: UserRole = USER_ROLE,
+    failedPasswordCount: Int = 0,
     id: Long = 0,
 ): User {
     return User(
@@ -34,6 +35,7 @@ fun createUser(
         loginType = loginType,
         role = role,
         isAccountNonLocked = isAccountNonLocked,
+        failedPasswordCount = failedPasswordCount,
         id = id,
     )
 }
@@ -54,7 +56,7 @@ class InmemoryUserRepository : InmemoryRepository<User>(), UserRepository {
     override fun existsByEmail(email: String): Boolean = findAll().any { it.email == email }
 }
 
-class TestPasswordEncoder : PasswordEncoder {
+object TestPasswordEncoder : PasswordEncoder {
     override fun encode(rawPassword: CharSequence): String {
         return rawPassword.toString()
     }

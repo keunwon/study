@@ -1,6 +1,6 @@
 package com.keunwon.jwt.security.jwt
 
-import com.keunwon.jwt.api.TestHomeController
+import com.keunwon.jwt.TestHomeController
 import com.keunwon.jwt.createToken
 import com.keunwon.jwt.testObjectMapper
 import com.keunwon.jwt.testTokenProvider
@@ -48,11 +48,8 @@ class JwtAuthorizationFilterMvcTest {
     @Test
     fun `토큰을 보내지 않으면 실패(403) 응답`() {
         // when, then
-        mockMvc.get("/").andExpect {
-            status { isForbidden() }
-            content { contentType(MediaType.APPLICATION_JSON) }
-            jsonPath("$.code").value(HttpStatus.FORBIDDEN.value())
-            jsonPath("$.message").value("Authorization 헤더가 비어있습니다")
+        thenForbiddenResult(null) {
+            "Authorization 헤더가 비어있습니다"
         }
     }
 
@@ -62,13 +59,8 @@ class JwtAuthorizationFilterMvcTest {
         val accessToken = createToken(expired = false).value
 
         // when, then
-        mockMvc.get("/") {
-            header(HttpHeaders.AUTHORIZATION, accessToken)
-        }.andExpect {
-            status { isForbidden() }
-            content { contentType(MediaType.APPLICATION_JSON) }
-            jsonPath("$.code").value(HttpStatus.FORBIDDEN.value())
-            jsonPath("$.message").value("Authorization 헤더 구성이 올바르지 않습니다")
+        thenForbiddenResult(accessToken) {
+            "Authorization 헤더 구성이 올바르지 않습니다"
         }
     }
 
@@ -78,29 +70,30 @@ class JwtAuthorizationFilterMvcTest {
         val token = "dump"
 
         // when, then
-        mockMvc.get("/") {
-            bearer(token)
-        }.andExpect {
-            status { isForbidden() }
-            content { contentType(MediaType.APPLICATION_JSON) }
-            jsonPath("$.code").value(HttpStatus.FORBIDDEN.value())
-            jsonPath("$.message").value("토큰이 유효하지 않습니다.")
+        thenForbiddenResult("Bearer $token") {
+            "토큰이 유효하지 않습니다."
         }
     }
 
     @Test
     fun `만료된 토큰을 함께 보내면 실패(403) 응답`() {
-        // given
         val expiredToken = createToken(expired = true).value
 
-        // when, then
+        thenForbiddenResult("Bearer $expiredToken") {
+            "유효기간이 만료된 토큰입니다."
+        }
+    }
+
+    private fun thenForbiddenResult(bearerToken: String?, message: () -> String) {
         mockMvc.get("/") {
-            bearer(expiredToken)
+            bearerToken?.let {
+                header(HttpHeaders.AUTHORIZATION, bearerToken)
+            }
         }.andExpect {
             status { isForbidden() }
             content { contentType(MediaType.APPLICATION_JSON) }
             jsonPath("$.code").value(HttpStatus.FORBIDDEN.value())
-            jsonPath("$.message").value("유효기간이 만료된 토큰입니다.")
+            jsonPath("$.message").value(message())
         }
     }
 }

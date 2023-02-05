@@ -5,8 +5,6 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.keunwon.jwt.common.ControllerErrorHandler
-import io.restassured.module.mockmvc.RestAssuredMockMvc
-import io.restassured.module.mockmvc.specification.MockMvcRequestSpecification
 import org.springframework.restdocs.RestDocumentationContextProvider
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration
 import org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint
@@ -19,20 +17,10 @@ import java.time.format.DateTimeFormatter
 import javax.servlet.Filter
 
 abstract class RestDocsSupport {
-    fun mockMvc(
+    fun createMockMvc(
         controller: Any,
         restDocumentation: RestDocumentationContextProvider,
         filters: List<Filter> = emptyList(),
-    ): MockMvcRequestSpecification {
-        return RestAssuredMockMvc.given()
-            .mockMvc(createMockMvc(controller, restDocumentation, filters))
-        //.log().all()
-    }
-
-    private fun createMockMvc(
-        controller: Any,
-        restDocumentation: RestDocumentationContextProvider,
-        filters: List<Filter>,
     ): MockMvc {
         return MockMvcBuilders.standaloneSetup(controller)
             .apply<StandaloneMockMvcBuilder>(
@@ -44,6 +32,15 @@ abstract class RestDocsSupport {
             .addFilters<StandaloneMockMvcBuilder>(*filters.toTypedArray())
             .setControllerAdvice(ControllerErrorHandler())
             .build()
+    }
+
+    fun createAuthMockMvc(
+        controller: Any,
+        restDocumentation: RestDocumentationContextProvider,
+        filters: MutableList<Filter> = mutableListOf(),
+    ): MockMvc {
+        filters.add(JwtAuthorizationFilterStub)
+        return createMockMvc(controller, restDocumentation, filters)
     }
 
     private fun createMockMvc(

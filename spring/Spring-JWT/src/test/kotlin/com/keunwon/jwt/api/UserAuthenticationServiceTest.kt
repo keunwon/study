@@ -11,13 +11,15 @@ import com.keunwon.jwt.USER_PASSWORD
 import com.keunwon.jwt.createAuthenticationCode
 import com.keunwon.jwt.domain.getByUsername
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Assertions.assertAll
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertDoesNotThrow
 
 class UserAuthenticationServiceTest {
     private val userRepository = InmemoryUserRepository()
+    private val passwordEncoder = TestPasswordEncoder
     private val authenticationCodeRepository = InmemoryAuthenticationCodeRepository()
-    private val passwordEncoder = TestPasswordEncoder()
 
     private val userAuthenticationService =
         UserAuthenticationService(userRepository, authenticationCodeRepository, passwordEncoder)
@@ -28,9 +30,15 @@ class UserAuthenticationServiceTest {
         val request = UserSignRequest(USERNAME, USER_PASSWORD, USER_FULL_NAME, USER_NICKNAME)
 
         // when, then
-        userAuthenticationService.sign(request)
-        val user = userRepository.getByUsername(USERNAME)
-        assertTrue(user.matchPassword(USER_PASSWORD, passwordEncoder))
+        assertDoesNotThrow { userAuthenticationService.sign(request) }
+        with(userRepository.getByUsername(USERNAME)) {
+            assertAll({
+                assertTrue(username == USERNAME)
+                assertTrue(matchPassword(USER_PASSWORD, passwordEncoder))
+                assertTrue(name == USER_FULL_NAME)
+                assertTrue(nickname == USER_NICKNAME)
+            })
+        }
     }
 
     @Test
