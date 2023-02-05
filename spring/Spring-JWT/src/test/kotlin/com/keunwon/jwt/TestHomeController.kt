@@ -9,5 +9,5 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 object TestHomeController {
     @GetMapping("/")
-    fun home() = ResponseEntity.ok("ok")
+    fun home(): ResponseEntity<String> = ResponseEntity.ok("ok")
 }

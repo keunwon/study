@@ -2,11 +2,11 @@ package com.keunwon.jwt.api
 
 import com.keunwon.jwt.InmemoryUserRepository
 import com.keunwon.jwt.InmemoryUserTokenRepository
-import com.keunwon.jwt.USERNAME
 import com.keunwon.jwt.common.util.toLocalDateTime
 import com.keunwon.jwt.createToken
-import com.keunwon.jwt.createUser
-import com.keunwon.jwt.createUserToken
+import com.keunwon.jwt.domain.USERNAME
+import com.keunwon.jwt.domain.UserBuilder
+import com.keunwon.jwt.domain.UserTokenBuilder
 import com.keunwon.jwt.security.jwt.AbstractJwtToken
 import com.keunwon.jwt.testTokenProvider
 import io.jsonwebtoken.ExpiredJwtException
@@ -79,13 +79,13 @@ class UserTokenServiceTest {
     }
 
     private fun givenLoginUserAndGetRefreshToken(expired: Boolean): AbstractJwtToken {
-        userRepository.save(createUser(id = 1L))
+        userRepository.save(UserBuilder(id = 1L).build())
         return createToken(expired).also {
-            val userToken = createUserToken(
+            val userToken = UserTokenBuilder(
                 userId = 1L,
                 refreshToken = it.value,
                 expirationRefreshToken = it.expiredAt.toLocalDateTime(),
-            )
+            ).build()
             userTokenRepository.save(userToken)
         }
     }

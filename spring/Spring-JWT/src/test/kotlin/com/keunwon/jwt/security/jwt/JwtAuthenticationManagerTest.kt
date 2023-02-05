@@ -2,11 +2,11 @@ package com.keunwon.jwt.security.jwt
 
 import com.keunwon.jwt.InmemoryUserRepository
 import com.keunwon.jwt.TestPasswordEncoder
-import com.keunwon.jwt.USER_ACCOUNT_LOCKED
-import com.keunwon.jwt.USER_WRONG_PASSWORD
 import com.keunwon.jwt.createPreAuthenticationToken
-import com.keunwon.jwt.createUser
+import com.keunwon.jwt.domain.USER_ACCOUNT_LOCKED
+import com.keunwon.jwt.domain.USER_WRONG_PASSWORD
 import com.keunwon.jwt.domain.User
+import com.keunwon.jwt.domain.UserBuilder
 import com.keunwon.jwt.domain.UserRole
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
@@ -24,7 +24,7 @@ class JwtAuthenticationManagerTest {
     @Test
     fun `사용자 로그인 성공`() {
         // given
-        val user = createUser(id = 1L)
+        val user = UserBuilder(id = 1L).build()
         userRepository.save(user)
 
         // when
@@ -47,7 +47,9 @@ class JwtAuthenticationManagerTest {
     @Test
     fun `사용자가 비밀번호가 일치하지 않으면 'BadCredentialsException' 발생`() {
         // given
-        userRepository.save(createUser(password = USER_WRONG_PASSWORD))
+        userRepository.save(
+            UserBuilder(password = USER_WRONG_PASSWORD).build()
+        )
 
         // when, then
         thenThrownBy(BadCredentialsException::class.java)
@@ -56,7 +58,10 @@ class JwtAuthenticationManagerTest {
     @Test
     fun `사용자의 계정이 잠겨있으면 'LockedException' 발생`() {
         // given
-        userRepository.save(createUser(isAccountNonLocked = USER_ACCOUNT_LOCKED))
+        userRepository.save(
+            UserBuilder(isAccountNonLocked = USER_ACCOUNT_LOCKED).build()
+        )
+
 
         // when, then
         thenThrownBy(LockedException::class.java)

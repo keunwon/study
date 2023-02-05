@@ -3,12 +3,12 @@ package com.keunwon.jwt.api
 import com.keunwon.jwt.InmemoryAuthenticationCodeRepository
 import com.keunwon.jwt.InmemoryUserRepository
 import com.keunwon.jwt.TestPasswordEncoder
-import com.keunwon.jwt.USERNAME
-import com.keunwon.jwt.USER_EMAIL
-import com.keunwon.jwt.USER_FULL_NAME
-import com.keunwon.jwt.USER_NICKNAME
-import com.keunwon.jwt.USER_PASSWORD
-import com.keunwon.jwt.createAuthenticationCode
+import com.keunwon.jwt.domain.AuthenticationCodeBuilder
+import com.keunwon.jwt.domain.USERNAME
+import com.keunwon.jwt.domain.USER_EMAIL
+import com.keunwon.jwt.domain.USER_FULL_NAME
+import com.keunwon.jwt.domain.USER_NICKNAME
+import com.keunwon.jwt.domain.USER_PASSWORD
 import com.keunwon.jwt.domain.getByUsername
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertAll
@@ -54,7 +54,7 @@ class UserAuthenticationServiceTest {
     @Test
     fun `인증 코드를 검증합니다`() {
         // given
-        val authenticationCode = createAuthenticationCode()
+        val authenticationCode = AuthenticationCodeBuilder().build()
         authenticationCodeRepository.save(authenticationCode)
 
         // when, then

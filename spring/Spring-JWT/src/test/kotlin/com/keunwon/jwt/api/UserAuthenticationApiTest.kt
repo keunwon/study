@@ -1,16 +1,16 @@
 package com.keunwon.jwt.api
 
-import com.keunwon.jwt.AUTHENTICATION_EMAIL
 import com.keunwon.jwt.InmemoryAuthenticationCodeRepository
 import com.keunwon.jwt.InmemoryUserRepository
 import com.keunwon.jwt.RestDocsSupport
 import com.keunwon.jwt.STRING
 import com.keunwon.jwt.TestPasswordEncoder
-import com.keunwon.jwt.USERNAME
-import com.keunwon.jwt.USER_FULL_NAME
-import com.keunwon.jwt.USER_NICKNAME
-import com.keunwon.jwt.USER_PASSWORD
-import com.keunwon.jwt.createAuthenticationCode
+import com.keunwon.jwt.domain.AUTHENTICATION_EMAIL
+import com.keunwon.jwt.domain.AuthenticationCodeBuilder
+import com.keunwon.jwt.domain.USERNAME
+import com.keunwon.jwt.domain.USER_FULL_NAME
+import com.keunwon.jwt.domain.USER_NICKNAME
+import com.keunwon.jwt.domain.USER_PASSWORD
 import com.keunwon.jwt.makeDocument
 import com.keunwon.jwt.param
 import com.keunwon.jwt.toJson
@@ -95,9 +95,8 @@ class UserAuthenticationApiTest : RestDocsSupport() {
 
     @Test
     fun `인증코드를 검증합니다`() {
-        val authenticationCode = createAuthenticationCode().also {
-            authenticationRepository.save(it)
-        }
+        val authenticationCode = AuthenticationCodeBuilder().build()
+        authenticationRepository.save(authenticationCode)
 
         Given {
             mockMvc(mockMvc)

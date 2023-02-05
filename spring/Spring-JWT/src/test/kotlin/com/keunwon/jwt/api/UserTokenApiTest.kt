@@ -6,9 +6,9 @@ import com.keunwon.jwt.LOGIN_USERNAME
 import com.keunwon.jwt.RestDocsSupport
 import com.keunwon.jwt.STRING
 import com.keunwon.jwt.common.util.toLocalDateTime
-import com.keunwon.jwt.createUser
-import com.keunwon.jwt.createUserToken
+import com.keunwon.jwt.domain.UserBuilder
 import com.keunwon.jwt.domain.UserRole
+import com.keunwon.jwt.domain.UserTokenBuilder
 import com.keunwon.jwt.makeDocument
 import com.keunwon.jwt.security.jwt.CreateTokenRequest
 import com.keunwon.jwt.security.jwt.JwtLoginToken
@@ -50,16 +50,16 @@ class UserTokenApiTest : RestDocsSupport() {
 
     @Test
     fun `refreshToken 이용하여 accessToken 새로 발급합니다`() {
-        val user = createUser(id = 1L).also { userRepository.save(it) }
+        val user = UserBuilder(id = 1L).build().also { userRepository.save(it) }
         val loginToken = testTokenProvider.generateLoginSuccessToken(
             CreateTokenRequest(user.username!!, listOf(user.role.name))
         )
         userTokenRepository.save(
-            createUserToken(
+            UserTokenBuilder(
                 userId = 1L,
                 refreshToken = loginToken.refreshToken.value,
-                expirationRefreshToken = loginToken.refreshToken.expiredAt.toLocalDateTime()
-            )
+                expirationRefreshToken = loginToken.refreshToken.expiredAt.toLocalDateTime(),
+            ).build()
         )
 
         givenWhenMockMvc(username, jwtLoginToken.refreshToken.value) Then {

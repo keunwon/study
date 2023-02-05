@@ -2,11 +2,11 @@ package com.keunwon.jwt.config
 
 import com.keunwon.jwt.LOGIN_PASSWORD
 import com.keunwon.jwt.LOGIN_USERNAME
-import com.keunwon.jwt.USERNAME
-import com.keunwon.jwt.USER_PASSWORD
-import com.keunwon.jwt.USER_WRONG_PASSWORD
-import com.keunwon.jwt.createUser
+import com.keunwon.jwt.domain.USERNAME
+import com.keunwon.jwt.domain.USER_PASSWORD
+import com.keunwon.jwt.domain.USER_WRONG_PASSWORD
 import com.keunwon.jwt.domain.User
+import com.keunwon.jwt.domain.UserBuilder
 import com.keunwon.jwt.domain.UserRepository
 import com.keunwon.jwt.domain.getByUsername
 import com.keunwon.jwt.toJson
@@ -48,10 +48,13 @@ class JwtLoginMvcTest {
     @Test
     fun `사용자 로그인 성공 시 정상(200) 응답`() {
         // given
-        val username = USERNAME
-        val password = USER_PASSWORD
-        val request = mapOf("username" to username, "password" to password)
-        userRepository.save(createUser(password = passwordEncoder.encode(password)))
+        val request = mapOf(
+            "username" to USERNAME,
+            "password" to USER_PASSWORD,
+        )
+        userRepository.save(
+            UserBuilder(password = passwordEncoder.encode(request.getValue("password"))).build()
+        )
 
         // when, then
         mockMvc.post(LOGIN_URL) {
@@ -82,7 +85,10 @@ class JwtLoginMvcTest {
     @Test
     fun `사용자 명 없이 로그인 시 실패(401) 응답`() {
         // given
-        val request = mapOf("username" to "", "password" to LOGIN_PASSWORD)
+        val request = mapOf(
+            "username" to "",
+            "password" to LOGIN_PASSWORD,
+        )
 
         // when, then
         thenUnauthorizedResult(request) {
@@ -93,7 +99,10 @@ class JwtLoginMvcTest {
     @Test
     fun `사용자 비밀번호 없이 로그인 시 실패(401) 응답`() {
         // given
-        val request = mapOf("username" to LOGIN_USERNAME, "password" to "")
+        val request = mapOf(
+            "username" to LOGIN_USERNAME,
+            "password" to "",
+        )
 
         // when, then
         thenUnauthorizedResult(request) {
@@ -104,7 +113,10 @@ class JwtLoginMvcTest {
     @Test
     fun `사용자가 존재하지 않는 경우 실패(401) 응답`() {
         // given
-        val request = mapOf("username" to "wrong-id", "password" to USER_PASSWORD)
+        val request = mapOf(
+            "username" to "wrong-id",
+            "password" to USER_PASSWORD,
+        )
 
         // when, then
         thenUnauthorizedResult(request) {
@@ -115,8 +127,11 @@ class JwtLoginMvcTest {
     @Test
     fun `사용자 비밀번호가 다른 경우 실패(401) 응답`() {
         // given
-        val request = mapOf("username" to USERNAME, "password" to USER_WRONG_PASSWORD)
-        userRepository.save(createUser())
+        val request = mapOf(
+            "username" to USERNAME,
+            "password" to USER_WRONG_PASSWORD,
+        )
+        userRepository.save(UserBuilder().build())
 
         // when, then
         thenUnauthorizedResult(request) {
@@ -127,8 +142,13 @@ class JwtLoginMvcTest {
     @Test
     fun `사용자 계정이 잠긴 경우 실패(401) 응답`() {
         // given
-        val request = mapOf("username" to USERNAME, "password" to USER_PASSWORD)
-        userRepository.save(createUser(isAccountNonLocked = false))
+        val request = mapOf(
+            "username" to USERNAME,
+            "password" to USER_PASSWORD,
+        )
+        userRepository.save(
+            UserBuilder(isAccountNonLocked = false).build()
+        )
 
         // when, then
         thenUnauthorizedResult(request) {
@@ -139,8 +159,13 @@ class JwtLoginMvcTest {
     @Test
     fun `사용자 로그인 실패 횟수가 10회 이상인 경우, 계정이 잠김`() {
         // given
-        val request = mapOf("username" to USERNAME, "password" to USER_WRONG_PASSWORD)
-        userRepository.save(createUser(failedPasswordCount = User.MAX_PASSWORD_FAILURED_COUNT))
+        val request = mapOf(
+            "username" to USERNAME,
+            "password" to USER_WRONG_PASSWORD,
+        )
+        userRepository.save(
+            UserBuilder(failedPasswordCount = User.MAX_PASSWORD_FAILURED_COUNT).build()
+        )
 
         // when, then
         thenUnauthorizedResult(request) {
