@@ -1,7 +1,7 @@
 package com.keunwon.jwt
 
 import com.keunwon.jwt.domain.UserBuilder
-import com.keunwon.jwt.domain.generatedGrantedAuthorityList
+import com.keunwon.jwt.domain.user.generatedGrantedAuthorityList
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication

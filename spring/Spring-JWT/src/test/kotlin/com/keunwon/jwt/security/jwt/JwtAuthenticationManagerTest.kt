@@ -5,9 +5,9 @@ import com.keunwon.jwt.TestPasswordEncoder
 import com.keunwon.jwt.createPreAuthenticationToken
 import com.keunwon.jwt.domain.USER_ACCOUNT_LOCKED
 import com.keunwon.jwt.domain.USER_WRONG_PASSWORD
-import com.keunwon.jwt.domain.User
 import com.keunwon.jwt.domain.UserBuilder
-import com.keunwon.jwt.domain.UserRole
+import com.keunwon.jwt.domain.user.User
+import com.keunwon.jwt.domain.user.UserRole
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
