@@ -15,7 +15,7 @@ class UserAuthenticationService(
     private val authenticationCodeRepository: AuthenticationCodeRepository,
     private val passwordEncoder: PasswordEncoder,
 ) {
-    fun sign(request: UserSignRequest) {
+    fun register(request: UserSignRequest) {
         check(!userRepository.existsByUsername(request.username)) {
             "${request.username}는 현재 사용 중인 아이디 입니다"
         }

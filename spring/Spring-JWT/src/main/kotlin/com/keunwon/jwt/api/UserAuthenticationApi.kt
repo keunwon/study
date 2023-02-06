@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController
 class UserAuthenticationApi(private val userAuthenticationService: UserAuthenticationService) {
     @PostMapping("/auth/sign")
     fun sing(@Validated @RequestBody request: UserSignRequest): ResponseEntity<Unit> {
-        userAuthenticationService.sign(request)
+        userAuthenticationService.register(request)
         log.info("> ${request.username} 회원가입 완료")
         return ResponseEntity.noContent().build()
     }
