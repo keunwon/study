@@ -16,6 +16,9 @@ import org.springframework.restdocs.request.ParameterDescriptor
 import org.springframework.restdocs.request.RequestDocumentation.parameterWithName
 import org.springframework.restdocs.request.RequestDocumentation.requestParameters
 import org.springframework.restdocs.request.RequestParametersSnippet
+import org.springframework.restdocs.snippet.Snippet
+import org.springframework.restdocs.snippet.TemplatedSnippet
+import org.springframework.test.web.servlet.MockMvcResultHandlersDsl
 import kotlin.reflect.KClass
 
 sealed class DocsFieldType(
@@ -98,6 +101,57 @@ open class Parameter(val descriptor: ParameterDescriptor) {
 
 fun MockMvcResponse.makeDocument(identifier: String, responseDsl: MockMvcResponseDsl.() -> Unit) =
     MockMvcResponseDsl(this, identifier, responseDsl).build()
+
+fun MockMvcResultHandlersDsl.makeDocument(identifier: String, responseDsl: ResultHandlerDsl.() -> Unit) {
+    ResultHandlerDsl(this, identifier, responseDsl).build()
+}
+
+class ResultHandlerDsl(
+    private val mockMvcResultHandlersDsl: MockMvcResultHandlersDsl,
+    private val identifier: String,
+    private val init: ResultHandlerDsl.() -> Unit,
+) {
+    private var requestHeadersSnippet: RequestHeadersSnippet? = null
+    private var requestParametersSnippet: RequestParametersSnippet? = null
+    private var requestFieldsSnippet: RequestFieldsSnippet? = null
+    private var responseFieldsSnippet: ResponseFieldsSnippet? = null
+
+    fun requestHeaders(vararg pairs: Pair<String, String>) {
+        val descriptors = pairs.map { (name, means) -> headerWithName(name).description(means) }
+        requestHeadersSnippet = requestHeaders(descriptors)
+    }
+
+    fun requestParams(vararg fields: Parameter) {
+        val descriptors = fields.map { it.descriptor }
+        requestParametersSnippet = requestParameters(descriptors)
+    }
+
+    fun requestBody(vararg fields: Field) {
+        val descriptions = fields.map { it.descriptor }
+        requestFieldsSnippet = requestFields(descriptions)
+    }
+
+    fun responseBody(vararg fields: Field) {
+        val descriptors = fields.map { it.descriptor }
+        responseFieldsSnippet = responseFields(descriptors)
+    }
+
+    fun build() {
+        init()
+        mockMvcResultHandlersDsl.handle(
+            document(identifier, *getNotNullSnippets())
+        )
+    }
+
+    private fun getNotNullSnippets(): Array<TemplatedSnippet> {
+        return listOfNotNull(
+            requestHeadersSnippet,
+            requestParametersSnippet,
+            requestFieldsSnippet,
+            responseFieldsSnippet,
+        ).toTypedArray()
+    }
+}
 
 class MockMvcResponseDsl(
     private val mockMvcResponse: MockMvcResponse,
