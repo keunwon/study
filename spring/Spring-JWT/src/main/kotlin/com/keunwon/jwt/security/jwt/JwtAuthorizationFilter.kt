@@ -38,9 +38,10 @@ class JwtAuthorizationFilter(
 
     private fun registerSecurityContext(token: String) {
         val claims = jwtProvider.getBody(token)
-        val roles = jwtProvider.getRoles(claims).map(::SimpleGrantedAuthority)
+        val jwtLoginUser = jwtProvider.toJwtLoginUser(claims)
+        val roles = jwtLoginUser.roles.map { SimpleGrantedAuthority(it.name) }
         SecurityContextHolder.getContext().authentication =
-            UsernamePasswordAuthenticationToken.authenticated(claims, "", roles)
+            UsernamePasswordAuthenticationToken.authenticated(jwtLoginUser, "", roles)
     }
 
     private fun createErrorDto(ex: Throwable): ErrorDto {

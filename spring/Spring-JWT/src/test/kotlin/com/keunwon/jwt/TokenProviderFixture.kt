@@ -1,7 +1,7 @@
 package com.keunwon.jwt
 
 import com.keunwon.jwt.security.jwt.AbstractJwtToken
-import com.keunwon.jwt.security.jwt.CreateTokenRequest
+import com.keunwon.jwt.security.jwt.CreateToken
 import com.keunwon.jwt.security.jwt.JwtProperties
 import com.keunwon.jwt.security.jwt.JwtProvider
 import io.jsonwebtoken.SignatureAlgorithm
@@ -35,10 +35,11 @@ val expiredDate: Date = run {
 fun createToken(
     expired: Boolean = false,
     username: String = LOGIN_USERNAME,
-    roles: List<String> = AUTHENTICATION_ROLES.map { it.authority }
+    roles: List<String> = AUTHENTICATION_ROLES.map { it.authority },
+    claims: Map<String, Any> = emptyMap(),
 ): AbstractJwtToken {
     val expirationDate = if (expired) expiredDate else unExpiredDate
-    val createTokenRequest = CreateTokenRequest(username, roles)
+    val createTokenRequest = CreateToken(username, roles, claims)
     val token = testTokenProvider.generateToken(createTokenRequest, expirationDate)
     return object : AbstractJwtToken() {
         override val value: String = token
