@@ -35,7 +35,11 @@ data class GoogleOAuth2Attributes(
     val locale: String,
 ) : Oauth2Attributes() {
     override fun toOAuth2User(role: String, oAuth2User: OAuth2User): OAuth2User {
-        return DefaultOAuth2User(listOf(SimpleGrantedAuthority(role)), oAuth2User.attributes, "email")
+        return DefaultOAuth2User(
+            listOf(SimpleGrantedAuthority(role)),
+            oAuth2User.attributes,
+            "email",
+        )
     }
 }
 
@@ -45,7 +49,11 @@ data class NaverOAuth2Attributes(
     override val nickname: String,
 ) : Oauth2Attributes() {
     override fun toOAuth2User(role: String, oAuth2User: OAuth2User): OAuth2User {
-        return DefaultOAuth2User(listOf(SimpleGrantedAuthority(role)), oAuth2User.getAttribute("response"), "email")
+        return DefaultOAuth2User(
+            listOf(SimpleGrantedAuthority(role)),
+            oAuth2User.getAttribute("response"),
+            "email",
+        )
     }
 }
 

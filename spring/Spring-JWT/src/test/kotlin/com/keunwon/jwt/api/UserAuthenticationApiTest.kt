@@ -1,12 +1,14 @@
 package com.keunwon.jwt.api
 
 import com.keunwon.jwt.InmemoryAuthenticationCodeRepository
+import com.keunwon.jwt.InmemoryUserPasswordHistoryRepository
 import com.keunwon.jwt.InmemoryUserRepository
 import com.keunwon.jwt.RestDocsSupport
 import com.keunwon.jwt.STRING
 import com.keunwon.jwt.TestPasswordEncoder
 import com.keunwon.jwt.domain.AuthenticationCodeBuilder
 import com.keunwon.jwt.domain.USERNAME
+import com.keunwon.jwt.domain.USER_EMAIL
 import com.keunwon.jwt.domain.USER_FULL_NAME
 import com.keunwon.jwt.domain.USER_NICKNAME
 import com.keunwon.jwt.domain.USER_PASSWORD
@@ -23,7 +25,6 @@ import io.restassured.module.mockmvc.kotlin.extensions.When
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.restdocs.RestDocumentationContextProvider
 import org.springframework.restdocs.RestDocumentationExtension

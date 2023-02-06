@@ -132,15 +132,16 @@ class MockMvcResponseDsl(
     fun build() {
         init()
         mockMvcResponse.then().apply(
-            document(
-                identifier,
-                *listOfNotNull(
-                    requestHeadersSnippet,
-                    requestParametersSnippet,
-                    requestFieldsSnippet,
-                    responseFieldsSnippet
-                ).toTypedArray(),
-            )
+            document(identifier, *getNotNullSnippet())
         )
+    }
+
+    private fun getNotNullSnippet(): Array<Snippet> {
+        return listOfNotNull(
+            requestHeadersSnippet,
+            requestParametersSnippet,
+            requestFieldsSnippet,
+            responseFieldsSnippet,
+        ).toTypedArray()
     }
 }
