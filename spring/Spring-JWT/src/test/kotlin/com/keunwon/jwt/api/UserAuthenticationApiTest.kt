@@ -35,10 +35,12 @@ class UserAuthenticationApiTest : RestDocsSupport() {
 
     private val userRepository = InmemoryUserRepository()
     private val authenticationRepository = InmemoryAuthenticationCodeRepository()
+    private val userPasswordHistoryRepository = InmemoryUserPasswordHistoryRepository()
 
     private val userAuthenticationService = UserAuthenticationService(
         userRepository,
         authenticationRepository,
+        userPasswordHistoryRepository,
         TestPasswordEncoder,
     )
 
@@ -49,22 +51,22 @@ class UserAuthenticationApiTest : RestDocsSupport() {
 
     @Test
     fun `사용자 회원가입`() {
-        val request = UserSignRequest(USERNAME, USER_PASSWORD, USER_FULL_NAME, USER_NICKNAME)
+        val request = UserSignRequest(USERNAME, USER_PASSWORD, USER_EMAIL, USER_FULL_NAME, USER_NICKNAME)
 
         Given {
             mockMvc(mockMvc)
             contentType(ContentType.JSON)
-            header(HttpHeaders.AUTHORIZATION, "Bearer VALID_TOKEN")
             body(toJson(request))
         } When {
             post("/auth/sign")
         } Then {
-            status(HttpStatus.NO_CONTENT)
+            status(HttpStatus.CREATED)
         } Extract {
             response().makeDocument("사용자 회원가입") {
                 requestBody(
                     "username" type STRING means "사용자 아이디",
                     "password" type STRING means "사용자 비밀번호",
+                    "email" type STRING means "사용자 이메일 주소",
                     "nickname" type STRING means "닉네임",
                     "name" type STRING means "사용자 이름",
                 )
@@ -79,7 +81,7 @@ class UserAuthenticationApiTest : RestDocsSupport() {
 
         Given {
             mockMvc(mockMvc)
-            param("email", user.email!!)
+            param("email", user.email)
         } When {
             post("/auth/authentication-code")
         } Then {

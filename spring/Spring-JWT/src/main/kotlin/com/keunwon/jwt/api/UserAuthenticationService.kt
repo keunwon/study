@@ -13,13 +13,15 @@ import org.springframework.transaction.annotation.Transactional
 class UserAuthenticationService(
     private val userRepository: UserRepository,
     private val authenticationCodeRepository: AuthenticationCodeRepository,
+    private val userPasswordHistoryRepository: UserPasswordHistoryRepository,
     private val passwordEncoder: PasswordEncoder,
 ) {
     fun register(request: UserSignRequest) {
         check(!userRepository.existsByUsername(request.username)) {
             "${request.username}는 현재 사용 중인 아이디 입니다"
         }
-        userRepository.save(request.toEntity(passwordEncoder))
+        val user = userRepository.save(request.toEntity(passwordEncoder))
+        userPasswordHistoryRepository.save(UserPasswordHistory(user))
     }
 
     fun generateAuthenticationCode(email: String): String {
