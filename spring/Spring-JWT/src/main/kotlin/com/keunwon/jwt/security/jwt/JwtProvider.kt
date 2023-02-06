@@ -27,41 +27,51 @@ class JwtProvider(
 ) {
     private var key: Key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtProperties.secret))
 
-    fun generateLoginSuccessToken(tokenRequest: CreateTokenRequest): JwtLoginToken {
-        return JwtLoginToken(generateAccessToken(tokenRequest), generateRefreshToken(tokenRequest))
+    fun generateLoginSuccessToken(token: CreateToken): JwtLoginToken {
+        return JwtLoginToken(generateAccessToken(token), generateRefreshToken(token))
     }
 
-    fun generateAccessToken(tokenRequest: CreateTokenRequest): JwtAccessToken {
-        val tokenValue = generateToken(tokenRequest, jwtProperties.expiredDateByAccessToken)
+    fun generateAccessTokenBy(refreshToken: String): JwtAccessToken {
+        val claims = getBody(refreshToken)
+        return generateAccessToken(CreateToken(claims.subject, getRoles(claims)))
+    }
+
+    private fun generateAccessToken(token: CreateToken): JwtAccessToken {
+        val tokenValue = generateToken(token, jwtProperties.expiredDateByAccessToken)
         val claims = getBody(tokenValue)
         return JwtAccessToken(tokenValue, claims)
     }
 
-    fun generateRefreshToken(tokenRequest: CreateTokenRequest): JwtRefreshToken {
-        val tokenValue = generateToken(tokenRequest, jwtProperties.expirationDateByRefreshToken)
+    private fun generateRefreshToken(token: CreateToken): JwtRefreshToken {
+        val tokenValue = generateToken(token, jwtProperties.expirationDateByRefreshToken)
         val claims = getBody(tokenValue)
         return JwtRefreshToken(tokenValue, claims)
     }
 
-    fun generateAccessTokenWith(refreshToken: String): JwtAccessToken {
-        val claims = getBody(refreshToken)
-        return generateAccessToken(CreateTokenRequest(claims.subject, getRoles(claims)))
-    }
-
-    fun generateToken(tokenRequest: CreateTokenRequest, expiredDate: Date): String {
+    fun generateToken(token: CreateToken, expirationDate: Date): String {
         return Jwts.builder()
             .setIssuer(appName)
-            .setSubject(tokenRequest.subject)
-            .claim(ROLE_KEY, tokenRequest.roles.joinToString(","))
+            .setSubject(token.username)
+            .claim(ROLE_KEY, token.roles.joinToString(","))
+            .addClaims(token.claims)
             .signWith(key, SignatureAlgorithm.HS512)
             .setIssuedAt(Date())
-            .setExpiration(expiredDate)
+            .setExpiration(expirationDate)
             .compact()
     }
 
     fun getBody(token: String): Claims = getJwsClaims(token).body
 
-    fun verifyTokenOrThrownError(token: String?) = getJwsClaims(token)
+    fun verifyTokenOrThrown(token: String?) = getJwsClaims(token)
+
+    fun toJwtLoginUser(claims: Claims): JwtLoginUser {
+        val id = claims["id"]?.let { it as Long }
+        return JwtLoginUser(
+            username = claims.subject,
+            roles = getRoles(claims).map { UserRole.valueOf(it.uppercase()) },
+            id = id,
+        )
+    }
 
     fun getRoles(claims: Claims): List<String> {
         return claims[ROLE_KEY].toString()
@@ -99,3 +109,9 @@ data class CreateToken(
             CreateToken(authentication.name, authentication.authorities.map { it.authority })
     }
 }
+
+data class JwtLoginUser(
+    val username: String,
+    val roles: List<UserRole>,
+    val id: Long? = null,
+)
