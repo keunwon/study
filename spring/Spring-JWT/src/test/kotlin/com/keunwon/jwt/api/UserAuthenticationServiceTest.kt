@@ -1,17 +1,23 @@
 package com.keunwon.jwt.api
 
 import com.keunwon.jwt.InmemoryAuthenticationCodeRepository
+import com.keunwon.jwt.InmemoryUserPasswordHistoryRepository
 import com.keunwon.jwt.InmemoryUserRepository
 import com.keunwon.jwt.TestPasswordEncoder
 import com.keunwon.jwt.domain.AuthenticationCodeBuilder
 import com.keunwon.jwt.domain.INVALID_CODE
 import com.keunwon.jwt.domain.USERNAME
+import com.keunwon.jwt.domain.USER_EMAIL
 import com.keunwon.jwt.domain.USER_FULL_NAME
 import com.keunwon.jwt.domain.USER_NICKNAME
 import com.keunwon.jwt.domain.USER_PASSWORD
 import com.keunwon.jwt.domain.UserBuilder
+import com.keunwon.jwt.domain.user.User
+import com.keunwon.jwt.domain.user.UserPasswordHistory
 import com.keunwon.jwt.domain.user.getByUsername
+import com.keunwon.jwt.security.jwt.JwtLoginUser
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Assertions.assertAll
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertThrowsExactly
@@ -22,16 +28,21 @@ import java.time.LocalDateTime
 
 class UserAuthenticationServiceTest {
     private val userRepository = InmemoryUserRepository()
-    private val passwordEncoder = TestPasswordEncoder
     private val authenticationCodeRepository = InmemoryAuthenticationCodeRepository()
+    private val userPasswordHistoryRepository = InmemoryUserPasswordHistoryRepository()
+    private val passwordEncoder = TestPasswordEncoder
 
-    private val userAuthenticationService =
-        UserAuthenticationService(userRepository, authenticationCodeRepository, passwordEncoder)
+    private val userAuthenticationService = UserAuthenticationService(
+        userRepository,
+        authenticationCodeRepository,
+        userPasswordHistoryRepository,
+        passwordEncoder,
+    )
 
     @Test
     fun `신규 사용자 회원가입`() {
         // given
-        val request = UserSignRequest(USERNAME, USER_PASSWORD, USER_FULL_NAME, USER_NICKNAME)
+        val request = UserSignRequest(USERNAME, USER_PASSWORD, USER_EMAIL, USER_FULL_NAME, USER_NICKNAME)
 
         // when, then
         assertDoesNotThrow { userAuthenticationService.register(request) }
@@ -52,7 +63,7 @@ class UserAuthenticationServiceTest {
         userRepository.save(user)
 
         // when
-        val code = userAuthenticationService.generateAuthenticationCode(user.email!!)
+        val code = userAuthenticationService.generateAuthenticationCode(user.email)
 
         // then
         assertTrue(code.isNotBlank())
@@ -127,5 +138,68 @@ class UserAuthenticationServiceTest {
             assertThat(actuator.message).isEqualTo("인증코드가 만료되었습니다.")
             assertFalse(authenticationCode.authenticated)
         })
+    }
+
+    @Test
+    fun `사용자 비밀번호를 변경합니다`() {
+        // given
+        val user = givenSaveUserWithPasswordHistoryAndGet()
+        val newPassword = "NEW_PASSWORD"
+
+        // when
+        userAuthenticationService.changePassword(
+            JwtLoginUser(user.username!!, listOf(user.role), user.id),
+            newPassword,
+        )
+
+        // then
+        assertAll({
+            assertTrue(user.matchPassword(newPassword, passwordEncoder))
+            assertThat(userPasswordHistoryRepository.findAllByUserId(user.id)).hasSize(4)
+        })
+    }
+
+    @Test
+    fun `이전에 사용한 비밀번호로 변경시 오류가 발생합니다`() {
+        // given
+        val oldPassword = "password1"
+        val user = givenSaveUserWithPasswordHistoryAndGet()
+
+        // when,
+        assertThatThrownBy {
+            userAuthenticationService.changePassword(
+                JwtLoginUser(user.username!!, listOf(user.role), user.id),
+                oldPassword,
+            )
+        }.hasMessage("이전에 사용했었던 비밀번호 입니다.")
+    }
+
+    private fun givenSaveUserWithPasswordHistoryAndGet(): User {
+        val nowPassword = "password1"
+        val user = UserBuilder(id = 1L, password = nowPassword).build()
+        val baseLocalDateTime = LocalDateTime.of(2023, 1, 1, 0, 0, 0)
+        val passwordHistory = mutableListOf(
+            UserPasswordHistory(
+                userId = user.id,
+                password = nowPassword,
+                createdAt = baseLocalDateTime,
+                id = 1L,
+            ),
+            UserPasswordHistory(
+                userId = user.id,
+                password = "password2",
+                createdAt = baseLocalDateTime.minusMinutes(3L),
+                id = 2L,
+            ),
+            UserPasswordHistory(
+                userId = user.id,
+                password = "password3",
+                createdAt = baseLocalDateTime.minusMinutes(6L),
+                id = 3L,
+            ),
+        )
+        userRepository.save(user)
+        userPasswordHistoryRepository.saveAll(passwordHistory)
+        return user
     }
 }
