@@ -1,9 +1,9 @@
 package com.keunwon.jwt.api
 
-import com.keunwon.jwt.domain.AuthenticationCode
-import com.keunwon.jwt.domain.AuthenticationCodeRepository
-import com.keunwon.jwt.domain.UserRepository
-import com.keunwon.jwt.domain.getLastByEmail
+import com.keunwon.jwt.domain.authenticationcode.AuthenticationCode
+import com.keunwon.jwt.domain.authenticationcode.AuthenticationCodeRepository
+import com.keunwon.jwt.domain.authenticationcode.getLastByEmail
+import com.keunwon.jwt.domain.user.UserRepository
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -23,7 +23,7 @@ class UserAuthenticationService(
     }
 
     fun generateAuthenticationCode(email: String): String {
-        //check(!userRepository.existsByEmail(email)) { "" }
+        check(userRepository.existsByEmail(email)) { "가입된 이메일이 존재하지 않습니다." }
         val authenticationCode = authenticationCodeRepository.save(AuthenticationCode(email))
         return authenticationCode.code
     }

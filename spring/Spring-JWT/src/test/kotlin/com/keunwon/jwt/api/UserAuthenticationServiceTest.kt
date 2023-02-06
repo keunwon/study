@@ -6,11 +6,11 @@ import com.keunwon.jwt.TestPasswordEncoder
 import com.keunwon.jwt.domain.AuthenticationCodeBuilder
 import com.keunwon.jwt.domain.INVALID_CODE
 import com.keunwon.jwt.domain.USERNAME
-import com.keunwon.jwt.domain.USER_EMAIL
 import com.keunwon.jwt.domain.USER_FULL_NAME
 import com.keunwon.jwt.domain.USER_NICKNAME
 import com.keunwon.jwt.domain.USER_PASSWORD
-import com.keunwon.jwt.domain.getByUsername
+import com.keunwon.jwt.domain.UserBuilder
+import com.keunwon.jwt.domain.user.getByUsername
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertAll
 import org.junit.jupiter.api.Assertions.assertFalse
@@ -48,10 +48,11 @@ class UserAuthenticationServiceTest {
     @Test
     fun `인증 코드를 생성합니다`() {
         // given
-        val email = USER_EMAIL
+        val user = UserBuilder(id = 1L).build()
+        userRepository.save(user)
 
         // when
-        val code = userAuthenticationService.generateAuthenticationCode(email)
+        val code = userAuthenticationService.generateAuthenticationCode(user.email!!)
 
         // then
         assertTrue(code.isNotBlank())

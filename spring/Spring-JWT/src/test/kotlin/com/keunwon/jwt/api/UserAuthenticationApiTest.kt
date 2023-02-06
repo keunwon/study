@@ -5,12 +5,12 @@ import com.keunwon.jwt.InmemoryUserRepository
 import com.keunwon.jwt.RestDocsSupport
 import com.keunwon.jwt.STRING
 import com.keunwon.jwt.TestPasswordEncoder
-import com.keunwon.jwt.domain.AUTHENTICATION_EMAIL
 import com.keunwon.jwt.domain.AuthenticationCodeBuilder
 import com.keunwon.jwt.domain.USERNAME
 import com.keunwon.jwt.domain.USER_FULL_NAME
 import com.keunwon.jwt.domain.USER_NICKNAME
 import com.keunwon.jwt.domain.USER_PASSWORD
+import com.keunwon.jwt.domain.UserBuilder
 import com.keunwon.jwt.makeDocument
 import com.keunwon.jwt.param
 import com.keunwon.jwt.toJson
@@ -28,7 +28,6 @@ import org.springframework.http.HttpStatus
 import org.springframework.restdocs.RestDocumentationContextProvider
 import org.springframework.restdocs.RestDocumentationExtension
 import org.springframework.test.web.servlet.MockMvc
-
 
 @ExtendWith(RestDocumentationExtension::class)
 class UserAuthenticationApiTest : RestDocsSupport() {
@@ -75,11 +74,12 @@ class UserAuthenticationApiTest : RestDocsSupport() {
 
     @Test
     fun `인증코드를 생성합니다`() {
-        val email = AUTHENTICATION_EMAIL
+        val user = UserBuilder(id = 1L).build()
+        userRepository.save(user)
 
         Given {
             mockMvc(mockMvc)
-            param("email", email)
+            param("email", user.email!!)
         } When {
             post("/auth/authentication-code")
         } Then {
