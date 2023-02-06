@@ -1,6 +1,6 @@
 package com.keunwon.jwt.domain
 
-import com.keunwon.jwt.domain.usertoken.UserToken
+import com.keunwon.jwt.domain.user.UserToken
 import java.time.LocalDateTime
 
 data class UserTokenBuilder(

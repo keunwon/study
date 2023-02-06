@@ -1,7 +1,7 @@
 package com.keunwon.jwt.security.jwt
 
+import com.keunwon.jwt.common.UserRole
 import com.keunwon.jwt.createToken
-import com.keunwon.jwt.domain.user.UserRole
 import com.keunwon.jwt.testTokenProvider
 import io.jsonwebtoken.ExpiredJwtException
 import org.assertj.core.api.Assertions.assertThat

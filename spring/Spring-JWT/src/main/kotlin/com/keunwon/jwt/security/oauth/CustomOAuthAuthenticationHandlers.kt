@@ -3,10 +3,10 @@ package com.keunwon.jwt.security.oauth
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.keunwon.jwt.common.ErrorDto
 import com.keunwon.jwt.domain.user.UserRepository
+import com.keunwon.jwt.domain.user.UserToken
+import com.keunwon.jwt.domain.user.UserTokenRepository
 import com.keunwon.jwt.domain.user.getByUsername
-import com.keunwon.jwt.domain.usertoken.UserToken
-import com.keunwon.jwt.domain.usertoken.UserTokenRepository
-import com.keunwon.jwt.security.jwt.CreateTokenRequest
+import com.keunwon.jwt.security.jwt.CreateToken
 import com.keunwon.jwt.security.jwt.JwtProvider
 import com.keunwon.jwt.security.jwt.JwtRefreshToken
 import com.keunwon.jwt.security.jwt.LoginTokenResponse
@@ -30,7 +30,7 @@ class OAuthAuthenticationSuccessHandler(
         response: HttpServletResponse,
         authentication: Authentication,
     ) {
-        val loginToken = jwtProvider.generateLoginSuccessToken(CreateTokenRequest.from(authentication))
+        val loginToken = jwtProvider.generateLoginSuccessToken(CreateToken.from(authentication))
         saveOrUpdateRefreshToken(authentication, loginToken.refreshToken)
         response.writeLoginToken(LoginTokenResponse(loginToken))
     }
@@ -43,8 +43,9 @@ class OAuthAuthenticationSuccessHandler(
 
     private fun saveOrUpdateRefreshToken(authentication: Authentication, refreshToken: JwtRefreshToken) {
         val user = userRepository.getByUsername(authentication.name)
-        val userToken = userTokenRepository.findByUserId(user.id)?.apply { updateRefreshToken(refreshToken) }
-            ?: UserToken(user.id, refreshToken)
+        val userToken = userTokenRepository.findByUserId(user.id)?.apply {
+            updateRefreshToken(refreshToken)
+        } ?: UserToken(user.id, refreshToken)
         userTokenRepository.save(userToken)
     }
 }

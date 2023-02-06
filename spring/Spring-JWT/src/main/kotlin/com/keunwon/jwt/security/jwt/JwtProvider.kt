@@ -1,5 +1,6 @@
 package com.keunwon.jwt.security.jwt
 
+import com.keunwon.jwt.common.UserRole
 import com.keunwon.jwt.config.LogSupport
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.ExpiredJwtException

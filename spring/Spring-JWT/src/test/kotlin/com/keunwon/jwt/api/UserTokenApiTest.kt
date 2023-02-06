@@ -5,6 +5,7 @@ import com.keunwon.jwt.InmemoryUserTokenRepository
 import com.keunwon.jwt.LOGIN_USERNAME
 import com.keunwon.jwt.RestDocsSupport
 import com.keunwon.jwt.STRING
+import com.keunwon.jwt.common.UserRole
 import com.keunwon.jwt.common.util.toLocalDateTime
 import com.keunwon.jwt.domain.UserBuilder
 import com.keunwon.jwt.domain.UserTokenBuilder

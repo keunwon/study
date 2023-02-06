@@ -6,6 +6,8 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.keunwon.jwt.common.ControllerErrorHandler
 import com.keunwon.jwt.common.ErrorDto
+import com.keunwon.jwt.common.UserRole
+import com.keunwon.jwt.domain.USERNAME
 import com.keunwon.jwt.security.jwt.AuthorizationHeader
 import org.springframework.http.HttpStatus
 import org.springframework.restdocs.RestDocumentationContextProvider

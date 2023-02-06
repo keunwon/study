@@ -1,5 +1,6 @@
 package com.keunwon.jwt.domain
 
+import com.keunwon.jwt.common.UserRole
 import com.keunwon.jwt.domain.user.LoginType
 import com.keunwon.jwt.domain.user.User
 import com.keunwon.jwt.domain.user.UserRole
