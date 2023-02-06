@@ -48,7 +48,7 @@ class UserTokenServiceTest {
         // given
         val username = USERNAME
         val refreshToken = givenLoginUserAndGetRefreshToken(expired = false)
-        val newRefreshToken = testTokenProvider.generateAccessTokenWith(refreshToken.value).value
+        val newRefreshToken = testTokenProvider.generateAccessTokenBy(refreshToken.value).value
 
         assertThatThrownBy { userTokenService.refreshAccessToken(AccessTokenIssueRequest(username, newRefreshToken)) }
             .isInstanceOf(IllegalArgumentException::class.java)

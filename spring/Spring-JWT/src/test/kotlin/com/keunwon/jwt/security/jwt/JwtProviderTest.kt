@@ -32,7 +32,7 @@ internal class JwtProviderTest {
         val token = createToken(expired = false).value
 
         // when, then
-        assertDoesNotThrow { testTokenProvider.verifyTokenOrThrownError(token) }
+        assertDoesNotThrow { testTokenProvider.verifyTokenOrThrown(token) }
     }
 
     @Test
@@ -41,14 +41,14 @@ internal class JwtProviderTest {
         val token = createToken(expired = true).value
 
         // when, then
-        assertThatThrownBy { testTokenProvider.verifyTokenOrThrownError(token) }
+        assertThatThrownBy { testTokenProvider.verifyTokenOrThrown(token) }
             .isInstanceOf(ExpiredJwtException::class.java)
     }
 
     @ParameterizedTest
     @ValueSource(strings = ["", "  ", "trash.trash"])
     fun `비어있거나, 유효하지 않은 토큰을 검증하면 exception 발생합니다`(token: String) {
-        assertThatThrownBy { testTokenProvider.verifyTokenOrThrownError(token) }
+        assertThatThrownBy { testTokenProvider.verifyTokenOrThrown(token) }
     }
 
     @Test
@@ -61,12 +61,12 @@ internal class JwtProviderTest {
 
         // then
         assertAll({
-            assertThat(claims.subject).isEqualTo(createJwtDto.subject)
+            assertThat(claims.subject).isEqualTo(createJwtDto.username)
             assertThat(testTokenProvider.getRoles(claims)).isEqualTo(createJwtDto.roles)
         })
     }
 
     companion object {
-        private val createJwtDto = CreateTokenRequest("test-id", UserRole.DEFAULT_ROLES)
+        private val createJwtDto = CreateToken("test-id", UserRole.DEFAULT_ROLES)
     }
 }

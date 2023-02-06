@@ -17,7 +17,7 @@ class UserTokenService(
     @Transactional
     fun refreshAccessToken(accessTokenIssueRequest: AccessTokenIssueRequest): AccessToken {
         validateRefreshToken(accessTokenIssueRequest)
-        return jwtProvider.generateAccessTokenWith(accessTokenIssueRequest.refreshToken).let(::AccessToken)
+        return jwtProvider.generateAccessTokenBy(accessTokenIssueRequest.refreshToken).let(::AccessToken)
     }
 
     private fun validateRefreshToken(accessTokenIssueRequest: AccessTokenIssueRequest) = with(accessTokenIssueRequest) {
