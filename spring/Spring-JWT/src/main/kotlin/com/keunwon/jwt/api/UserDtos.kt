@@ -17,6 +17,9 @@ data class UserSignRequest(
     val password: String,
 
     @field:NotBlank(message = "{required.message}")
+    val email: String,
+
+    @field:NotBlank(message = "{required.message}")
     val name: String,
 
     @field:NotBlank(message = "{required.message}")
@@ -26,6 +29,7 @@ data class UserSignRequest(
         name = name,
         username = username,
         password = passwordEncoder.encode(password),
+        email = email,
         nickname = nickname,
         isAccountNonLocked = true,
         role = UserRole.USER,

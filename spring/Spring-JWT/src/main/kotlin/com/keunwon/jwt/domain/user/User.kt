@@ -29,7 +29,7 @@ class User(
     var nickname: String,
 
     @Column(name = "email", length = 30)
-    var email: String? = null,
+    var email: String,
 
     @Column(name = "login_type", length = 10)
     @Enumerated(EnumType.STRING)
@@ -51,6 +51,10 @@ class User(
     fun matchPassword(password: String, passwordEncoder: PasswordEncoder): Boolean =
         passwordEncoder.matches(password, this.password)
 
+    fun changePassword(password: String, passwordEncoder: PasswordEncoder) {
+        this.password = passwordEncoder.encode(password)
+    }
+
     fun reset() {
         failedPasswordCount = 0
         isAccountNonLocked = true
@@ -63,16 +67,6 @@ class User(
 
     companion object {
         const val MAX_PASSWORD_FAILURED_COUNT = 10
-    }
-}
-
-enum class UserRole(val title: String) {
-    ADMIN("관리자"),
-    USER("사용자"),
-    GUEST("게스트");
-
-    companion object {
-        val DEFAULT_ROLES = listOf(USER.name)
     }
 }
 

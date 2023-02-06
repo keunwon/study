@@ -3,7 +3,6 @@ package com.keunwon.jwt.domain
 import com.keunwon.jwt.common.UserRole
 import com.keunwon.jwt.domain.user.LoginType
 import com.keunwon.jwt.domain.user.User
-import com.keunwon.jwt.domain.user.UserRole
 
 const val USERNAME = "test-id"
 const val USER_EMAIL = "test@test.com"
@@ -19,7 +18,7 @@ data class UserBuilder(
     val password: String? = USER_PASSWORD,
     val name: String = USER_FULL_NAME,
     val nickname: String = USER_NICKNAME,
-    val email: String? = USER_EMAIL,
+    val email: String = USER_EMAIL,
     val loginType: LoginType = LoginType.SIMPLE,
     val failedPasswordCount: Int = 0,
     val isAccountNonLocked: Boolean = true,
