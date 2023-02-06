@@ -2,8 +2,8 @@ package com.keunwon.jwt.api
 
 import com.fasterxml.jackson.annotation.JsonFormat
 import com.keunwon.jwt.common.util.toLocalDateTime
-import com.keunwon.jwt.domain.User
-import com.keunwon.jwt.domain.UserRole
+import com.keunwon.jwt.domain.user.User
+import com.keunwon.jwt.domain.user.UserRole
 import com.keunwon.jwt.security.jwt.JwtAccessToken
 import org.springframework.security.crypto.password.PasswordEncoder
 import java.time.LocalDateTime
@@ -32,7 +32,7 @@ data class UserSignRequest(
     )
 }
 
-data class AccessTokenIssue(
+data class AccessTokenIssueRequest(
     @field:NotBlank(message = "{required.message}")
     val username: String,
 

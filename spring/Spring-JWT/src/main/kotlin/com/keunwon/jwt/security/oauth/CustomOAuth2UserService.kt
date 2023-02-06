@@ -1,8 +1,8 @@
 package com.keunwon.jwt.security.oauth
 
 import com.keunwon.jwt.config.LogSupport
-import com.keunwon.jwt.domain.User
-import com.keunwon.jwt.domain.UserRepository
+import com.keunwon.jwt.domain.user.User
+import com.keunwon.jwt.domain.user.UserRepository
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService

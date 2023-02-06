@@ -1,5 +1,6 @@
 package com.keunwon.jwt.domain
 
+import com.keunwon.jwt.domain.authenticationcode.AuthenticationCode
 import java.time.LocalDateTime
 
 const val AUTHENTICATION_EMAIL = "test@test.com"

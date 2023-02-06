@@ -1,4 +1,4 @@
-package com.keunwon.jwt.domain
+package com.keunwon.jwt.domain.user
 
 import com.keunwon.jwt.common.jpa.BaseEntity
 import com.keunwon.jwt.common.jpa.convert.BooleanConverter

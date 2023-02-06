@@ -1,4 +1,4 @@
-package com.keunwon.jwt.domain
+package com.keunwon.jwt.domain.user
 
 import org.springframework.data.repository.CrudRepository
 

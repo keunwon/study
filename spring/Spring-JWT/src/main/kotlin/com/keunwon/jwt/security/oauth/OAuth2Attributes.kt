@@ -2,9 +2,9 @@ package com.keunwon.jwt.security.oauth
 
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.keunwon.jwt.domain.LoginType
-import com.keunwon.jwt.domain.User
-import com.keunwon.jwt.domain.UserRole
+import com.keunwon.jwt.domain.user.LoginType
+import com.keunwon.jwt.domain.user.User
+import com.keunwon.jwt.domain.user.UserRole
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User
@@ -60,7 +60,8 @@ object OAuth2AttributeFactory {
         return when (oAuth2UserRequest.registrationId().uppercase()) {
             "GOOGLE" -> objectMapper.convertValue(oAuth2User.attributes, GoogleOAuth2Attributes::class.java)
             "NAVER" -> objectMapper.convertValue(
-                oAuth2User.getAttribute(oAuth2UserRequest.userNameAttributeName()), NaverOAuth2Attributes::class.java)
+                oAuth2User.getAttribute(oAuth2UserRequest.userNameAttributeName()), NaverOAuth2Attributes::class.java
+            )
             else -> throw IllegalArgumentException("")
         }
     }

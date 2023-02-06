@@ -1,4 +1,4 @@
-package com.keunwon.jwt.domain
+package com.keunwon.jwt.domain.authenticationcode
 
 import com.keunwon.jwt.common.jpa.BaseEntity
 import java.time.Duration

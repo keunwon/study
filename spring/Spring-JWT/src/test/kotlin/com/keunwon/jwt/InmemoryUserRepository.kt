@@ -1,7 +1,7 @@
 package com.keunwon.jwt
 
-import com.keunwon.jwt.domain.User
-import com.keunwon.jwt.domain.UserRepository
+import com.keunwon.jwt.domain.user.User
+import com.keunwon.jwt.domain.user.UserRepository
 import java.util.*
 
 class InmemoryUserRepository : InmemoryRepository<User>(), UserRepository {

@@ -1,7 +1,7 @@
 package com.keunwon.jwt
 
-import com.keunwon.jwt.domain.UserToken
-import com.keunwon.jwt.domain.UserTokenRepository
+import com.keunwon.jwt.domain.usertoken.UserToken
+import com.keunwon.jwt.domain.usertoken.UserTokenRepository
 import java.util.*
 
 class InmemoryUserTokenRepository : InmemoryRepository<UserToken>(), UserTokenRepository {

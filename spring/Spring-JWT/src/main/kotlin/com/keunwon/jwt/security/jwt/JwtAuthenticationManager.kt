@@ -1,9 +1,9 @@
 package com.keunwon.jwt.security.jwt
 
 import com.keunwon.jwt.config.LogSupport
-import com.keunwon.jwt.domain.User
-import com.keunwon.jwt.domain.UserRepository
-import com.keunwon.jwt.domain.generatedGrantedAuthorityList
+import com.keunwon.jwt.domain.user.User
+import com.keunwon.jwt.domain.user.UserRepository
+import com.keunwon.jwt.domain.user.generatedGrantedAuthorityList
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.authentication.LockedException

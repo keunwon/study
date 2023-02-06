@@ -1,5 +1,9 @@
 package com.keunwon.jwt.domain
 
+import com.keunwon.jwt.domain.user.LoginType
+import com.keunwon.jwt.domain.user.User
+import com.keunwon.jwt.domain.user.UserRole
+
 const val USERNAME = "test-id"
 const val USER_EMAIL = "test@test.com"
 const val USER_PASSWORD = "password"

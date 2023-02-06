@@ -4,9 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.keunwon.jwt.common.ErrorDto
 import com.keunwon.jwt.common.util.toLocalDateTime
 import com.keunwon.jwt.config.LogSupport
-import com.keunwon.jwt.domain.User
-import com.keunwon.jwt.domain.UserToken
-import com.keunwon.jwt.domain.UserTokenRepository
+import com.keunwon.jwt.domain.user.User
+import com.keunwon.jwt.domain.usertoken.UserToken
+import com.keunwon.jwt.domain.usertoken.UserTokenRepository
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.security.core.Authentication

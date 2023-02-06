@@ -7,8 +7,8 @@ import com.keunwon.jwt.RestDocsSupport
 import com.keunwon.jwt.STRING
 import com.keunwon.jwt.common.util.toLocalDateTime
 import com.keunwon.jwt.domain.UserBuilder
-import com.keunwon.jwt.domain.UserRole
 import com.keunwon.jwt.domain.UserTokenBuilder
+import com.keunwon.jwt.domain.user.UserRole
 import com.keunwon.jwt.makeDocument
 import com.keunwon.jwt.security.jwt.CreateTokenRequest
 import com.keunwon.jwt.security.jwt.JwtLoginToken
@@ -106,7 +106,7 @@ class UserTokenApiTest : RestDocsSupport() {
         return Given {
             mockMvc(mockMvc)
             contentType(ContentType.JSON)
-            body(toJson(AccessTokenIssue(username, refreshToken)))
+            body(toJson(AccessTokenIssueRequest(username, refreshToken)))
         } When {
             post("/auth/refreshToken")
         }

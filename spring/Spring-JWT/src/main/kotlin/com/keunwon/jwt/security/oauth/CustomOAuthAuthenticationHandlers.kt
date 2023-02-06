@@ -2,10 +2,10 @@ package com.keunwon.jwt.security.oauth
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.keunwon.jwt.common.ErrorDto
-import com.keunwon.jwt.domain.UserRepository
-import com.keunwon.jwt.domain.UserToken
-import com.keunwon.jwt.domain.UserTokenRepository
-import com.keunwon.jwt.domain.getByUsername
+import com.keunwon.jwt.domain.user.UserRepository
+import com.keunwon.jwt.domain.user.getByUsername
+import com.keunwon.jwt.domain.usertoken.UserToken
+import com.keunwon.jwt.domain.usertoken.UserTokenRepository
 import com.keunwon.jwt.security.jwt.CreateTokenRequest
 import com.keunwon.jwt.security.jwt.JwtProvider
 import com.keunwon.jwt.security.jwt.JwtRefreshToken

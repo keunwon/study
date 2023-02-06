@@ -1,7 +1,7 @@
 package com.keunwon.jwt
 
-import com.keunwon.jwt.domain.AuthenticationCode
-import com.keunwon.jwt.domain.AuthenticationCodeRepository
+import com.keunwon.jwt.domain.authenticationcode.AuthenticationCode
+import com.keunwon.jwt.domain.authenticationcode.AuthenticationCodeRepository
 import java.util.*
 
 class InmemoryAuthenticationCodeRepository : InmemoryRepository<AuthenticationCode>(), AuthenticationCodeRepository {
