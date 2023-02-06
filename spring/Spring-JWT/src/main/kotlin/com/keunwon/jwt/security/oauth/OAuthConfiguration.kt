@@ -2,7 +2,7 @@ package com.keunwon.jwt.security.oauth
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.keunwon.jwt.domain.user.UserRepository
-import com.keunwon.jwt.domain.usertoken.UserTokenRepository
+import com.keunwon.jwt.domain.user.UserTokenRepository
 import com.keunwon.jwt.security.jwt.JwtProvider
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration

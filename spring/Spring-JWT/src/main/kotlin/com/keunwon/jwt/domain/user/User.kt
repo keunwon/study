@@ -1,5 +1,6 @@
 package com.keunwon.jwt.domain.user
 
+import com.keunwon.jwt.common.UserRole
 import com.keunwon.jwt.common.jpa.BaseEntity
 import com.keunwon.jwt.common.jpa.convert.BooleanConverter
 import org.springframework.security.core.GrantedAuthority

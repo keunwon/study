@@ -2,9 +2,9 @@ package com.keunwon.jwt.security.oauth
 
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.keunwon.jwt.common.UserRole
 import com.keunwon.jwt.domain.user.LoginType
 import com.keunwon.jwt.domain.user.User
-import com.keunwon.jwt.domain.user.UserRole
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User
