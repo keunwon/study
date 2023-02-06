@@ -5,7 +5,7 @@ import com.keunwon.jwt.RestDocsSupport
 import com.keunwon.jwt.STRING
 import com.keunwon.jwt.TestHomeController
 import com.keunwon.jwt.makeDocument
-import com.keunwon.jwt.security.jwt.CreateTokenRequest
+import com.keunwon.jwt.security.jwt.CreateToken
 import com.keunwon.jwt.security.jwt.JwtLoginAuthenticationFilter
 import com.keunwon.jwt.security.jwt.LoginTokenResponse
 import com.keunwon.jwt.testObjectMapper
@@ -90,6 +90,6 @@ class LoginSuccessHandlerStub : AuthenticationSuccessHandler {
         }
     }
 
-    private fun Authentication.toCreateTokenRequest(): CreateTokenRequest =
-        CreateTokenRequest(name, authorities.map { it.authority })
+    private fun Authentication.toCreateTokenRequest(): CreateToken =
+        CreateToken(name, authorities.map { it.authority })
 }

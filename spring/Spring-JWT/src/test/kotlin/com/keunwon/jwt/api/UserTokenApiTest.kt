@@ -9,9 +9,8 @@ import com.keunwon.jwt.common.UserRole
 import com.keunwon.jwt.common.util.toLocalDateTime
 import com.keunwon.jwt.domain.UserBuilder
 import com.keunwon.jwt.domain.UserTokenBuilder
-import com.keunwon.jwt.domain.user.UserRole
 import com.keunwon.jwt.makeDocument
-import com.keunwon.jwt.security.jwt.CreateTokenRequest
+import com.keunwon.jwt.security.jwt.CreateToken
 import com.keunwon.jwt.security.jwt.JwtLoginToken
 import com.keunwon.jwt.testTokenProvider
 import com.keunwon.jwt.toJson
@@ -45,7 +44,7 @@ class UserTokenApiTest : RestDocsSupport() {
     fun setup(restDocumentation: RestDocumentationContextProvider) {
         mockMvc = createMockMvc(UserTokenApi(userTokenService), restDocumentation)
         jwtLoginToken = testTokenProvider.generateLoginSuccessToken(
-            CreateTokenRequest(username, UserRole.DEFAULT_ROLES)
+            CreateToken(username, UserRole.DEFAULT_ROLES)
         )
     }
 
@@ -53,7 +52,7 @@ class UserTokenApiTest : RestDocsSupport() {
     fun `refreshToken 이용하여 accessToken 새로 발급합니다`() {
         val user = UserBuilder(id = 1L).build().also { userRepository.save(it) }
         val loginToken = testTokenProvider.generateLoginSuccessToken(
-            CreateTokenRequest(user.username!!, listOf(user.role.name))
+            CreateToken(user.username!!, listOf(user.role.name))
         )
         userTokenRepository.save(
             UserTokenBuilder(

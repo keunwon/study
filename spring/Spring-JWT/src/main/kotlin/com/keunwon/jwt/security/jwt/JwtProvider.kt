@@ -89,12 +89,13 @@ class JwtProvider(
     }
 }
 
-data class CreateTokenRequest(
-    val subject: String,
+data class CreateToken(
+    val username: String,
     val roles: List<String>,
+    val claims: Map<String, Any> = emptyMap(),
 ) {
     companion object {
         fun from(authentication: Authentication) =
-            CreateTokenRequest(authentication.name, authentication.authorities.map { it.authority })
+            CreateToken(authentication.name, authentication.authorities.map { it.authority })
     }
 }

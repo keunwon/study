@@ -35,7 +35,7 @@ class JwtLoginAuthenticationSuccessHandler(
     }
 
     private fun generateJwtLoginToken(user: User): JwtLoginToken {
-        val createTokenRequest = CreateTokenRequest(user.username!!, listOf(user.role.name))
+        val createTokenRequest = CreateToken(user.username!!, listOf(user.role.name))
         return jwtProvider.generateLoginSuccessToken(createTokenRequest)
     }
 
