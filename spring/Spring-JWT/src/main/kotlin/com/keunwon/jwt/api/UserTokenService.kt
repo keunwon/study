@@ -1,9 +1,9 @@
 package com.keunwon.jwt.api
 
-import com.keunwon.jwt.domain.UserRepository
-import com.keunwon.jwt.domain.UserTokenRepository
-import com.keunwon.jwt.domain.getByUserId
-import com.keunwon.jwt.domain.getByUsername
+import com.keunwon.jwt.domain.user.UserRepository
+import com.keunwon.jwt.domain.user.getByUsername
+import com.keunwon.jwt.domain.usertoken.UserTokenRepository
+import com.keunwon.jwt.domain.usertoken.getByUserId
 import com.keunwon.jwt.security.jwt.JwtProvider
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -15,14 +15,14 @@ class UserTokenService(
     private val jwtProvider: JwtProvider,
 ) {
     @Transactional
-    fun refreshAccessToken(accessTokenIssue: AccessTokenIssue): AccessToken {
-        validateRefreshToken(accessTokenIssue)
-        return jwtProvider.generateAccessTokenWith(accessTokenIssue.refreshToken).let(::AccessToken)
+    fun refreshAccessToken(accessTokenIssueRequest: AccessTokenIssueRequest): AccessToken {
+        validateRefreshToken(accessTokenIssueRequest)
+        return jwtProvider.generateAccessTokenWith(accessTokenIssueRequest.refreshToken).let(::AccessToken)
     }
 
-    private fun validateRefreshToken(accessTokenIssue: AccessTokenIssue) = with(accessTokenIssue) {
-        jwtProvider.verifyTokenOrThrownError(accessTokenIssue.refreshToken)
-        val user = userRepository.getByUsername(accessTokenIssue.username)
+    private fun validateRefreshToken(accessTokenIssueRequest: AccessTokenIssueRequest) = with(accessTokenIssueRequest) {
+        jwtProvider.verifyTokenOrThrownError(accessTokenIssueRequest.refreshToken)
+        val user = userRepository.getByUsername(accessTokenIssueRequest.username)
         val userToken = userTokenRepository.getByUserId(user.id)
         require(refreshToken == userToken.refreshToken) { "refreshToken 일치하지 않습니다" }
     }

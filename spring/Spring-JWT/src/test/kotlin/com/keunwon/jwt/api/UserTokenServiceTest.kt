@@ -34,7 +34,7 @@ class UserTokenServiceTest {
         val refreshToken = givenLoginUserAndGetRefreshToken(expired = false)
 
         // when
-        val token = userTokenService.refreshAccessToken(AccessTokenIssue(username, refreshToken.value))
+        val token = userTokenService.refreshAccessToken(AccessTokenIssueRequest(username, refreshToken.value))
 
         // then
         assertAll({
@@ -50,7 +50,7 @@ class UserTokenServiceTest {
         val refreshToken = givenLoginUserAndGetRefreshToken(expired = false)
         val newRefreshToken = testTokenProvider.generateAccessTokenWith(refreshToken.value).value
 
-        assertThatThrownBy { userTokenService.refreshAccessToken(AccessTokenIssue(username, newRefreshToken)) }
+        assertThatThrownBy { userTokenService.refreshAccessToken(AccessTokenIssueRequest(username, newRefreshToken)) }
             .isInstanceOf(IllegalArgumentException::class.java)
             .hasMessage("refreshToken 일치하지 않습니다")
     }
@@ -62,7 +62,14 @@ class UserTokenServiceTest {
         val refreshToken = givenLoginUserAndGetRefreshToken(expired = true)
 
         // when, then
-        assertThatThrownBy { userTokenService.refreshAccessToken(AccessTokenIssue(username, refreshToken.value)) }
+        assertThatThrownBy {
+            userTokenService.refreshAccessToken(
+                AccessTokenIssueRequest(
+                    username,
+                    refreshToken.value
+                )
+            )
+        }
             .isInstanceOf(ExpiredJwtException::class.java)
     }
 
@@ -74,7 +81,7 @@ class UserTokenServiceTest {
         givenLoginUserAndGetRefreshToken(expired = false)
 
         // when ,then
-        assertThatThrownBy { userTokenService.refreshAccessToken(AccessTokenIssue(username, refreshToken)) }
+        assertThatThrownBy { userTokenService.refreshAccessToken(AccessTokenIssueRequest(username, refreshToken)) }
             .isInstanceOf(JwtException::class.java)
     }
 
