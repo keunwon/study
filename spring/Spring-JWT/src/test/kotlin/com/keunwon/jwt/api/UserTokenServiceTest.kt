@@ -38,7 +38,7 @@ class UserTokenServiceTest {
 
         // then
         assertAll({
-            assertDoesNotThrow { testTokenProvider.verifyTokenOrThrownError(token.value) }
+            assertDoesNotThrow { testTokenProvider.verifyTokenOrThrown(token.value) }
             assertTrue(token.value.isNotBlank())
         })
     }
