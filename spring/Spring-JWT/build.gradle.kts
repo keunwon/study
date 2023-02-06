@@ -2,7 +2,6 @@ plugins {
     id("org.springframework.boot") version "2.7.7"
     id("io.spring.dependency-management") version "1.1.0"
     id("org.asciidoctor.jvm.convert") version "3.3.2"
-    id("java-library")
     id("java-test-fixtures")
     kotlin("jvm") version "1.7.22"
     kotlin("plugin.spring") version "1.7.22"
@@ -68,6 +67,7 @@ dependencies {
     testImplementation("io.mockk:mockk:${property("mockkVersion")}")
     //testImplementation("io.rest-assured:spring-mock-mvc:${property("restAssuredVersion")}")
     testImplementation("io.rest-assured:spring-mock-mvc-kotlin-extensions:${property("restAssuredVersion")}")
+    testImplementation(kotlin("script-runtime"))
 }
 
 // spring rest-doc
