@@ -30,10 +30,14 @@ class WebSecurityConfiguration(
             defaultSettings()
 
             securityMatcher("/resources/**")
-            securityMatcher("/auth/sign", "/auth/login", "/auth/refreshToken")
+            securityMatcher(
+                "/auth/authentication-code",
+                "/auth/authenticate-email",
+                "/auth/sign",
+                "/auth/login",
+            )
             securityMatcher("/oauth2/**", "/login/**")
-            securityMatcher(PathRequest.toH2Console())
-            securityMatcher(PathRequest.toStaticResources().atCommonLocations())
+            securityMatcher(PathRequest.toH2Console(), PathRequest.toStaticResources().atCommonLocations())
 
             authorizeHttpRequests {
                 authorize(anyRequest, permitAll)

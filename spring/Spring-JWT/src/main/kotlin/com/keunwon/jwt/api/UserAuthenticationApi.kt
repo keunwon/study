@@ -30,7 +30,8 @@ class UserAuthenticationApi(private val userAuthenticationService: UserAuthentic
      */
     @PostMapping("/auth/authentication-code")
     fun generateAuthenticationCode(@RequestParam email: String): ResponseEntity<Unit> {
-        userAuthenticationService.generateAuthenticationCode(email)
+        val code = userAuthenticationService.generateAuthenticationCode(email)
+        log.info("> code: $code")
         return ResponseEntity.noContent().build()
     }
 
@@ -49,7 +50,7 @@ class UserAuthenticationApi(private val userAuthenticationService: UserAuthentic
     /**
      * 사용자 비밀번호 변경 API
      */
-    @PatchMapping("/auth/me/password", consumes = [MediaType.APPLICATION_FORM_URLENCODED_VALUE])
+    @PatchMapping("/auth/me/edit-password", consumes = [MediaType.APPLICATION_FORM_URLENCODED_VALUE])
     fun changePassword(
         @RequestParam password: String,
         @LoginUser loginUserDto: LoginUserDto,
