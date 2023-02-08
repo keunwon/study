@@ -18,6 +18,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.http.HttpHeaders
+import org.springframework.http.MediaType
 import org.springframework.restdocs.RestDocumentationContextProvider
 import org.springframework.restdocs.RestDocumentationExtension
 import org.springframework.test.web.servlet.MockMvc
@@ -52,9 +53,9 @@ class UserAuthenticationApiTest2 : RestDocsSupport() {
             userPasswordHistoryRepository.save(UserPasswordHistory(it))
         }
 
-        mockMvc.patch("/auth/me/password") {
+        mockMvc.patch("/auth/me/password?password=${newPassword}") {
             bearer(VALID_TOKEN)
-            param("password", newPassword)
+            contentType = MediaType.APPLICATION_FORM_URLENCODED
         }.andExpect {
             status { isNoContent() }
         }.andDo {
