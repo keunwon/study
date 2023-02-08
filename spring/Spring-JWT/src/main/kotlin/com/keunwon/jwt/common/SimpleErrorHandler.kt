@@ -1,5 +1,6 @@
 package com.keunwon.jwt.common
 
+import com.fasterxml.jackson.core.JsonParseException
 import com.fasterxml.jackson.databind.exc.InvalidFormatException
 import com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException
 import com.keunwon.jwt.config.LogSupport
@@ -14,7 +15,7 @@ import org.springframework.web.context.request.WebRequest
 import org.springframework.web.servlet.NoHandlerFoundException
 
 @ControllerAdvice
-class ControllerErrorHandler {
+class SimpleErrorHandler {
     @ExceptionHandler(Exception::class)
     fun handleException(ex: Exception): ResponseEntity<ErrorDto> {
         log.error("> 관리자 확인이 필요합니다.", ex)
@@ -51,6 +52,7 @@ class ControllerErrorHandler {
     @ExceptionHandler(MethodArgumentNotValidException::class)
     fun handleMethodArgumentNotValidException(ex: MethodArgumentNotValidException): ResponseEntity<ErrorDto> {
         val errorMessages = ex.fieldErrors.map { "${it.field} ${it.defaultMessage}" }
+        log.warn("> $errorMessages")
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .body(ErrorDto(HttpStatus.BAD_REQUEST, "파라미터가 유효하지 않습니다", errorMessages))
     }
@@ -62,8 +64,10 @@ class ControllerErrorHandler {
                 "${causeException.value}를 ${causeException.targetType}으로 변환 중 오류가 발생하였습니다."
             is MissingKotlinParameterException ->
                 "${causeException.parameter.name} 파라미터가 존재하지 않습니다."
+            is JsonParseException -> "json 값이 유효하지 않습니다."
             else -> "요청 파라미터가 유효하지 않습니다."
         }
+        log.warn("> $errorMessage", ex)
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .body(ErrorDto(HttpStatus.BAD_REQUEST, errorMessage))
     }
