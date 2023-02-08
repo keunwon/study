@@ -65,9 +65,6 @@ include::{snippets}/사용자 회원가입/curl-request.adoc[]
 Request HTTP::
 include::{snippets}/사용자 회원가입/http-request.adoc[]
 
-Response Fields::
-include::{snippets}/사용자 회원가입/response-fields.adoc[]
-
 Response HTTP::
 include::{snippets}/사용자 회원가입/http-response.adoc[]
 
@@ -104,3 +101,17 @@ include::{snippets}/accessToken 재발급/response-fields.adoc[]
 
 Response Body::
 include::{snippets}/accessToken 재발급/response-body.adoc[]
+
+=== 2.4. 사용자 비밀번호 변경
+
+Request Fields::
+include::{snippets}/사용자 비밀번호 변경/request-parameters.adoc[]
+
+Request CURL::
+include::{snippets}/사용자 비밀번호 변경/curl-request.adoc[]
+
+Request HTTP::
+include::{snippets}/사용자 비밀번호 변경/http-request.adoc[]
+
+Response HTTP::
+include::{snippets}/사용자 비밀번호 변경/http-response.adoc[]
