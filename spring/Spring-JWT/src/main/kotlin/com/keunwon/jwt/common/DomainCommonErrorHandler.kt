@@ -1,5 +1,6 @@
 package com.keunwon.jwt.common
 
+import com.keunwon.jwt.config.LogSupport
 import com.keunwon.jwt.security.jwt.JwtProvider
 import io.jsonwebtoken.ExpiredJwtException
 import io.jsonwebtoken.JwtException
@@ -13,7 +14,10 @@ class DomainCommonErrorHandler {
     @ExceptionHandler(JwtException::class)
     fun handleExpiredJwtException(ex: ExpiredJwtException): ResponseEntity<ErrorDto> {
         val message = JwtProvider.validationErrorMessages[ex::class] ?: "토큰이 유효하지 않습니다"
+        log.warn("> $message")
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
             .body(ErrorDto(HttpStatus.INTERNAL_SERVER_ERROR.value(), message))
     }
+
+    companion object : LogSupport
 }
