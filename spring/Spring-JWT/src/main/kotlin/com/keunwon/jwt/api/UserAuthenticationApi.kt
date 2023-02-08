@@ -37,7 +37,10 @@ class UserAuthenticationApi(private val userAuthenticationService: UserAuthentic
      * 사용자 이메일을 기준으로 인증코드 검증 API
      */
     @PostMapping("/auth/authenticate-email")
-    fun authenticateEmail(@RequestParam email: String, @RequestParam code: String): ResponseEntity<Unit> {
+    fun authenticateEmail(
+        @RequestParam email: String,
+        @RequestParam code: String,
+    ): ResponseEntity<Unit> {
         userAuthenticationService.authenticateEmail(email, code)
         return ResponseEntity.noContent().build()
     }
@@ -47,8 +50,8 @@ class UserAuthenticationApi(private val userAuthenticationService: UserAuthentic
      */
     @PatchMapping("/auth/me/password")
     fun changePassword(
-        @LoginUser loginUserDto: LoginUserDto,
         @RequestParam password: String,
+        @LoginUser loginUserDto: LoginUserDto,
     ): ResponseEntity<Unit> {
         userAuthenticationService.changePassword(loginUserDto.id, password)
         return ResponseEntity.noContent().build()
