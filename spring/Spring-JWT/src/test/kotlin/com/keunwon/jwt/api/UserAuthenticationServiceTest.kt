@@ -41,7 +41,17 @@ class UserAuthenticationServiceTest {
     @Test
     fun `신규 사용자 회원가입`() {
         // given
-        val request = UserSignRequest(USERNAME, USER_PASSWORD, USER_EMAIL, USER_FULL_NAME, USER_NICKNAME)
+        val authenticationCode = AuthenticationCodeBuilder(authenticated = true).build()
+        val request = UserSignRequest(
+            username = USERNAME,
+            password = USER_PASSWORD,
+            confirmPassword = USER_PASSWORD,
+            email = USER_EMAIL,
+            name = USER_FULL_NAME,
+            nickname = USER_NICKNAME,
+            authenticationCode = authenticationCode.code,
+        )
+        authenticationCodeRepository.save(authenticationCode)
 
         // when, then
         assertDoesNotThrow { userAuthenticationService.register(request) }
@@ -58,11 +68,10 @@ class UserAuthenticationServiceTest {
     @Test
     fun `인증 코드를 생성합니다`() {
         // given
-        val user = UserBuilder(id = 1L).build()
-        userRepository.save(user)
+        val email = USER_EMAIL
 
         // when
-        val code = userAuthenticationService.generateAuthenticationCode(user.email)
+        val code = userAuthenticationService.generateAuthenticationCode(email)
 
         // then
         assertTrue(code.isNotBlank())
@@ -95,7 +104,7 @@ class UserAuthenticationServiceTest {
 
         // then
         assertAll({
-            assertThat(actuator.message).isEqualTo("인증 코드가 일치하지 않습니다.")
+            assertThat(actuator.message).isEqualTo("인증코드가 일치하지 않습니다.")
             assertFalse(authenticationCode.authenticated)
         })
     }

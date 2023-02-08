@@ -53,7 +53,7 @@ class UserAuthenticationApiTest2 : RestDocsSupport() {
             userPasswordHistoryRepository.save(UserPasswordHistory(it))
         }
 
-        mockMvc.patch("/auth/me/password?password=${newPassword}") {
+        mockMvc.patch("/auth/me/edit-password?password=${newPassword}") {
             bearer(VALID_TOKEN)
             contentType = MediaType.APPLICATION_FORM_URLENCODED
         }.andExpect {

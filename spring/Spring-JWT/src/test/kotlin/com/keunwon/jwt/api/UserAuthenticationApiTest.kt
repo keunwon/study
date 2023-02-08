@@ -12,7 +12,6 @@ import com.keunwon.jwt.domain.USER_EMAIL
 import com.keunwon.jwt.domain.USER_FULL_NAME
 import com.keunwon.jwt.domain.USER_NICKNAME
 import com.keunwon.jwt.domain.USER_PASSWORD
-import com.keunwon.jwt.domain.UserBuilder
 import com.keunwon.jwt.makeDocument
 import com.keunwon.jwt.param
 import com.keunwon.jwt.toJson
@@ -52,7 +51,17 @@ class UserAuthenticationApiTest : RestDocsSupport() {
 
     @Test
     fun `사용자 회원가입`() {
-        val request = UserSignRequest(USERNAME, USER_PASSWORD, USER_EMAIL, USER_FULL_NAME, USER_NICKNAME)
+        val authenticationCode = AuthenticationCodeBuilder(authenticated = true).build()
+        val request = UserSignRequest(
+            username = USERNAME,
+            password = USER_PASSWORD,
+            confirmPassword = USER_PASSWORD,
+            email = authenticationCode.email,
+            name = USER_FULL_NAME,
+            nickname = USER_NICKNAME,
+            authenticationCode = authenticationCode.code,
+        )
+        authenticationRepository.save(authenticationCode)
 
         Given {
             mockMvc(mockMvc)
@@ -67,9 +76,11 @@ class UserAuthenticationApiTest : RestDocsSupport() {
                 requestBody(
                     "username" type STRING means "사용자 아이디",
                     "password" type STRING means "사용자 비밀번호",
+                    "confirmPassword" type STRING means "재확인 사용자 비밀번호",
                     "email" type STRING means "사용자 이메일 주소",
                     "nickname" type STRING means "닉네임",
                     "name" type STRING means "사용자 이름",
+                    "authenticationCode" type STRING means "인증 코드",
                 )
             }
         }
@@ -77,12 +88,11 @@ class UserAuthenticationApiTest : RestDocsSupport() {
 
     @Test
     fun `인증코드를 생성합니다`() {
-        val user = UserBuilder(id = 1L).build()
-        userRepository.save(user)
+        val email = USER_EMAIL
 
         Given {
             mockMvc(mockMvc)
-            param("email", user.email)
+            param("email", email)
         } When {
             post("/auth/authentication-code")
         } Then {

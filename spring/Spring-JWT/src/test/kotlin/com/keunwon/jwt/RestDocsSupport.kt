@@ -4,9 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.keunwon.jwt.common.ControllerErrorHandler
 import com.keunwon.jwt.common.DomainCommonErrorHandler
 import com.keunwon.jwt.common.ErrorDto
+import com.keunwon.jwt.common.SimpleErrorHandler
 import com.keunwon.jwt.domain.USER_EMAIL
 import com.keunwon.jwt.security.jwt.AuthorizationHeader
 import com.keunwon.jwt.security.jwt.ClaimsInfo
@@ -45,7 +45,7 @@ abstract class RestDocsSupport {
             )
             .addFilters<StandaloneMockMvcBuilder>(*filters.toTypedArray())
             .setCustomArgumentResolvers(*getCustomResolvers())
-            .setControllerAdvice(ControllerErrorHandler(), DomainCommonErrorHandler())
+            .setControllerAdvice(SimpleErrorHandler(), DomainCommonErrorHandler())
             .build()
     }
 
