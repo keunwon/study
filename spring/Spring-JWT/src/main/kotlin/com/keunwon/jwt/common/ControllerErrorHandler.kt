@@ -51,6 +51,7 @@ class ControllerErrorHandler {
 
     @ExceptionHandler(RuntimeException::class)
     fun handleRuntimeException(ex: RuntimeException): ResponseEntity<ErrorDto> {
+        log.error("> 알수 없는 오류 발생", ex)
         return createResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, ex)
     }
 
@@ -77,6 +78,7 @@ class ControllerErrorHandler {
     fun createResponseEntity(status: HttpStatus, exception: Throwable): ResponseEntity<ErrorDto> {
         val message = exception.message ?: unknownErrorMessage
         val errorDto = ErrorDto(status.value(), message).also { it.logging() }
+        log.error(errorDto.message, exception)
         return ResponseEntity.status(status).body(errorDto)
     }
 
