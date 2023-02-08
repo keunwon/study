@@ -25,10 +25,15 @@ class AuthenticationCode(
         get() = createdAt + EXPIRY_MINUTE_TIME
 
     fun authenticate(code: String) {
-        require(this.code == code) { "인증 코드가 일치하지 않습니다." }
+        require(this.code == code) { "인증코드가 일치하지 않습니다." }
         check(!authenticated) { "이미 인증되었습니다." }
         check(LocalDateTime.now() < expiryDateTime) { "인증코드가 만료되었습니다." }
         authenticated = true
+    }
+
+    fun validate(code: String) {
+        require(this.code == code) { "인증코드가 일치하지 않습니다." }
+        check(authenticated) { "인증코드가 인증되지 않았습니다." }
     }
 
     companion object {

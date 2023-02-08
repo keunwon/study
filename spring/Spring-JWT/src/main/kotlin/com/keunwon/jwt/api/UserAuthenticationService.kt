@@ -20,15 +20,17 @@ class UserAuthenticationService(
     private val passwordEncoder: PasswordEncoder,
 ) {
     fun register(request: UserSignRequest) {
+        require(request.password == request.confirmPassword) { "사용자 비밀번호가 일치하지 않습니다." }
         check(!userRepository.existsByUsername(request.username)) {
             "${request.username}는 현재 사용 중인 아이디 입니다"
         }
+        authenticationCodeRepository.getLastByEmail(request.email).validate(request.authenticationCode)
         val user = userRepository.save(request.toEntity(passwordEncoder))
         userPasswordHistoryRepository.save(UserPasswordHistory(user))
     }
 
     fun generateAuthenticationCode(email: String): String {
-        check(userRepository.existsByEmail(email)) { "가입된 이메일이 존재하지 않습니다." }
+        check(!userRepository.existsByEmail(email)) { "이미 가입된 이메일입니다." }
         val authenticationCode = authenticationCodeRepository.save(AuthenticationCode(email))
         return authenticationCode.code
     }
