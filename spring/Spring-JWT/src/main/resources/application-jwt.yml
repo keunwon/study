@@ -1,0 +1,5 @@
+---
+jwt:
+  secret: 0uy8K1Oh7JHfjsRjZ7Tq7/h5hpsX1rrRcC0CzFTSBKHF7FZcooz4QC167w9i6YiMzxkLxZ2ntXkfSxIdyp1ssA==
+  access-token-validity-seconds: 600
+  refresh-token-validity-seconds: 3600
