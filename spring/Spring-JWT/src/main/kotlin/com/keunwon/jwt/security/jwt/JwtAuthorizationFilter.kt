@@ -8,7 +8,6 @@ import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
-import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.filter.OncePerRequestFilter
 import javax.servlet.FilterChain
@@ -37,18 +36,14 @@ class JwtAuthorizationFilter(
     }
 
     private fun registerSecurityContext(token: String) {
-        val claims = jwtProvider.getBody(token)
-        val jwtLoginUser = jwtProvider.toJwtLoginUser(claims)
-        val roles = jwtLoginUser.roles.map { SimpleGrantedAuthority(it.name) }
-        SecurityContextHolder.getContext().authentication =
-            UsernamePasswordAuthenticationToken.authenticated(jwtLoginUser, "", roles)
+        val claims = jwtProvider.getClaims(token)
+        val claimsInfo = ClaimsInfo.from(claims)
+        SecurityContextHolder.getContext().authentication = UsernamePasswordAuthenticationToken
+            .authenticated(claimsInfo, "", claimsInfo.getGrantedAuthorities())
     }
 
     private fun createErrorDto(ex: Throwable): ErrorDto {
-        val message = run {
-            val defaultMessage = ex.message ?: "토큰 검증을 실패하였습니다"
-            JwtProvider.validationErrorMessages[ex::class] ?: defaultMessage
-        }
+        val message = JwtProvider.validationErrorMessages[ex::class] ?: "토큰이 유효하지 않습니다"
         return ErrorDto(HttpStatus.FORBIDDEN.value(), message)
     }
 

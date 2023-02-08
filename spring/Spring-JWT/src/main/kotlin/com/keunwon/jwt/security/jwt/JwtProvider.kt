@@ -1,7 +1,7 @@
 package com.keunwon.jwt.security.jwt
 
-import com.keunwon.jwt.common.UserRole
 import com.keunwon.jwt.config.LogSupport
+import com.keunwon.jwt.domain.user.User
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.ExpiredJwtException
 import io.jsonwebtoken.Jws
@@ -14,7 +14,8 @@ import io.jsonwebtoken.security.Keys
 import io.jsonwebtoken.security.SignatureException
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.context.properties.EnableConfigurationProperties
-import org.springframework.security.core.Authentication
+import org.springframework.security.core.GrantedAuthority
+import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.stereotype.Component
 import java.security.Key
 import java.util.*
@@ -27,58 +28,40 @@ class JwtProvider(
 ) {
     private var key: Key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtProperties.secret))
 
-    fun generateLoginSuccessToken(token: CreateToken): JwtLoginToken {
-        return JwtLoginToken(generateAccessToken(token), generateRefreshToken(token))
+    fun generateLoginSuccessToken(claimsInfo: ClaimsInfo): JwtLoginToken {
+        return JwtLoginToken(generateAccessToken(claimsInfo), generateRefreshToken(claimsInfo))
     }
 
     fun generateAccessTokenBy(refreshToken: String): JwtAccessToken {
-        val claims = getBody(refreshToken)
-        return generateAccessToken(CreateToken(claims.subject, getRoles(claims)))
+        val claims = getClaims(refreshToken)
+        return generateAccessToken(ClaimsInfo.from(claims))
     }
 
-    private fun generateAccessToken(token: CreateToken): JwtAccessToken {
-        val tokenValue = generateToken(token, jwtProperties.expiredDateByAccessToken)
-        val claims = getBody(tokenValue)
+    private fun generateAccessToken(claimsInfo: ClaimsInfo): JwtAccessToken {
+        val tokenValue = generateToken(claimsInfo, jwtProperties.expiredDateByAccessToken)
+        val claims = getClaims(tokenValue)
         return JwtAccessToken(tokenValue, claims)
     }
 
-    private fun generateRefreshToken(token: CreateToken): JwtRefreshToken {
-        val tokenValue = generateToken(token, jwtProperties.expirationDateByRefreshToken)
-        val claims = getBody(tokenValue)
+    private fun generateRefreshToken(claimsInfo: ClaimsInfo): JwtRefreshToken {
+        val tokenValue = generateToken(claimsInfo, jwtProperties.expirationDateByRefreshToken)
+        val claims = getClaims(tokenValue)
         return JwtRefreshToken(tokenValue, claims)
     }
 
-    fun generateToken(token: CreateToken, expirationDate: Date): String {
+    fun generateToken(claimsInfo: ClaimsInfo, expirationDate: Date): String {
         return Jwts.builder()
             .setIssuer(appName)
-            .setSubject(token.username)
-            .claim(ROLE_KEY, token.roles.joinToString(","))
-            .addClaims(token.claims)
-            .signWith(key, SignatureAlgorithm.HS512)
+            .addClaims(claimsInfo.toMap())
+            .signWith(key, SignatureAlgorithm.HS256)
             .setIssuedAt(Date())
             .setExpiration(expirationDate)
             .compact()
     }
 
-    fun getBody(token: String): Claims = getJwsClaims(token).body
+    fun getClaims(token: String): Claims = getJwsClaims(token).body
 
     fun verifyTokenOrThrown(token: String?) = getJwsClaims(token)
-
-    fun toJwtLoginUser(claims: Claims): JwtLoginUser {
-        val id = claims["id"]?.let { it as Long }
-        return JwtLoginUser(
-            username = claims.subject,
-            roles = getRoles(claims).map { UserRole.valueOf(it.uppercase()) },
-            id = id,
-        )
-    }
-
-    fun getRoles(claims: Claims): List<String> {
-        return claims[ROLE_KEY].toString()
-            .split(",")
-            .dropLastWhile { it.isEmpty() }
-            .toList()
-    }
 
     private fun getJwsClaims(token: String?): Jws<Claims> {
         return Jwts.parserBuilder()
@@ -99,19 +82,41 @@ class JwtProvider(
     }
 }
 
-data class CreateToken(
-    val username: String,
+data class ClaimsInfo(
+    val userId: Long,
+    val subject: String,
     val roles: List<String>,
-    val claims: Map<String, Any> = emptyMap(),
 ) {
+    constructor(user: User) : this(
+        user.id,
+        user.email,
+        listOf(user.role.name),
+    )
+
+    fun getGrantedAuthorities(): List<GrantedAuthority> = roles.map { SimpleGrantedAuthority(it) }
+
+    fun toMap(): Map<String, Any> {
+        return mapOf(
+            ID to userId,
+            SUB to subject,
+            ROLES to roles.joinToString(","),
+        )
+    }
+
     companion object {
-        fun from(authentication: Authentication) =
-            CreateToken(authentication.name, authentication.authorities.map { it.authority })
+        const val ID = "id"
+        const val SUB = "sub"
+        const val ROLES = "roles"
+
+        fun from(claims: Claims): ClaimsInfo {
+            val roles = claims[ROLES]?.let { value ->
+                value.toString().split(",").dropLastWhile { it.isBlank() }
+            } ?: emptyList()
+            return ClaimsInfo(
+                claims[ID].toString().toLong(),
+                claims.subject,
+                roles,
+            )
+        }
     }
 }
-
-data class JwtLoginUser(
-    val username: String,
-    val roles: List<UserRole>,
-    val id: Long? = null,
-)

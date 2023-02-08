@@ -15,7 +15,6 @@ import com.keunwon.jwt.domain.UserBuilder
 import com.keunwon.jwt.domain.user.User
 import com.keunwon.jwt.domain.user.UserPasswordHistory
 import com.keunwon.jwt.domain.user.getByUsername
-import com.keunwon.jwt.security.jwt.JwtLoginUser
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Assertions.assertAll
@@ -147,10 +146,7 @@ class UserAuthenticationServiceTest {
         val newPassword = "NEW_PASSWORD"
 
         // when
-        userAuthenticationService.changePassword(
-            JwtLoginUser(user.username!!, listOf(user.role), user.id),
-            newPassword,
-        )
+        userAuthenticationService.changePassword(user.id, newPassword)
 
         // then
         assertAll({
@@ -167,10 +163,7 @@ class UserAuthenticationServiceTest {
 
         // when,
         assertThatThrownBy {
-            userAuthenticationService.changePassword(
-                JwtLoginUser(user.username!!, listOf(user.role), user.id),
-                oldPassword,
-            )
+            userAuthenticationService.changePassword(user.id, oldPassword)
         }.hasMessage("이전에 사용했었던 비밀번호 입니다.")
     }
 

@@ -22,7 +22,19 @@ class LoginUserResolver : HandlerMethodArgumentResolver {
         mavContainer: ModelAndViewContainer?,
         webRequest: NativeWebRequest,
         binderFactory: WebDataBinderFactory?
-    ): JwtLoginUser {
-        return SecurityContextHolder.getContext().authentication.principal as JwtLoginUser
+    ): LoginUserDto {
+        assert(SecurityContextHolder.getContext().authentication.principal is ClaimsInfo)
+        val claimsInfo = SecurityContextHolder.getContext().authentication.principal as ClaimsInfo
+        return LoginUserDto(claimsInfo)
     }
+}
+
+data class LoginUserDto(
+    val id: Long,
+    val email: String,
+) {
+    constructor(claimsInfo: ClaimsInfo) : this(
+        claimsInfo.userId,
+        claimsInfo.subject,
+    )
 }

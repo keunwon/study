@@ -4,8 +4,9 @@ import com.keunwon.jwt.JwtAuthenticationManagerStub
 import com.keunwon.jwt.RestDocsSupport
 import com.keunwon.jwt.STRING
 import com.keunwon.jwt.TestHomeController
+import com.keunwon.jwt.createClaimsInfo
+import com.keunwon.jwt.domain.USER_EMAIL
 import com.keunwon.jwt.makeDocument
-import com.keunwon.jwt.security.jwt.CreateToken
 import com.keunwon.jwt.security.jwt.JwtLoginAuthenticationFilter
 import com.keunwon.jwt.security.jwt.LoginTokenResponse
 import com.keunwon.jwt.testObjectMapper
@@ -81,7 +82,8 @@ class LoginSuccessHandlerStub : AuthenticationSuccessHandler {
         response: HttpServletResponse,
         authentication: Authentication,
     ) {
-        val loginToken = testTokenProvider.generateLoginSuccessToken(authentication.toCreateTokenRequest())
+        val claimsInfo = createClaimsInfo(subject = USER_EMAIL)
+        val loginToken = testTokenProvider.generateLoginSuccessToken(claimsInfo)
         val body = LoginTokenResponse(loginToken)
         response.apply {
             status = HttpStatus.OK.value()
@@ -89,7 +91,4 @@ class LoginSuccessHandlerStub : AuthenticationSuccessHandler {
             testObjectMapper.writeValue(outputStream, body)
         }
     }
-
-    private fun Authentication.toCreateTokenRequest(): CreateToken =
-        CreateToken(name, authorities.map { it.authority })
 }

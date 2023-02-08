@@ -57,16 +57,13 @@ internal class JwtProviderTest {
         val token = createToken(expired = false).value
 
         // when
-        val claims = testTokenProvider.getBody(token)
+        val claims = testTokenProvider.getClaims(token)
+        val claimsInfo = ClaimsInfo.from(claims)
 
         // then
         assertAll({
-            assertThat(claims.subject).isEqualTo(createJwtDto.username)
-            assertThat(testTokenProvider.getRoles(claims)).isEqualTo(createJwtDto.roles)
+            assertThat(claims.subject).isEqualTo("test@test.com")
+            assertThat(claimsInfo.roles).isEqualTo(listOf(UserRole.USER.name))
         })
-    }
-
-    companion object {
-        private val createJwtDto = CreateToken("test-id", UserRole.DEFAULT_ROLES)
     }
 }

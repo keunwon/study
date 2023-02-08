@@ -21,7 +21,7 @@ import org.springframework.http.HttpHeaders
 import org.springframework.restdocs.RestDocumentationContextProvider
 import org.springframework.restdocs.RestDocumentationExtension
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.post
+import org.springframework.test.web.servlet.patch
 
 @ExtendWith(RestDocumentationExtension::class)
 class UserAuthenticationApiTest2 : RestDocsSupport() {
@@ -52,16 +52,11 @@ class UserAuthenticationApiTest2 : RestDocsSupport() {
             userPasswordHistoryRepository.save(UserPasswordHistory(it))
         }
 
-        mockMvc.post("/auth/me/password") {
+        mockMvc.patch("/auth/me/password") {
             bearer(VALID_TOKEN)
             param("password", newPassword)
         }.andExpect {
             status { isNoContent() }
-
-            assertAll({
-                assertTrue(user.matchPassword(newPassword, passwordEncoder))
-                assertThat(userPasswordHistoryRepository.findAllByUserId(user.id)).hasSize(2)
-            })
         }.andDo {
             makeDocument("사용자 비밀번호 변경") {
                 requestHeaders(
@@ -72,5 +67,10 @@ class UserAuthenticationApiTest2 : RestDocsSupport() {
                 )
             }
         }
+
+        assertAll({
+            assertTrue(user.matchPassword(newPassword, passwordEncoder))
+            assertThat(userPasswordHistoryRepository.findAllByUserId(user.id)).hasSize(2)
+        })
     }
 }

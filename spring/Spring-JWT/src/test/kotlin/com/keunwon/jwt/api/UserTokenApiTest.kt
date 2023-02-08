@@ -5,12 +5,12 @@ import com.keunwon.jwt.InmemoryUserTokenRepository
 import com.keunwon.jwt.LOGIN_USERNAME
 import com.keunwon.jwt.RestDocsSupport
 import com.keunwon.jwt.STRING
-import com.keunwon.jwt.common.UserRole
 import com.keunwon.jwt.common.util.toLocalDateTime
+import com.keunwon.jwt.createClaimsInfo
+import com.keunwon.jwt.domain.USER_EMAIL
 import com.keunwon.jwt.domain.UserBuilder
 import com.keunwon.jwt.domain.UserTokenBuilder
 import com.keunwon.jwt.makeDocument
-import com.keunwon.jwt.security.jwt.CreateToken
 import com.keunwon.jwt.security.jwt.JwtLoginToken
 import com.keunwon.jwt.testTokenProvider
 import com.keunwon.jwt.toJson
@@ -43,22 +43,18 @@ class UserTokenApiTest : RestDocsSupport() {
     @BeforeEach
     fun setup(restDocumentation: RestDocumentationContextProvider) {
         mockMvc = createMockMvc(UserTokenApi(userTokenService), restDocumentation)
-        jwtLoginToken = testTokenProvider.generateLoginSuccessToken(
-            CreateToken(username, UserRole.DEFAULT_ROLES)
-        )
+        jwtLoginToken = testTokenProvider.generateLoginSuccessToken(createClaimsInfo(subject = USER_EMAIL))
     }
 
     @Test
     fun `refreshToken 이용하여 accessToken 새로 발급합니다`() {
-        val user = UserBuilder(id = 1L).build().also { userRepository.save(it) }
-        val loginToken = testTokenProvider.generateLoginSuccessToken(
-            CreateToken(user.username!!, listOf(user.role.name))
-        )
+        val user = UserBuilder(id = 1L).build()
+        userRepository.save(user)
         userTokenRepository.save(
             UserTokenBuilder(
-                userId = 1L,
-                refreshToken = loginToken.refreshToken.value,
-                expirationRefreshToken = loginToken.refreshToken.expiredAt.toLocalDateTime(),
+                userId = user.id,
+                refreshToken = jwtLoginToken.refreshToken.value,
+                expirationRefreshToken = jwtLoginToken.refreshToken.expiredAt.toLocalDateTime(),
             ).build()
         )
 

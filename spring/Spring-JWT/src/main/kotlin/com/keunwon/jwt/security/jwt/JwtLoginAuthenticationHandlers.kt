@@ -35,8 +35,7 @@ class JwtLoginAuthenticationSuccessHandler(
     }
 
     private fun generateJwtLoginToken(user: User): JwtLoginToken {
-        val createTokenRequest = CreateToken(user.username!!, listOf(user.role.name))
-        return jwtProvider.generateLoginSuccessToken(createTokenRequest)
+        return jwtProvider.generateLoginSuccessToken(ClaimsInfo(user))
     }
 
     private fun HttpServletResponse.writeLoginToken(loginTokenResponse: LoginTokenResponse) = apply {
@@ -52,7 +51,7 @@ class JwtLoginAuthenticationSuccessHandler(
     }
 
     private fun loggingLogin(jwtLoginToken: JwtLoginToken) {
-        val claims = jwtProvider.getBody(jwtLoginToken.accessToken.value)
+        val claims = jwtProvider.getClaims(jwtLoginToken.accessToken.value)
         log.info("===== [s] 사용자 토큰 발급 성공 =====")
         log.info("> 사용자 명: ${claims.subject}")
         log.info("> accessToken 만료 일자: ${claims.expiration.toLocalDateTime()}")

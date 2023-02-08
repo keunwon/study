@@ -1,11 +1,12 @@
 package com.keunwon.jwt.api
 
 import com.keunwon.jwt.config.LogSupport
-import com.keunwon.jwt.security.jwt.JwtLoginUser
 import com.keunwon.jwt.security.jwt.LoginUser
+import com.keunwon.jwt.security.jwt.LoginUserDto
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
+import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
@@ -44,12 +45,12 @@ class UserAuthenticationApi(private val userAuthenticationService: UserAuthentic
     /**
      * 사용자 비밀번호 변경 API
      */
-    @PostMapping("/auth/me/password")
+    @PatchMapping("/auth/me/password")
     fun changePassword(
-        @LoginUser jwtLoginUser: JwtLoginUser,
+        @LoginUser loginUserDto: LoginUserDto,
         @RequestParam password: String,
     ): ResponseEntity<Unit> {
-        userAuthenticationService.changePassword(jwtLoginUser, password)
+        userAuthenticationService.changePassword(loginUserDto.id, password)
         return ResponseEntity.noContent().build()
     }
 

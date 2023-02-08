@@ -6,8 +6,7 @@ import com.keunwon.jwt.domain.authenticationcode.getLastByEmail
 import com.keunwon.jwt.domain.user.UserPasswordHistory
 import com.keunwon.jwt.domain.user.UserPasswordHistoryRepository
 import com.keunwon.jwt.domain.user.UserRepository
-import com.keunwon.jwt.domain.user.getByUsername
-import com.keunwon.jwt.security.jwt.JwtLoginUser
+import com.keunwon.jwt.domain.user.getById
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -39,8 +38,8 @@ class UserAuthenticationService(
         authenticationCode.authenticate(code)
     }
 
-    fun changePassword(jwtLoginUser: JwtLoginUser, password: String) {
-        val user = userRepository.getByUsername(jwtLoginUser.username)
+    fun changePassword(userId: Long, password: String) {
+        val user = userRepository.getById(userId)
         val usedPassword = userPasswordHistoryRepository.findAllByUserId(user.id)
             .sortedBy { it.createdAt }
             .any { passwordEncoder.matches(password, it.password) }
