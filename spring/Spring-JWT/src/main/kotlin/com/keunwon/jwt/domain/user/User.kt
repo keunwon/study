@@ -2,12 +2,9 @@ package com.keunwon.jwt.domain.user
 
 import com.keunwon.jwt.common.UserRole
 import com.keunwon.jwt.common.jpa.BaseEntity
-import com.keunwon.jwt.common.jpa.convert.BooleanConverter
-import org.springframework.security.core.GrantedAuthority
-import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.crypto.password.PasswordEncoder
 import javax.persistence.Column
-import javax.persistence.Convert
+import javax.persistence.Embedded
 import javax.persistence.Entity
 import javax.persistence.EnumType
 import javax.persistence.Enumerated
@@ -16,31 +13,18 @@ import javax.persistence.Table
 @Entity
 @Table(name = "users")
 class User(
-    @Column(name = "username", length = 20)
-    val username: String? = null,
+    @Embedded
+    val information: UserInformation,
 
-    @Column(name = "password", length = 255)
-    var password: String? = null,
+    @Embedded
+    var password: Password? = null,
 
-    @Column(name = "name", length = 10)
-    var name: String,
-
-    @Column(name = "nickname", length = 50)
-    var nickname: String,
-
-    @Column(name = "email", length = 30)
-    var email: String,
+    @Embedded
+    val loginPolicy: LoginPolicy = LoginPolicy(),
 
     @Column(name = "login_type", length = 10)
     @Enumerated(EnumType.STRING)
     val loginType: LoginType = LoginType.SIMPLE,
-
-    @Column(name = "failed_password_count")
-    var failedPasswordCount: Int = 0,
-
-    @Column(name = "accountNonLocked", length = 1)
-    @Convert(converter = BooleanConverter::class)
-    var isAccountNonLocked: Boolean = true,
 
     @Column(name = "role", length = 10)
     @Enumerated(EnumType.STRING)
@@ -48,30 +32,23 @@ class User(
 
     id: Long = 0,
 ) : BaseEntity(id) {
-    fun matchPassword(password: String, passwordEncoder: PasswordEncoder): Boolean =
-        passwordEncoder.matches(password, this.password)
-
-    fun changePassword(password: String, passwordEncoder: PasswordEncoder) {
-        this.password = passwordEncoder.encode(password)
+    fun authenticate(password: Password, passwordEncoder: PasswordEncoder) {
+        identify(passwordEncoder.matches(password.value, this.password!!.value)) { "사용자 비밀번호가 일치하지 않습니다." }
     }
 
-    fun reset() {
-        failedPasswordCount = 0
-        isAccountNonLocked = true
+    fun changePassword(oldPassword: Password, newPassword: Password, passwordEncoder: PasswordEncoder) {
+        identify(loginType == LoginType.SIMPLE) { "소셜 로그인 사용자입니다." }
+        identify(!passwordEncoder.matches(oldPassword, newPassword)) { "기존 비밀번호와 일치합니다." }
+        this.password = newPassword
     }
 
-    fun incrementFailures() {
-        failedPasswordCount++
-        isAccountNonLocked = failedPasswordCount < MAX_PASSWORD_FAILURED_COUNT
-    }
-
-    companion object {
-        const val MAX_PASSWORD_FAILURED_COUNT = 10
+    private fun identify(value: Boolean, lazyMessage: () -> Any = {}) {
+        if (!value) {
+            val message = lazyMessage()
+            throw UnIdentifiedUserException(message.toString())
+        }
     }
 }
-
-fun generatedGrantedAuthorityList(vararg roles: UserRole): List<GrantedAuthority> =
-    roles.map { SimpleGrantedAuthority(it.name) }.toList()
 
 enum class LoginType(val title: String) {
     SIMPLE("기본 방식"),

@@ -89,7 +89,7 @@ data class ClaimsInfo(
 ) {
     constructor(user: User) : this(
         user.id,
-        user.email,
+        user.information.email,
         listOf(user.role.name),
     )
 

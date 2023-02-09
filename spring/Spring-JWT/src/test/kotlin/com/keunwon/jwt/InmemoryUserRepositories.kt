@@ -15,13 +15,13 @@ class InmemoryUserRepository : InmemoryRepository<User>(), UserRepository {
 
     override fun existsById(id: Long): Boolean = super.existsById(id)
 
-    override fun findByUsername(username: String): User? = findAll().find { it.username == username }
+    override fun findByInformationEmail(email: String): User? {
+        return findAll().find { it.information.email == email }
+    }
 
-    override fun findByEmail(email: String): User? = findAll().find { it.email == email }
-
-    override fun existsByUsername(username: String): Boolean = findAll().any { it.username == username }
-
-    override fun existsByEmail(email: String): Boolean = findAll().any { it.email == email }
+    override fun existsByInformationEmail(email: String): Boolean {
+        return findAll().any { it.information.email == email }
+    }
 }
 
 class InmemoryUserTokenRepository : InmemoryRepository<UserToken>(), UserTokenRepository {

@@ -3,15 +3,13 @@ package com.keunwon.jwt.domain.user
 import org.springframework.data.repository.CrudRepository
 import org.springframework.data.repository.findByIdOrNull
 
-fun UserRepository.getByUsername(username: String): User = findByUsername(username)
-    ?: throw IllegalArgumentException("$username 찾을 수 없습니다.")
+fun UserRepository.getByEmail(email: String): User = findByInformationEmail(email)
+    ?: throw IllegalArgumentException("사용자를 찾을 수 없습니다. 이메일: $email")
 
 fun UserRepository.getById(id: Long): User = findByIdOrNull(id)
-    ?: throw IllegalArgumentException("$id 값이 존재하지 않습니다.")
+    ?: throw IllegalArgumentException("사용자를 찾을 수 없습니다. id: $id")
 
 interface UserRepository : CrudRepository<User, Long> {
-    fun findByUsername(username: String): User?
-    fun findByEmail(email: String): User?
-    fun existsByUsername(username: String): Boolean
-    fun existsByEmail(email: String): Boolean
+    fun findByInformationEmail(email: String): User?
+    fun existsByInformationEmail(email: String): Boolean
 }

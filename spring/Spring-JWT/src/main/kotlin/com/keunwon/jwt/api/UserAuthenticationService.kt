@@ -3,6 +3,7 @@ package com.keunwon.jwt.api
 import com.keunwon.jwt.domain.authenticationcode.AuthenticationCode
 import com.keunwon.jwt.domain.authenticationcode.AuthenticationCodeRepository
 import com.keunwon.jwt.domain.authenticationcode.getLastByEmail
+import com.keunwon.jwt.domain.user.Password
 import com.keunwon.jwt.domain.user.UserPasswordHistory
 import com.keunwon.jwt.domain.user.UserPasswordHistoryRepository
 import com.keunwon.jwt.domain.user.UserRepository
@@ -21,16 +22,13 @@ class UserAuthenticationService(
 ) {
     fun register(request: UserSignRequest) {
         require(request.password == request.confirmPassword) { "사용자 비밀번호가 일치하지 않습니다." }
-        check(!userRepository.existsByUsername(request.username)) {
-            "${request.username}는 현재 사용 중인 아이디 입니다"
-        }
+        check(!userRepository.existsByInformationEmail(request.email)) { "${request.email}는 가입된 이메일입니다." }
         authenticationCodeRepository.getLastByEmail(request.email).validate(request.authenticationCode)
-        val user = userRepository.save(request.toEntity(passwordEncoder))
-        userPasswordHistoryRepository.save(UserPasswordHistory(user))
+        userRepository.save(request.toEntity(passwordEncoder))
     }
 
     fun generateAuthenticationCode(email: String): String {
-        check(!userRepository.existsByEmail(email)) { "이미 가입된 이메일입니다." }
+        check(!userRepository.existsByInformationEmail(email)) { "${email}는 이미 가입된 이메일입니다." }
         val authenticationCode = authenticationCodeRepository.save(AuthenticationCode(email))
         return authenticationCode.code
     }
@@ -40,13 +38,18 @@ class UserAuthenticationService(
         authenticationCode.authenticate(code)
     }
 
-    fun changePassword(userId: Long, password: String) {
-        val user = userRepository.getById(userId)
-        val usedPassword = userPasswordHistoryRepository.findAllByUserId(user.id)
+    fun changePassword(editUserPassword: EditUserPassword) {
+        val user = userRepository.getById(editUserPassword.id).apply {
+            require(!usedPassword(id, editUserPassword.newPassword)) { "이미 사용했었던 비밀번호입니다." }
+            changePassword(editUserPassword.oldPassword, editUserPassword.newPassword, passwordEncoder)
+        }
+        val userPasswordHistory = UserPasswordHistory(user.id, editUserPassword.oldPassword)
+        userPasswordHistoryRepository.save(userPasswordHistory)
+    }
+
+    private fun usedPassword(userId: Long, newPassword: Password): Boolean {
+        return userPasswordHistoryRepository.findAllByUserId(userId)
             .sortedBy { it.createdAt }
-            .any { passwordEncoder.matches(password, it.password) }
-        require(!usedPassword) { "이전에 사용했었던 비밀번호 입니다." }
-        user.changePassword(password, passwordEncoder)
-        userPasswordHistoryRepository.save(UserPasswordHistory(user))
+            .any { passwordEncoder.matches(it.password.value, newPassword.value) }
     }
 }

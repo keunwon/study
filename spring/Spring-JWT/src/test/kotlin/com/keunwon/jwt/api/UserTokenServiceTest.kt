@@ -4,7 +4,7 @@ import com.keunwon.jwt.InmemoryUserRepository
 import com.keunwon.jwt.InmemoryUserTokenRepository
 import com.keunwon.jwt.common.util.toLocalDateTime
 import com.keunwon.jwt.createToken
-import com.keunwon.jwt.domain.USERNAME
+import com.keunwon.jwt.domain.USER_EMAIL
 import com.keunwon.jwt.domain.UserBuilder
 import com.keunwon.jwt.domain.UserTokenBuilder
 import com.keunwon.jwt.security.jwt.AbstractJwtToken
@@ -30,11 +30,11 @@ class UserTokenServiceTest {
     @Test
     fun `refreshToken 이용하여 accessToken 재발행합니다`() {
         // given
-        val username = USERNAME
+        val email = USER_EMAIL
         val refreshToken = givenLoginUserAndGetRefreshToken(expired = false)
 
         // when
-        val token = userTokenService.refreshAccessToken(AccessTokenIssueRequest(username, refreshToken.value))
+        val token = userTokenService.refreshAccessToken(AccessTokenIssueRequest(email, refreshToken.value))
 
         // then
         assertAll({
@@ -46,11 +46,11 @@ class UserTokenServiceTest {
     @Test
     fun `refreshToken 값이 db와 다른 경우 오류가 발생합니다`() {
         // given
-        val username = USERNAME
+        val email = USER_EMAIL
         val refreshToken = givenLoginUserAndGetRefreshToken(expired = false)
         val newRefreshToken = testTokenProvider.generateAccessTokenBy(refreshToken.value).value
 
-        assertThatThrownBy { userTokenService.refreshAccessToken(AccessTokenIssueRequest(username, newRefreshToken)) }
+        assertThatThrownBy { userTokenService.refreshAccessToken(AccessTokenIssueRequest(email, newRefreshToken)) }
             .isInstanceOf(IllegalArgumentException::class.java)
             .hasMessage("refreshToken 일치하지 않습니다")
     }
@@ -58,16 +58,13 @@ class UserTokenServiceTest {
     @Test
     fun `만료된 refreshToken 으로 재발급을 요청하면 오류가 발생합니다`() {
         // given
-        val username = USERNAME
+        val email = USER_EMAIL
         val refreshToken = givenLoginUserAndGetRefreshToken(expired = true)
 
         // when, then
         assertThatThrownBy {
             userTokenService.refreshAccessToken(
-                AccessTokenIssueRequest(
-                    username,
-                    refreshToken.value
-                )
+                AccessTokenIssueRequest(email, refreshToken.value)
             )
         }
             .isInstanceOf(ExpiredJwtException::class.java)
@@ -77,11 +74,11 @@ class UserTokenServiceTest {
     @ValueSource(strings = ["dump", "dump1234"])
     fun `유효하지 않는 refreshToken 으로 재발급 요청을 하면 오류가 발생합니다`(refreshToken: String) {
         // given
-        val username = USERNAME
+        val email = USER_EMAIL
         givenLoginUserAndGetRefreshToken(expired = false)
 
         // when ,then
-        assertThatThrownBy { userTokenService.refreshAccessToken(AccessTokenIssueRequest(username, refreshToken)) }
+        assertThatThrownBy { userTokenService.refreshAccessToken(AccessTokenIssueRequest(email, refreshToken)) }
             .isInstanceOf(JwtException::class.java)
     }
 

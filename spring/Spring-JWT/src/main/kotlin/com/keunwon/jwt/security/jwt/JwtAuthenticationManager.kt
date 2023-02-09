@@ -1,9 +1,12 @@
 package com.keunwon.jwt.security.jwt
 
+import com.keunwon.jwt.common.mapGrantedAuthority
 import com.keunwon.jwt.config.LogSupport
+import com.keunwon.jwt.domain.user.LoginPolicy
+import com.keunwon.jwt.domain.user.Password
 import com.keunwon.jwt.domain.user.User
 import com.keunwon.jwt.domain.user.UserRepository
-import com.keunwon.jwt.domain.user.generatedGrantedAuthorityList
+import com.keunwon.jwt.domain.user.matches
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.authentication.LockedException
@@ -19,7 +22,7 @@ open class JwtAuthenticationManager(
 ) : AuthenticationManager {
     @Transactional(noRollbackFor = [BadCredentialsException::class])
     override fun authenticate(authentication: Authentication): Authentication {
-        val user = userRepository.findByUsername(authentication.name)
+        val user = userRepository.findByInformationEmail(authentication.name)
             ?: throw UsernameNotFoundException("${authentication.name} 찾을 수 없습니다")
         return user.run {
             preAuthenticationCheck()
@@ -28,22 +31,24 @@ open class JwtAuthenticationManager(
         }
     }
 
-    private fun User.preAuthenticationCheck() {
-        if (!isAccountNonLocked) throw LockedException("사용자 계정이 잠겨있습니다. 사용자: $username")
+    private fun User.preAuthenticationCheck() = with(loginPolicy) {
+        if (!isAccountNotLocked) {
+            throw LockedException("최대 로그인 시도 횟수를 초과하였습니다. (${LoginPolicy.MAX_PASSWORD_FAILURED_COUNT}회)")
+        }
     }
 
     private fun User.matchPasswordAndUpdate(authentication: Authentication, passwordEncoder: PasswordEncoder) {
-        val password = authentication.credentials as String
-        if (matchPassword(password, passwordEncoder)) {
-            reset()
+        val requestPassword = Password(authentication.credentials as String)
+        if (passwordEncoder.matches(requestPassword, this.password!!)) {
+            loginPolicy.reset()
         } else {
-            incrementFailures()
-            throw BadCredentialsException("${authentication.name} 비밀번호가 일치하지 않습니다")
+            loginPolicy.loginFailed()
+            throw BadCredentialsException("${information.email} 비밀번호가 일치하지 않습니다.")
         }
     }
 
     private fun User.generateAuthenticationToken() =
-        UsernamePasswordAuthenticationToken.authenticated(this, "", generatedGrantedAuthorityList(role))
+        UsernamePasswordAuthenticationToken.authenticated(this, "", mapGrantedAuthority(role))
 
     companion object : LogSupport
 }

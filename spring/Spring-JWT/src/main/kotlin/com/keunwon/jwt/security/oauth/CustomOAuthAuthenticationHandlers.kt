@@ -5,7 +5,7 @@ import com.keunwon.jwt.common.ErrorDto
 import com.keunwon.jwt.domain.user.UserRepository
 import com.keunwon.jwt.domain.user.UserToken
 import com.keunwon.jwt.domain.user.UserTokenRepository
-import com.keunwon.jwt.domain.user.getByUsername
+import com.keunwon.jwt.domain.user.getByEmail
 import com.keunwon.jwt.security.jwt.ClaimsInfo
 import com.keunwon.jwt.security.jwt.JwtProvider
 import com.keunwon.jwt.security.jwt.JwtRefreshToken
@@ -30,7 +30,7 @@ class OAuthAuthenticationSuccessHandler(
         response: HttpServletResponse,
         authentication: Authentication,
     ) {
-        val user = userRepository.getByUsername(authentication.name)
+        val user = userRepository.getByEmail(authentication.name)
         val loginToken = jwtProvider.generateLoginSuccessToken(ClaimsInfo(user))
         saveOrUpdateRefreshToken(user.id, loginToken.refreshToken)
         response.writeLoginToken(LoginTokenResponse(loginToken))

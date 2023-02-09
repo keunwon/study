@@ -7,9 +7,8 @@ import com.keunwon.jwt.RestDocsSupport
 import com.keunwon.jwt.STRING
 import com.keunwon.jwt.TestPasswordEncoder
 import com.keunwon.jwt.domain.AuthenticationCodeBuilder
-import com.keunwon.jwt.domain.USERNAME
 import com.keunwon.jwt.domain.USER_EMAIL
-import com.keunwon.jwt.domain.USER_FULL_NAME
+import com.keunwon.jwt.domain.USER_NAME
 import com.keunwon.jwt.domain.USER_NICKNAME
 import com.keunwon.jwt.domain.USER_PASSWORD
 import com.keunwon.jwt.makeDocument
@@ -53,13 +52,12 @@ class UserAuthenticationApiTest : RestDocsSupport() {
     fun `사용자 회원가입`() {
         val authenticationCode = AuthenticationCodeBuilder(authenticated = true).build()
         val request = UserSignRequest(
-            username = USERNAME,
-            password = USER_PASSWORD,
-            confirmPassword = USER_PASSWORD,
-            email = authenticationCode.email,
-            name = USER_FULL_NAME,
-            nickname = USER_NICKNAME,
-            authenticationCode = authenticationCode.code,
+            USER_EMAIL,
+            USER_PASSWORD,
+            USER_PASSWORD,
+            USER_NAME,
+            USER_NICKNAME,
+            authenticationCode.code
         )
         authenticationRepository.save(authenticationCode)
 
@@ -74,12 +72,11 @@ class UserAuthenticationApiTest : RestDocsSupport() {
         } Extract {
             response().makeDocument("사용자 회원가입") {
                 requestBody(
-                    "username" type STRING means "사용자 아이디",
+                    "email" type STRING means "사용자 이메일 주소",
                     "password" type STRING means "사용자 비밀번호",
                     "confirmPassword" type STRING means "재확인 사용자 비밀번호",
-                    "email" type STRING means "사용자 이메일 주소",
-                    "nickname" type STRING means "닉네임",
                     "name" type STRING means "사용자 이름",
+                    "nickname" type STRING means "닉네임",
                     "authenticationCode" type STRING means "인증 코드",
                 )
             }

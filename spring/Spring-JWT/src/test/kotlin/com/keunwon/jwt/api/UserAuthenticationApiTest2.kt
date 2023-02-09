@@ -4,13 +4,15 @@ import com.keunwon.jwt.InmemoryAuthenticationCodeRepository
 import com.keunwon.jwt.InmemoryUserPasswordHistoryRepository
 import com.keunwon.jwt.InmemoryUserRepository
 import com.keunwon.jwt.RestDocsSupport
+import com.keunwon.jwt.STRING
 import com.keunwon.jwt.TestPasswordEncoder
 import com.keunwon.jwt.VALID_TOKEN
 import com.keunwon.jwt.domain.UserBuilder
 import com.keunwon.jwt.domain.user.UserPasswordHistory
 import com.keunwon.jwt.makeDocument
-import com.keunwon.jwt.param
 import com.keunwon.jwt.security.jwt.bearer
+import com.keunwon.jwt.toJson
+import com.keunwon.jwt.type
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertAll
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -52,10 +54,12 @@ class UserAuthenticationApiTest2 : RestDocsSupport() {
             userRepository.save(it)
             userPasswordHistoryRepository.save(UserPasswordHistory(it))
         }
+        val request = EditPasswordRequest(user.password!!.value, newPassword)
 
-        mockMvc.patch("/auth/me/edit-password?password=${newPassword}") {
+        mockMvc.patch("/auth/me/edit-password") {
             bearer(VALID_TOKEN)
-            contentType = MediaType.APPLICATION_FORM_URLENCODED
+            contentType = MediaType.APPLICATION_JSON
+            content = toJson(request)
         }.andExpect {
             status { isNoContent() }
         }.andDo {
@@ -63,14 +67,15 @@ class UserAuthenticationApiTest2 : RestDocsSupport() {
                 requestHeaders(
                     HttpHeaders.AUTHORIZATION to "accessToken",
                 )
-                requestParams(
-                    "password" param "변경할 비밀번호",
+                requestBody(
+                    "oldPassword" type STRING means "현재 비밀번호",
+                    "newPassword" type STRING means "신규 비밀번호",
                 )
             }
         }
 
         assertAll({
-            assertTrue(user.matchPassword(newPassword, passwordEncoder))
+            assertTrue(passwordEncoder.matches(user.password!!.value, newPassword))
             assertThat(userPasswordHistoryRepository.findAllByUserId(user.id)).hasSize(2)
         })
     }

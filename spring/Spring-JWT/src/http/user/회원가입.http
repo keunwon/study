@@ -8,7 +8,6 @@ Content-Type: application/x-www-form-urlencoded
 
 > {%
 client.global.set("authenticationCode", response.body)
-console.log(client.global.get("authenticationCode"))
 %}
 
 ### 2. 사용자 인증코드 검증

@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.web.HttpMediaTypeNotSupportedException
 import org.springframework.web.bind.MethodArgumentNotValidException
+import org.springframework.web.bind.MissingServletRequestParameterException
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.context.request.WebRequest
@@ -52,9 +53,17 @@ class SimpleErrorHandler {
     @ExceptionHandler(MethodArgumentNotValidException::class)
     fun handleMethodArgumentNotValidException(ex: MethodArgumentNotValidException): ResponseEntity<ErrorDto> {
         val errorMessages = ex.fieldErrors.map { "${it.field} ${it.defaultMessage}" }
-        log.warn("> $errorMessages")
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+        log.warn("> $errorMessages", ex)
+        return ResponseEntity.badRequest()
             .body(ErrorDto(HttpStatus.BAD_REQUEST, "파라미터가 유효하지 않습니다", errorMessages))
+    }
+
+    @ExceptionHandler(MissingServletRequestParameterException::class)
+    fun handleMissingServletRequestParameterException(ex: MissingServletRequestParameterException): ResponseEntity<ErrorDto> {
+        log.warn("> 파라미터 값이 존재하지 않습니다. ", ex)
+        val message = "${ex.message} 파라미터가 존재하지 않습니다."
+        return ResponseEntity.badRequest()
+            .body(ErrorDto(HttpStatus.BAD_REQUEST, message))
     }
 
     @ExceptionHandler(HttpMessageNotReadableException::class)

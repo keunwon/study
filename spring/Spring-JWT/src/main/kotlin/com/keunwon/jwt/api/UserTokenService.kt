@@ -2,8 +2,8 @@ package com.keunwon.jwt.api
 
 import com.keunwon.jwt.domain.user.UserRepository
 import com.keunwon.jwt.domain.user.UserTokenRepository
+import com.keunwon.jwt.domain.user.getByEmail
 import com.keunwon.jwt.domain.user.getByUserId
-import com.keunwon.jwt.domain.user.getByUsername
 import com.keunwon.jwt.security.jwt.JwtProvider
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -22,7 +22,7 @@ class UserTokenService(
 
     private fun validateRefreshToken(accessTokenIssueRequest: AccessTokenIssueRequest) = with(accessTokenIssueRequest) {
         jwtProvider.verifyTokenOrThrown(accessTokenIssueRequest.refreshToken)
-        val user = userRepository.getByUsername(accessTokenIssueRequest.username)
+        val user = userRepository.getByEmail(accessTokenIssueRequest.email)
         val userToken = userTokenRepository.getByUserId(user.id)
         require(refreshToken == userToken.refreshToken) { "refreshToken 일치하지 않습니다" }
     }

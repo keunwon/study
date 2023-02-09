@@ -1,7 +1,7 @@
 package com.keunwon.jwt
 
+import com.keunwon.jwt.common.mapGrantedAuthority
 import com.keunwon.jwt.domain.UserBuilder
-import com.keunwon.jwt.domain.user.generatedGrantedAuthorityList
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
@@ -17,10 +17,10 @@ object TestPasswordEncoder : PasswordEncoder {
     }
 }
 
-const val LOGIN_USERNAME = "test-id"
-const val LOGIN_PASSWORD = "password"
+const val LOGIN_USERNAME = "test@test.com"
+const val LOGIN_PASSWORD = "PASSWORD"
 
-fun createPreAuthenticationToken(
+fun createUsernamePasswordAuthenticationToken(
     username: String = LOGIN_USERNAME,
     password: String = LOGIN_PASSWORD,
 ): UsernamePasswordAuthenticationToken {
@@ -28,7 +28,7 @@ fun createPreAuthenticationToken(
 }
 
 val AUTHENTICATION_USER = UserBuilder().build()
-val AUTHENTICATION_ROLES = generatedGrantedAuthorityList(AUTHENTICATION_USER.role)
+val AUTHENTICATION_ROLES = mapGrantedAuthority(AUTHENTICATION_USER.role)
 
 object JwtAuthenticationManagerStub : AuthenticationManager {
     override fun authenticate(authentication: Authentication?): Authentication {

@@ -2,18 +2,20 @@ package com.keunwon.jwt.config
 
 import com.keunwon.jwt.LOGIN_PASSWORD
 import com.keunwon.jwt.LOGIN_USERNAME
-import com.keunwon.jwt.domain.USERNAME
+import com.keunwon.jwt.domain.LoginPolicyBuilder
+import com.keunwon.jwt.domain.PasswordBuilder
+import com.keunwon.jwt.domain.USER_EMAIL
 import com.keunwon.jwt.domain.USER_PASSWORD
-import com.keunwon.jwt.domain.USER_WRONG_PASSWORD
 import com.keunwon.jwt.domain.UserBuilder
-import com.keunwon.jwt.domain.user.User
+import com.keunwon.jwt.domain.WRONG_USER_PASSWORD
+import com.keunwon.jwt.domain.user.LoginPolicy
 import com.keunwon.jwt.domain.user.UserRepository
-import com.keunwon.jwt.domain.user.getByUsername
+import com.keunwon.jwt.domain.user.getByEmail
 import com.keunwon.jwt.toJson
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Assertions.assertAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
+import org.junit.jupiter.api.assertAll
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
@@ -25,12 +27,14 @@ import org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath
 import org.springframework.restdocs.payload.PayloadDocumentation.requestFields
 import org.springframework.restdocs.payload.PayloadDocumentation.responseFields
 import org.springframework.security.crypto.password.PasswordEncoder
+import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.transaction.annotation.Transactional
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@ActiveProfiles("test")
 @Transactional
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -49,11 +53,14 @@ class JwtLoginMvcTest {
     fun `사용자 로그인 성공 시 정상(200) 응답`() {
         // given
         val request = mapOf(
-            "username" to USERNAME,
+            "username" to USER_EMAIL,
             "password" to USER_PASSWORD,
         )
         userRepository.save(
-            UserBuilder(password = passwordEncoder.encode(request.getValue("password"))).build()
+            UserBuilder(
+                id = 1L,
+                password = PasswordBuilder(passwordEncoder.encode(USER_PASSWORD)).build(),
+            ).build()
         )
 
         // when, then
@@ -120,7 +127,7 @@ class JwtLoginMvcTest {
 
         // when, then
         thenUnauthorizedResult(request) {
-            "$USERNAME 찾을 수 없습니다"
+            "$USER_EMAIL 찾을 수 없습니다"
         }
     }
 
@@ -128,14 +135,14 @@ class JwtLoginMvcTest {
     fun `사용자 비밀번호가 다른 경우 실패(401) 응답`() {
         // given
         val request = mapOf(
-            "username" to USERNAME,
-            "password" to USER_WRONG_PASSWORD,
+            "username" to USER_EMAIL,
+            "password" to WRONG_USER_PASSWORD,
         )
         userRepository.save(UserBuilder().build())
 
         // when, then
         thenUnauthorizedResult(request) {
-            "사용자 계정이 잠겨있습니다. 사용자: $USERNAME"
+            "사용자 계정이 잠겨있습니다. 이메일: $USER_EMAIL"
         }
     }
 
@@ -143,40 +150,41 @@ class JwtLoginMvcTest {
     fun `사용자 계정이 잠긴 경우 실패(401) 응답`() {
         // given
         val request = mapOf(
-            "username" to USERNAME,
+            "username" to USER_EMAIL,
             "password" to USER_PASSWORD,
         )
+        val loginPolicy = LoginPolicyBuilder(LoginPolicy.MAX_PASSWORD_FAILURED_COUNT).build()
+
         userRepository.save(
-            UserBuilder(isAccountNonLocked = false).build()
+            UserBuilder(id = 1L, loginPolicy = loginPolicy).build()
         )
 
         // when, then
         thenUnauthorizedResult(request) {
-            "사용자 계정이 잠겨있습니다. 사용자: $USERNAME"
+            "사용자 계정이 잠겨있습니다. 이메일: $USER_EMAIL"
         }
     }
 
     @Test
     fun `사용자 로그인 실패 횟수가 10회 이상인 경우, 계정이 잠김`() {
         // given
+        val email = USER_EMAIL
         val request = mapOf(
-            "username" to USERNAME,
-            "password" to USER_WRONG_PASSWORD,
+            "username" to email,
+            "password" to WRONG_USER_PASSWORD,
         )
+        val loginPolicy = LoginPolicyBuilder(failedPasswordCount = LoginPolicy.MAX_PASSWORD_FAILURED_COUNT).build()
         userRepository.save(
-            UserBuilder(failedPasswordCount = User.MAX_PASSWORD_FAILURED_COUNT).build()
+            UserBuilder(loginPolicy = loginPolicy).build()
         )
 
         // when, then
-        thenUnauthorizedResult(request) {
-            "$USERNAME 비밀번호가 일치하지 않습니다"
-        }
-        with(userRepository.getByUsername(USERNAME)) {
-            assertAll({
-                assertThat(isAccountNonLocked).isFalse
-                assertThat(failedPasswordCount).isEqualTo(User.MAX_PASSWORD_FAILURED_COUNT + 1)
-            })
-        }
+        thenUnauthorizedResult(request) { "$email 비밀번호가 일치하지 않습니다" }
+        val user = userRepository.getByEmail(email)
+        assertAll({
+            assertThat(user.loginPolicy.isAccountNotLocked).isFalse
+            assertThat(user.loginPolicy.failedPasswordCount).isEqualTo(LoginPolicy.MAX_PASSWORD_FAILURED_COUNT)
+        })
     }
 
     private fun thenUnauthorizedResult(login: Map<String, String>, message: () -> String) {

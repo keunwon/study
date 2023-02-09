@@ -6,15 +6,16 @@ import com.keunwon.jwt.InmemoryUserRepository
 import com.keunwon.jwt.TestPasswordEncoder
 import com.keunwon.jwt.domain.AuthenticationCodeBuilder
 import com.keunwon.jwt.domain.INVALID_CODE
-import com.keunwon.jwt.domain.USERNAME
+import com.keunwon.jwt.domain.PasswordBuilder
 import com.keunwon.jwt.domain.USER_EMAIL
-import com.keunwon.jwt.domain.USER_FULL_NAME
+import com.keunwon.jwt.domain.USER_NAME
 import com.keunwon.jwt.domain.USER_NICKNAME
 import com.keunwon.jwt.domain.USER_PASSWORD
 import com.keunwon.jwt.domain.UserBuilder
+import com.keunwon.jwt.domain.UserPasswordHistoryBuilder
+import com.keunwon.jwt.domain.user.Password
 import com.keunwon.jwt.domain.user.User
-import com.keunwon.jwt.domain.user.UserPasswordHistory
-import com.keunwon.jwt.domain.user.getByUsername
+import com.keunwon.jwt.domain.user.getByEmail
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Assertions.assertAll
@@ -43,11 +44,10 @@ class UserAuthenticationServiceTest {
         // given
         val authenticationCode = AuthenticationCodeBuilder(authenticated = true).build()
         val request = UserSignRequest(
-            username = USERNAME,
             password = USER_PASSWORD,
             confirmPassword = USER_PASSWORD,
             email = USER_EMAIL,
-            name = USER_FULL_NAME,
+            name = USER_NAME,
             nickname = USER_NICKNAME,
             authenticationCode = authenticationCode.code,
         )
@@ -55,12 +55,11 @@ class UserAuthenticationServiceTest {
 
         // when, then
         assertDoesNotThrow { userAuthenticationService.register(request) }
-        with(userRepository.getByUsername(USERNAME)) {
+        with(userRepository.getByEmail(request.email).information) {
             assertAll({
-                assertTrue(username == USERNAME)
-                assertTrue(matchPassword(USER_PASSWORD, passwordEncoder))
-                assertTrue(name == USER_FULL_NAME)
-                assertTrue(nickname == USER_NICKNAME)
+                assertThat(name).isEqualTo(request.name)
+                assertThat(nickname).isEqualTo(request.nickname)
+                assertThat(email).isEqualTo(request.email)
             })
         }
     }
@@ -152,53 +151,49 @@ class UserAuthenticationServiceTest {
     fun `사용자 비밀번호를 변경합니다`() {
         // given
         val user = givenSaveUserWithPasswordHistoryAndGet()
-        val newPassword = "NEW_PASSWORD"
+        val newPassword = Password("NEW_PASSWORD")
+        val editUserPassword = EditUserPassword(user.id, user.password!!, newPassword)
 
         // when
-        userAuthenticationService.changePassword(user.id, newPassword)
-
+        userAuthenticationService.changePassword(editUserPassword)
+       
         // then
-        assertAll({
-            assertTrue(user.matchPassword(newPassword, passwordEncoder))
-            assertThat(userPasswordHistoryRepository.findAllByUserId(user.id)).hasSize(4)
-        })
+        assertDoesNotThrow { user.authenticate(newPassword, passwordEncoder) }
     }
 
     @Test
     fun `이전에 사용한 비밀번호로 변경시 오류가 발생합니다`() {
         // given
-        val oldPassword = "password1"
         val user = givenSaveUserWithPasswordHistoryAndGet()
+        val oldPassword = Password(USER_PASSWORD)
+        val edit = EditUserPassword(user.id, user.password!!, oldPassword)
 
         // when,
         assertThatThrownBy {
-            userAuthenticationService.changePassword(user.id, oldPassword)
-        }.hasMessage("이전에 사용했었던 비밀번호 입니다.")
+            userAuthenticationService.changePassword(edit)
+        }.hasMessage("이미 사용했었던 비밀번호입니다.")
     }
 
     private fun givenSaveUserWithPasswordHistoryAndGet(): User {
-        val nowPassword = "password1"
-        val user = UserBuilder(id = 1L, password = nowPassword).build()
+        val user = UserBuilder(id = 1L).build()
         val baseLocalDateTime = LocalDateTime.of(2023, 1, 1, 0, 0, 0)
         val passwordHistory = mutableListOf(
-            UserPasswordHistory(
+            UserPasswordHistoryBuilder(
                 userId = user.id,
-                password = nowPassword,
-                createdAt = baseLocalDateTime,
+                password = PasswordBuilder("PASSWORD_1").build(),
+                createdAt = baseLocalDateTime.minusMinutes(6L),
                 id = 1L,
-            ),
-            UserPasswordHistory(
+            ).build(),
+            UserPasswordHistoryBuilder(
                 userId = user.id,
-                password = "password2",
+                password = PasswordBuilder("PASSWORD_2").build(),
                 createdAt = baseLocalDateTime.minusMinutes(3L),
                 id = 2L,
-            ),
-            UserPasswordHistory(
+            ).build(),
+            UserPasswordHistoryBuilder(
                 userId = user.id,
-                password = "password3",
-                createdAt = baseLocalDateTime.minusMinutes(6L),
-                id = 3L,
-            ),
+                createdAt = baseLocalDateTime,
+            ).build(),
         )
         userRepository.save(user)
         userPasswordHistoryRepository.saveAll(passwordHistory)

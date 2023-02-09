@@ -11,7 +11,7 @@ class UserPasswordHistory(
     val userId: Long,
 
     @Column(name = "password")
-    val password: String,
+    val password: Password,
 
     createdAt: LocalDateTime = LocalDateTime.now(),
     id: Long = 0L,

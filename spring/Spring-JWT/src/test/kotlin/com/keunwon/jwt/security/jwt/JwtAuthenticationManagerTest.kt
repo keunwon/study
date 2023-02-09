@@ -3,10 +3,12 @@ package com.keunwon.jwt.security.jwt
 import com.keunwon.jwt.InmemoryUserRepository
 import com.keunwon.jwt.TestPasswordEncoder
 import com.keunwon.jwt.common.UserRole
-import com.keunwon.jwt.createPreAuthenticationToken
-import com.keunwon.jwt.domain.USER_ACCOUNT_LOCKED
-import com.keunwon.jwt.domain.USER_WRONG_PASSWORD
+import com.keunwon.jwt.createUsernamePasswordAuthenticationToken
+import com.keunwon.jwt.domain.LoginPolicyBuilder
+import com.keunwon.jwt.domain.PasswordBuilder
 import com.keunwon.jwt.domain.UserBuilder
+import com.keunwon.jwt.domain.WRONG_USER_PASSWORD
+import com.keunwon.jwt.domain.user.LoginPolicy
 import com.keunwon.jwt.domain.user.User
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
@@ -28,13 +30,13 @@ class JwtAuthenticationManagerTest {
         userRepository.save(user)
 
         // when
-        val authentication = jwtAuthenticationManager.authenticate(createPreAuthenticationToken())
+        val authentication = jwtAuthenticationManager.authenticate(createUsernamePasswordAuthenticationToken())
         val principal = authentication.principal as User
 
         // then
         assertAll({
             assertThat(principal).isEqualTo(user)
-            assertThat((principal.username)).isEqualTo(user.username)
+            assertThat((principal.information.email)).isEqualTo(user.information.email)
             assertThat(authentication.authorities.map { it.authority }).containsAll(UserRole.DEFAULT_ROLES)
         })
     }
@@ -47,8 +49,9 @@ class JwtAuthenticationManagerTest {
     @Test
     fun `사용자가 비밀번호가 일치하지 않으면 'BadCredentialsException' 발생`() {
         // given
+        val password = PasswordBuilder(WRONG_USER_PASSWORD).build()
         userRepository.save(
-            UserBuilder(password = USER_WRONG_PASSWORD).build()
+            UserBuilder(password = password).build()
         )
 
         // when, then
@@ -58,10 +61,10 @@ class JwtAuthenticationManagerTest {
     @Test
     fun `사용자의 계정이 잠겨있으면 'LockedException' 발생`() {
         // given
+        val loginPolicy = LoginPolicyBuilder(failedPasswordCount = LoginPolicy.MAX_PASSWORD_FAILURED_COUNT).build()
         userRepository.save(
-            UserBuilder(isAccountNonLocked = USER_ACCOUNT_LOCKED).build()
+            UserBuilder(loginPolicy = loginPolicy).build()
         )
-
 
         // when, then
         thenThrownBy(LockedException::class.java)
@@ -69,7 +72,7 @@ class JwtAuthenticationManagerTest {
 
     private fun thenThrownBy(exception: Class<*>) {
         assertThatThrownBy {
-            jwtAuthenticationManager.authenticate(createPreAuthenticationToken())
+            jwtAuthenticationManager.authenticate(createUsernamePasswordAuthenticationToken())
         }.isInstanceOf(exception)
     }
 }

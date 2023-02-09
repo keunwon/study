@@ -5,6 +5,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.keunwon.jwt.common.UserRole
 import com.keunwon.jwt.domain.user.LoginType
 import com.keunwon.jwt.domain.user.User
+import com.keunwon.jwt.domain.user.UserInformation
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User
@@ -18,9 +19,7 @@ sealed class Oauth2Attributes {
     abstract fun toOAuth2User(role: String, oAuth2User: OAuth2User): OAuth2User
 
     fun toUserEntity() = User(
-        name = name,
-        nickname = nickname,
-        email = email,
+        information = UserInformation(email, name, nickname),
         loginType = LoginType.OAUTH2,
         role = UserRole.USER,
     )

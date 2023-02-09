@@ -58,14 +58,14 @@ class UserTokenApiTest : RestDocsSupport() {
             ).build()
         )
 
-        givenWhenMockMvc(username, jwtLoginToken.refreshToken.value) Then {
+        givenWhenMockMvc(user.information.email, jwtLoginToken.refreshToken.value) Then {
             status(HttpStatus.OK)
             body("value", notNullValue())
             body("expirationAccessToken", notNullValue())
         } Extract {
             response().makeDocument("accessToken 재발급") {
                 requestBody(
-                    "username" type STRING means "사용자 아이디",
+                    "email" type STRING means "사용자 아아디(이메일)",
                     "refreshToken" type STRING means "로그인 시 발급 받은 refreshToken",
                 )
                 responseBody(
@@ -77,19 +77,19 @@ class UserTokenApiTest : RestDocsSupport() {
     }
 
     @Test
-    fun `username 값이 비어있으면 오류 응답을 반환합니다`() {
+    fun `email 값이 비어있으면 오류 응답을 반환합니다`() {
         givenWhenMockMvc("", jwtLoginToken.refreshToken.value) Then {
             status(HttpStatus.BAD_REQUEST)
             contentType(ContentType.JSON)
-            body("code", equalTo(400))
+            body("code", equalTo(HttpStatus.BAD_REQUEST.value()))
             body("message", equalTo("파라미터가 유효하지 않습니다"))
-            body("errors", equalTo(listOf("username 필수 파라미터 입니다")))
+            body("errors", equalTo(listOf("email 필수 파라미터 입니다")))
         }
     }
 
     @Test
     fun `refreshToken 값이 비어있으면 오류 응답을 반환합니다`() {
-        givenWhenMockMvc(username, "") Then {
+        givenWhenMockMvc(LOGIN_USERNAME, "") Then {
             status(HttpStatus.BAD_REQUEST)
             contentType(ContentType.JSON)
             body("code", equalTo(400))
@@ -106,9 +106,5 @@ class UserTokenApiTest : RestDocsSupport() {
         } When {
             post("/auth/refreshToken")
         }
-    }
-
-    companion object {
-        private const val username = LOGIN_USERNAME
     }
 }

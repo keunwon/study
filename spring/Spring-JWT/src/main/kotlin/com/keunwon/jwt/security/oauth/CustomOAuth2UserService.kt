@@ -18,15 +18,17 @@ class CustomOAuth2UserService(private val userRepository: UserRepository) :
     }
 
     private fun saveOrUpdate(oAuth2Attributes: Oauth2Attributes): User {
-        val user = userRepository.findByEmail(oAuth2Attributes.email)?.apply { oAuthLogin(oAuth2Attributes) }
-            ?: oAuth2Attributes.toUserEntity()
+        val user = userRepository.findByInformationEmail(oAuth2Attributes.email)?.apply {
+            oAuthLogin(oAuth2Attributes)
+        } ?: oAuth2Attributes.toUserEntity()
         return userRepository.save(user)
     }
 
     private fun User.oAuthLogin(oAuth2Attributes: Oauth2Attributes) {
-        this.email = oAuth2Attributes.email
-        this.name = oAuth2Attributes.name
-        this.nickname = oAuth2Attributes.nickname
+        with(information) {
+            name = oAuth2Attributes.name
+            nickname = oAuth2Attributes.nickname
+        }
     }
 
     companion object : LogSupport {

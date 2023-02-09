@@ -4,7 +4,6 @@ import com.keunwon.jwt.config.LogSupport
 import com.keunwon.jwt.security.jwt.LoginUser
 import com.keunwon.jwt.security.jwt.LoginUserDto
 import org.springframework.http.HttpStatus
-import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.PatchMapping
@@ -21,8 +20,8 @@ class UserAuthenticationApi(private val userAuthenticationService: UserAuthentic
     @PostMapping("/auth/sign")
     fun sing(@Validated @RequestBody request: UserSignRequest): ResponseEntity<Unit> {
         userAuthenticationService.register(request)
-        log.info("> 회원가입 완료, username: ${request.username}")
-        return ResponseEntity(HttpStatus.CREATED)
+        log.info("> 회원가입 완료, email: ${request.email}")
+        return ResponseEntity.status(HttpStatus.CREATED).build()
     }
 
     /**
@@ -50,12 +49,12 @@ class UserAuthenticationApi(private val userAuthenticationService: UserAuthentic
     /**
      * 사용자 비밀번호 변경 API
      */
-    @PatchMapping("/auth/me/edit-password", consumes = [MediaType.APPLICATION_FORM_URLENCODED_VALUE])
+    @PatchMapping("/auth/me/edit-password")
     fun changePassword(
-        @RequestParam password: String,
+        @RequestBody request: EditPasswordRequest,
         @LoginUser loginUserDto: LoginUserDto,
     ): ResponseEntity<Unit> {
-        userAuthenticationService.changePassword(loginUserDto.id, password)
+        userAuthenticationService.changePassword(EditUserPassword(loginUserDto.id, request))
         log.info("> 비밀번호 변경 완료, 사용자 이메일: ${loginUserDto.email}")
         return ResponseEntity.noContent().build()
     }
