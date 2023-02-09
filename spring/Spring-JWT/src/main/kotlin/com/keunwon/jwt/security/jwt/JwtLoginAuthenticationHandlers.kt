@@ -27,7 +27,7 @@ class JwtLoginAuthenticationSuccessHandler(
         authentication: Authentication,
     ) {
         val user = authentication.principal as User
-        generateJwtLoginToken(user).also { loginToken ->
+        generateJwtLoginToken(user).let { loginToken ->
             saveOrUpdateRefreshToken(user, loginToken.refreshToken)
             response.writeLoginToken(LoginTokenResponse(loginToken))
             loggingLogin(loginToken)

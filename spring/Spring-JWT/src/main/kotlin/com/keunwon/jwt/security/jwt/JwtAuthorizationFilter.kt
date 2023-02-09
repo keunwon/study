@@ -24,7 +24,7 @@ class JwtAuthorizationFilter(
         filterChain: FilterChain,
     ) {
         runCatching {
-            AuthorizationHeader(request).also {
+            AuthorizationHeader(request).let {
                 jwtProvider.verifyTokenOrThrown(it.credentials)
                 registerSecurityContext(it.credentials)
             }
