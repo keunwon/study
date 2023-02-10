@@ -28,6 +28,8 @@ dependencies {
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")
+    testImplementation("io.rest-assured:spring-mock-mvc-kotlin-extensions:${property("restAssuredVersion")}")
+
 
     // oauth
     implementation("org.springframework.security:spring-security-oauth2-client")
@@ -40,6 +42,5 @@ dependencies {
     // mock
     testImplementation("io.mockk:mockk:${property("mockkVersion")}")
     //testImplementation("io.rest-assured:spring-mock-mvc:${property("restAssuredVersion")}")
-    testImplementation("io.rest-assured:spring-mock-mvc-kotlin-extensions:${property("restAssuredVersion")}")
     testImplementation(kotlin("script-runtime"))
 }
