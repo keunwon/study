@@ -19,21 +19,6 @@ configurations {
     }
 }
 
-repositories {
-    mavenCentral()
-}
-
-allOpen {
-    annotation("javax.persistence.Entity")
-    annotation("javax.persistence.MappedSuperclass")
-    annotation("javax.persistence.Embeddable")
-}
-
-noArg {
-    annotation("javax.persistence.Entity")
-    annotation("javax.persistence.MappedSuperclass")
-    annotation("javax.persistence.Embeddable")
-}
 
 extra.apply {
     set("jwtVersion", "0.11.5")
@@ -41,75 +26,71 @@ extra.apply {
     set("restAssuredVersion", "5.3.0")
 }
 
-dependencies {
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation("org.springframework.boot:spring-boot-starter-jdbc")
-    implementation("org.springframework.boot:spring-boot-starter-security")
-    implementation("org.springframework.boot:spring-boot-starter-validation")
-    implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-    implementation("org.jetbrains.kotlin:kotlin-reflect")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    runtimeOnly("com.h2database:h2")
-    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("org.springframework.security:spring-security-test")
-
-    // oauth
-    implementation("org.springframework.security:spring-security-oauth2-client")
-
-    // jwt
-    implementation("io.jsonwebtoken:jjwt-api:${property("jwtVersion")}")
-    runtimeOnly("io.jsonwebtoken:jjwt-impl:${property("jwtVersion")}")
-    runtimeOnly("io.jsonwebtoken:jjwt-jackson:${property("jwtVersion")}")
-
-    // mock
-    testImplementation("io.mockk:mockk:${property("mockkVersion")}")
-    //testImplementation("io.rest-assured:spring-mock-mvc:${property("restAssuredVersion")}")
-    testImplementation("io.rest-assured:spring-mock-mvc-kotlin-extensions:${property("restAssuredVersion")}")
-    testImplementation(kotlin("script-runtime"))
+allprojects {
+    repositories {
+        mavenCentral()
+    }
 }
 
-// spring rest-doc
-val asciidoctorExt: Configuration by configurations.creating
-val snippetsDir by extra { file("build/generated-snippets") }
-dependencies {
-    asciidoctorExt("org.springframework.restdocs:spring-restdocs-asciidoctor")
-    testImplementation("org.springframework.restdocs:spring-restdocs-mockmvc")
-}
-tasks {
-    compileKotlin {
-        kotlinOptions {
-            freeCompilerArgs = listOf("-Xjsr305=strict")
-            jvmTarget = "17"
-        }
+subprojects {
+    apply {
+        plugin("org.springframework.boot")
+        plugin("io.spring.dependency-management")
+        plugin("org.asciidoctor.jvm.convert")
+        plugin("java-test-fixtures")
+        plugin("org.jetbrains.kotlin.jvm")
+        plugin("org.jetbrains.kotlin.plugin.spring")
+        plugin("org.jetbrains.kotlin.plugin.jpa")
+        plugin("org.jetbrains.kotlin.kapt")
     }
 
-    test {
-        useJUnitPlatform()
-        testLogging {
-            showCauses = true
-        }
-        outputs.dir(snippetsDir)
+
+    dependencies {
+        implementation("org.jetbrains.kotlin:kotlin-reflect")
+        implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     }
 
-    asciidoctor {
-        inputs.dir(snippetsDir)
-        configurations(asciidoctorExt.name)
-        dependsOn(test)
-        doFirst {
-            delete("src/main/resources/static/docs")
-            mkdir("src/main/resources/static/docs")
-        }
-        doLast {
-            copy {
-                from("${buildDir.path}/docs/")
-                into("src/main/resources/static/docs")
+    // spring rest-doc
+    val asciidoctorExt: Configuration by configurations.creating
+    val snippetsDir by extra { file("build/generated-snippets") }
+    dependencies {
+        asciidoctorExt("org.springframework.restdocs:spring-restdocs-asciidoctor")
+        testImplementation("org.springframework.restdocs:spring-restdocs-mockmvc")
+    }
+    tasks {
+        compileKotlin {
+            kotlinOptions {
+                freeCompilerArgs = listOf("-Xjsr305=strict")
+                jvmTarget = "17"
             }
         }
-    }
 
-    build {
-        dependsOn(asciidoctor)
+        test {
+            useJUnitPlatform()
+            testLogging {
+                showCauses = true
+            }
+            outputs.dir(snippetsDir)
+        }
+
+        asciidoctor {
+            inputs.dir(snippetsDir)
+            configurations(asciidoctorExt.name)
+            dependsOn(test)
+            doFirst {
+                delete("src/main/resources/static/docs")
+                mkdir("src/main/resources/static/docs")
+            }
+            doLast {
+                copy {
+                    from("${buildDir.path}/docs/")
+                    into("src/main/resources/static/docs")
+                }
+            }
+        }
+
+        build {
+            dependsOn(asciidoctor)
+        }
     }
 }
