@@ -1,4 +1,4 @@
-package com.github.keunwon.test
+package com.github.keunwon.repository
 
 interface PrimaryKeyGenerator<ID> {
     fun nextPrimaryKey(preKey: ID): ID

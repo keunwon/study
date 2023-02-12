@@ -1,4 +1,4 @@
-package com.github.keunwon.test
+package com.github.keunwon.repository
 
 import org.springframework.data.repository.CrudRepository
 import java.io.Serializable

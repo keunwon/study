@@ -1,4 +1,4 @@
-package com.github.keunwon.test
+package com.github.keunwon.repository
 
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.booleans.shouldBeFalse

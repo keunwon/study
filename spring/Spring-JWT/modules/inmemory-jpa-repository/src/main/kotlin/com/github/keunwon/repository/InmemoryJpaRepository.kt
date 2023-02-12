@@ -1,4 +1,4 @@
-package com.github.keunwon.test
+package com.github.keunwon.repository
 
 import org.springframework.data.domain.Example
 import org.springframework.data.domain.Page

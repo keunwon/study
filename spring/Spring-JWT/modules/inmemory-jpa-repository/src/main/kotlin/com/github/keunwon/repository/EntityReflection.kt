@@ -1,4 +1,4 @@
-package com.github.keunwon.test
+package com.github.keunwon.repository
 
 import java.io.Serializable
 import java.lang.reflect.Field
