@@ -117,6 +117,11 @@ class InmemoryJpaRepositoryTest : BehaviorSpec({
     }
 })
 
+abstract class BaseEntity(
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    val id: Long = 0L,
+)
+
 @Entity
 class TestEntity(
     @Column
@@ -125,9 +130,8 @@ class TestEntity(
     @Column
     var nickname: String,
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long = 0L,
-)
+    id: Long = 0L,
+) : BaseEntity(id)
 
 interface TestUserRepository : JpaRepository<TestEntity, Long>
 
