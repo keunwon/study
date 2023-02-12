@@ -1,0 +1,16 @@
+package com.github.keunwon.user.memeber
+
+import javax.persistence.Column
+import javax.persistence.Embeddable
+
+@Embeddable
+data class UserProfile(
+    @Column(name = "email")
+    val email: String,
+
+    @Column(name = "name")
+    val name: String,
+
+    @Column(name = "nickname")
+    val nickname: String,
+)
