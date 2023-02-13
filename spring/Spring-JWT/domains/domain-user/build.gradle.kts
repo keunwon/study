@@ -4,7 +4,7 @@ tasks {
 }
 
 dependencies {
-    api(project(":core"))
+    api(project(":core-jpa"))
     api("org.springframework.boot:spring-boot-starter-data-jpa")
 
     runtimeOnly("com.h2database:h2")

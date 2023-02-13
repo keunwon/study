@@ -18,10 +18,10 @@ data class UserRegister(
 
     fun toUser(): User {
         return User(
-            UserProfile(email, name, nickname),
-            Password(password),
-            LoginType.SIMPLE,
-            UserRole.MEMBER,
+            profile = UserProfile(email, name, nickname),
+            password = Password(password),
+            loginType = LoginType.SIMPLE,
+            role = UserRole.MEMBER,
         )
     }
 }

@@ -1,14 +1,11 @@
 package com.github.keunwon.user.authenticationcode
 
-import org.springframework.data.annotation.CreatedDate
+import com.github.keunwon.corejpa.BaseEntity
 import java.time.Duration
 import java.time.LocalDateTime
 import java.util.*
 import javax.persistence.Column
 import javax.persistence.Entity
-import javax.persistence.GeneratedValue
-import javax.persistence.GenerationType
-import javax.persistence.Id
 
 @Entity
 class AuthenticationCode(
@@ -21,14 +18,11 @@ class AuthenticationCode(
     @Column(nullable = false)
     var authenticated: Boolean = false,
 
-    @CreatedDate
-    var createLocalDate: LocalDateTime = LocalDateTime.now(),
-
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long = 0,
-) {
+    createLocalDate: LocalDateTime = LocalDateTime.now(),
+    id: Long = 0,
+) : BaseEntity(id, createLocalDate) {
     private val expiryDateTime: LocalDateTime
-        get() = createLocalDate + EXPIRY_MINUTE
+        get() = createdDateTime + EXPIRY_MINUTE
 
     fun authenticate(code: String, dateTime: LocalDateTime) {
         require(this.code == code) { "인증코드가 일치하지 않습니다." }

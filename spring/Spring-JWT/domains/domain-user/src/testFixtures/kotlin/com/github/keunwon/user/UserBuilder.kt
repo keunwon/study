@@ -2,9 +2,11 @@ package com.github.keunwon.user
 
 import com.github.keunwon.core.enums.LoginType
 import com.github.keunwon.core.enums.UserRole
+import com.github.keunwon.user.memeber.AccountPolicy
 import com.github.keunwon.user.memeber.Password
 import com.github.keunwon.user.memeber.User
 import com.github.keunwon.user.memeber.UserProfile
+import java.time.LocalDateTime
 
 val USER_LOGIN_TYPE = LoginType.SIMPLE
 val USER_ROLE = UserRole.MEMBER
@@ -12,6 +14,7 @@ val USER_ROLE = UserRole.MEMBER
 data class UserBuilder(
     val userProfile: UserProfile = UserInformationBuilder().build(),
     val password: Password = PasswordBuilder().build(),
+    val accountPolicy: AccountPolicy = AccountPolicyBuilder().build(),
     val loginType: LoginType = USER_LOGIN_TYPE,
     val role: UserRole = USER_ROLE,
     val id: Long = 0
@@ -20,6 +23,7 @@ data class UserBuilder(
         return User(
             profile = userProfile,
             password = password,
+            accountPolicy = accountPolicy,
             loginType = loginType,
             role = role,
             id = id
@@ -54,6 +58,20 @@ data class PasswordBuilder(
     fun build(): Password {
         return Password(
             value = value
+        )
+    }
+}
+
+data class AccountPolicyBuilder(
+    val failedPasswordCount: Int = 0,
+    val enable: Boolean = true,
+    val lastPasswordModifiedDateTime: LocalDateTime = LocalDateTime.now(),
+) {
+    fun build(): AccountPolicy {
+        return AccountPolicy(
+            failedPasswordCount = failedPasswordCount,
+            enabled = enable,
+            lastPasswordModifiedDateTime = lastPasswordModifiedDateTime,
         )
     }
 }

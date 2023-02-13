@@ -2,14 +2,13 @@ package com.github.keunwon.user.memeber
 
 import com.github.keunwon.core.enums.LoginType
 import com.github.keunwon.core.enums.UserRole
+import com.github.keunwon.corejpa.BaseEntity
+import java.time.LocalDateTime
 import javax.persistence.Column
 import javax.persistence.Embedded
 import javax.persistence.Entity
 import javax.persistence.EnumType
 import javax.persistence.Enumerated
-import javax.persistence.GeneratedValue
-import javax.persistence.GenerationType
-import javax.persistence.Id
 import javax.persistence.Table
 
 @Entity
@@ -21,6 +20,9 @@ class User(
     @Embedded
     var password: Password,
 
+    @Embedded
+    val accountPolicy: AccountPolicy = AccountPolicy(),
+
     @Enumerated(EnumType.STRING)
     @Column(name = "login_type")
     val loginType: LoginType,
@@ -28,11 +30,8 @@ class User(
     @Enumerated(EnumType.STRING)
     val role: UserRole,
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
-    val id: Long = 0L,
-) {
+    id: Long = 0L,
+) : BaseEntity(id) {
     init {
         if (loginType == LoginType.SIMPLE) {
             identify(password.value.isNotBlank()) { "비밀번호는 필수입니다." }
@@ -41,13 +40,31 @@ class User(
         }
     }
 
-    fun changePassword(oldRawPassword: Password, newRawPassword: Password, passwordEncrypt: PasswordEncrypt) {
-        identify(passwordEncrypt.matches(oldRawPassword, this.password)) {
-            "현재 비밀번호가 일치하지 않습니다."
+    fun authenticate(
+        rawPassword: Password,
+        passwordEncrypt: PasswordEncrypt,
+        now: LocalDateTime,
+    ) {
+        accountPolicy.validateWith(now)
+        if (!passwordEncrypt.matches(rawPassword, this.password)) {
+            accountPolicy.authenticateFailed()
+            throw MissMatchUserPasswordException(profile.email, accountPolicy.failedPasswordCount)
         }
+        accountPolicy.authenticateSuccess()
+    }
+
+    fun changePassword(
+        oldRawPassword: Password,
+        newRawPassword: Password,
+        passwordEncrypt: PasswordEncrypt,
+    ) {
         identify(oldRawPassword != newRawPassword) {
             "변경하려는 비밀번호와 현재 비밀번호와 동일합니다."
         }
-        this.password = passwordEncrypt.encrypt(newRawPassword)
+        if (!passwordEncrypt.matches(oldRawPassword, this.password)) {
+            throw MissMatchUserPasswordException(profile.email, accountPolicy.failedPasswordCount)
+        }
+        password = passwordEncrypt.encrypt(newRawPassword)
+        accountPolicy.modifiedPasswordBy(LocalDateTime.now())
     }
 }
