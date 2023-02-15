@@ -39,4 +39,6 @@ dependencies {
     api("org.springframework.restdocs:spring-restdocs-mockmvc")
     api("org.junit.jupiter:junit-jupiter-api")
     api("javax.servlet:javax.servlet-api")
+
+    testApi("org.springframework.boot:spring-boot-starter-test")
 }

@@ -1,6 +1,5 @@
 package com.github.keunwon.restdocs
 
-import io.restassured.module.mockmvc.response.ValidatableMockMvcResponse
 import org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders
 import org.springframework.restdocs.headers.RequestHeadersSnippet
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document
@@ -12,14 +11,10 @@ import org.springframework.restdocs.payload.ResponseFieldsSnippet
 import org.springframework.restdocs.request.RequestDocumentation.requestParameters
 import org.springframework.restdocs.request.RequestParametersSnippet
 import org.springframework.restdocs.snippet.Snippet
-import org.springframework.test.web.servlet.MockMvcResultHandlersDsl
+import org.springframework.test.web.servlet.ResultActionsDsl
 
-fun MockMvcResultHandlersDsl.makeDocument(identifier: String, init: RestDocsDsl.() -> Unit) {
-    return RestDocsDsl(identifier, init).build { this.handle(it) }
-}
-
-fun ValidatableMockMvcResponse.makeDocument(identifier: String, init: RestDocsDsl.() -> Unit) {
-    return RestDocsDsl(identifier, init).build { this.apply(it) }
+fun ResultActionsDsl.makeDocument(identifier: String, init: RestDocsDsl.() -> Unit) {
+    return RestDocsDsl(identifier, init).build { andDo { handle(it) } }
 }
 
 class RestDocsDsl(

@@ -26,8 +26,8 @@ abstract class AbstractRestDocsSupport {
 
     protected fun mockMvc(
         controller: Any,
-        filters: List<Filter>,
-        resolvers: List<HandlerMethodArgumentResolver>,
+        filters: List<Filter> = emptyList(),
+        resolvers: List<HandlerMethodArgumentResolver> = emptyList(),
     ): MockMvc {
         return MockMvcBuilders.standaloneSetup(controller)
             .apply<StandaloneMockMvcBuilder>(

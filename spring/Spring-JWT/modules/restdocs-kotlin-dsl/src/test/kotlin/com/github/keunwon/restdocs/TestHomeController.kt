@@ -9,17 +9,6 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class TestHomeController {
-
-    @GetMapping("/")
-    fun home(): ResponseEntity<Any> {
-        return ResponseEntity.ok().body(
-            mapOf(
-                "id" to "아이디",
-                "password" to "비밀번호",
-            )
-        )
-    }
-
     @PostMapping("/json-body")
     fun jsonBody(@RequestBody jsonBody: JsonBody): ResponseEntity<JsonBody> {
         return ResponseEntity.ok(jsonBody)

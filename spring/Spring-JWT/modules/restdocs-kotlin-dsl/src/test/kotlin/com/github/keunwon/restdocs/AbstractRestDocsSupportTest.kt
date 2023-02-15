@@ -1,50 +1,64 @@
 package com.github.keunwon.restdocs
 
-import io.restassured.http.ContentType
+import org.hamcrest.Matchers
 import org.junit.jupiter.api.Test
-import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
+import org.springframework.test.web.servlet.get
+import org.springframework.test.web.servlet.post
 
 class RestDocsSupportTest : AbstractRestDocsSupport() {
     private val controller = TestHomeController()
 
     @Test
-    fun `응답코드 200, 응답 json 확인`() {
-        val response = mockMvc(controller)
-            .get("/")
-
-        response.then()
-            .statusCode(HttpStatus.OK.value())
-            .makeDocument("응답 json") {
-                responseBody(
-                    "id" type STRING means "id 값",
-                    "password" type STRING means "password 값",
-                )
+    fun `요청 json, 응답 json restdocs 생성`() {
+        mockMvc(controller).post("/json-body") {
+            contentType = MediaType.APPLICATION_JSON
+            content = JsonBody(1L, "username", "password").toJson()
+        }.andExpect {
+            status { isOk() }
+            content {
+                contentType(MediaType.APPLICATION_JSON)
             }
+            jsonPath("$.username", Matchers.notNullValue())
+            jsonPath("$.password", Matchers.notNullValue())
+        }.andDo {
+            print()
+        }.makeDocument("json-body") {
+            requestBody(
+                "code" type NUMBER means "요청 id 값",
+                "username" type STRING means "요청 username 값",
+                "password" type STRING means "요청 password 값"
+            )
+            responseBody(
+                "code" type NUMBER means "응답 id 값",
+                "username" type STRING means "응답 username 값",
+                "password" type STRING means "응답 password 값",
+            )
+        }
     }
 
     @Test
-    fun `응답코드 200, 요청 json, 응답 json`() {
-        val response = mockMvc(controller)
-            .body(JsonBody(1L, "username", "password").toJson())
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .post("/json-body")
-
-        response.then()
-            .statusCode(HttpStatus.OK.value())
-            .contentType(ContentType.JSON)
-            .makeDocument("json-body") {
-                requestBody(
-                    "code" type NUMBER means "요청 id 값",
-                    "username" type STRING means "요청 username 값",
-                    "password" type STRING means "요청 password 값"
-                )
-                responseBody(
-                    "code" type NUMBER means "응답 id 값",
-                    "username" type STRING means "응답 username 값",
-                    "password" type STRING means "응답 password 값",
-                )
+    fun `queryString 사용하여 restdocs 생성`() {
+        mockMvc(controller).get("/query-string") {
+            contentType = MediaType.APPLICATION_FORM_URLENCODED
+            param("username", "usernameParam")
+            param("password", "passwordParam")
+        }.andExpect {
+            status { isOk() }
+            content {
+                contentType(MediaType.APPLICATION_JSON)
             }
+            jsonPath("$.username", Matchers.notNullValue())
+            jsonPath("$.password", Matchers.notNullValue())
+        }.makeDocument("queryString") {
+            requestParameters(
+                "username" paramMeans "username param",
+                "password" paramMeans "password param",
+            )
+            responseBody(
+                "username" type STRING means "username param value",
+                "password" type STRING means "password param value",
+            )
+        }
     }
-
 }
