@@ -1,4 +1,8 @@
 rootProject.name = "jwt"
 include("application:app-auth")
-//findProject(":application:app-auth")?.name = "app-auth"
-//findProject(":moduels:mysql-mvc")?.name = "mysql-mvc"
+include("domains:domain-user")
+include("core")
+include("domains:domain-user-auth")
+include("modules:inmemory-jpa-repository")
+include("core-jpa")
+include("modules:restdocs-kotlin-dsl")
