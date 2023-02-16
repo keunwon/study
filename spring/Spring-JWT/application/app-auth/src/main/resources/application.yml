@@ -4,3 +4,5 @@ spring:
     include:
       - jwt
       - oauth
+  jpa:
+    open-in-view: false

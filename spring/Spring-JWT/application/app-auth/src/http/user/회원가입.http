@@ -11,7 +11,7 @@ client.global.set("authenticationCode", response.body)
 %}
 
 ### 2. 사용자 인증코드 검증
-POST {{host}}/auth/authenticate-email?email={{email}}&code={{authenticationCode}}
+POST {{host}}/auth/authenticate-email?email={{email}}&code=26453b65
 Content-Type: application/x-www-form-urlencoded
 
 ### 3. 회원 가입
@@ -25,5 +25,5 @@ Content-Type: application/json
   "email": "{{email}}",
   "name": "{{name}}",
   "nickname": "{{nickname}}",
-  "authenticationCode": "{{authenticationCode}}"
+  "authenticationCode": "26453b65"
 }
