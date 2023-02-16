@@ -6,7 +6,7 @@ import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.get
 import org.springframework.test.web.servlet.post
 
-class RestDocsSupportTest : AbstractRestDocsSupport() {
+class RestDocsSupportTest : RestDocsSupport() {
     private val controller = TestHomeController()
 
     @Test

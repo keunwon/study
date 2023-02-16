@@ -15,12 +15,14 @@ import javax.servlet.Filter
 
 @Tag("restdocs")
 @ExtendWith(RestDocumentationExtension::class)
-abstract class AbstractRestDocsSupport {
+abstract class RestDocsSupport {
     private val objectMapper = jacksonObjectMapper()
+
     private lateinit var restDocumentation: RestDocumentationContextProvider
 
     @BeforeEach
     fun setup(restDocumentation: RestDocumentationContextProvider) {
+        println("setup2")
         this.restDocumentation = restDocumentation
     }
 
