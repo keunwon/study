@@ -106,7 +106,7 @@ open class InmemoryJpaRepository<T : Any, ID>(
     override fun <S : T, R : Any?> findBy(
         example: Example<S>,
         queryFunction: Function<FluentQuery.FetchableFluentQuery<S>, R>
-    ): R {
+    ): R & Any {
         throw NotSupportedException(NOT_SUPPORTED_EXCEPTION_MESSAGE)
     }
 
