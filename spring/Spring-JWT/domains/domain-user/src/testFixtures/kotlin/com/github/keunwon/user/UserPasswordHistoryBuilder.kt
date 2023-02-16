@@ -15,7 +15,7 @@ data class UserPasswordHistoryBuilder(
             userId = userId,
             password = password,
             createdDateTime = createdDateTime,
-            id = id
+            id = id,
         )
     }
 }

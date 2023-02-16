@@ -3,14 +3,17 @@ package com.github.keunwon.user.service
 import com.github.keunwon.user.AccountPolicyBuilder
 import com.github.keunwon.user.InmemoryUserRepository
 import com.github.keunwon.user.UserBuilder
-import com.github.keunwon.user.memeber.NoPasswordEncrypt
+import com.github.keunwon.user.WRONG_USER_PASSWORD
+import com.github.keunwon.user.memeber.NotMatchUserPasswordException
+import com.github.keunwon.user.memeber.Password
+import com.github.keunwon.user.memeber.UserPasswordNoEncoder
 import io.kotest.assertions.throwables.shouldThrowExactly
 import io.kotest.core.spec.style.BehaviorSpec
 import java.time.LocalDateTime
 
 class UserAuthenticationServiceTest : BehaviorSpec({
     val userRepository = InmemoryUserRepository()
-    val passwordEncrypt = NoPasswordEncrypt()
+    val passwordEncrypt = UserPasswordNoEncoder()
     val userAuthenticationService = UserAuthenticationService(userRepository, passwordEncrypt)
 
     Given("사용자를 생성하고") {
@@ -21,6 +24,15 @@ class UserAuthenticationServiceTest : BehaviorSpec({
             val email = user.profile.email
             val password = user.password
             userAuthenticationService.authenticate(email, password)
+        }
+
+        Then("비밀번호가 일치하지 않으면 오류가 발생한다") {
+            val email = user.profile.email
+            val password = Password(WRONG_USER_PASSWORD)
+
+            shouldThrowExactly<NotMatchUserPasswordException> {
+                userAuthenticationService.authenticate(email, password).getOrThrow()
+            }
         }
     }
 
@@ -38,7 +50,7 @@ class UserAuthenticationServiceTest : BehaviorSpec({
             val password = user.password
 
             shouldThrowExactly<IllegalStateException> {
-                userAuthenticationService.authenticate(email, password)
+                userAuthenticationService.authenticate(email, password).getOrThrow()
             }
         }
     }
@@ -57,7 +69,7 @@ class UserAuthenticationServiceTest : BehaviorSpec({
             val now = user.accountPolicy.lastPasswordModifiedDateTime.plusDays(90L)
 
             shouldThrowExactly<IllegalStateException> {
-                userAuthenticationService.authenticate(email, password, now)
+                userAuthenticationService.authenticate(email, password, now).getOrThrow()
             }
         }
     }

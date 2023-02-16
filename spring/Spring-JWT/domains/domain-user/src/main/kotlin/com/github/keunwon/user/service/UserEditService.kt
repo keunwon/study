@@ -1,6 +1,6 @@
 package com.github.keunwon.user.service
 
-import com.github.keunwon.user.memeber.PasswordEncrypt
+import com.github.keunwon.user.memeber.UserPasswordEncoder
 import com.github.keunwon.user.memeber.UserRepository
 import com.github.keunwon.user.memeber.getByEmail
 import com.github.keunwon.user.passwordhistory.UserPasswordHistory
@@ -13,15 +13,15 @@ import org.springframework.transaction.annotation.Transactional
 class UserEditService(
     private val userRepository: UserRepository,
     private val userPasswordHistoryRepository: UserPasswordHistoryRepository,
-    private val passwordEncrypt: PasswordEncrypt,
+    private val userPasswordEncoder: UserPasswordEncoder,
 ) {
     fun changePassword(passwordEdit: PasswordEdit) {
         val user = userRepository.getByEmail(passwordEdit.email)
         val usedPassword = userPasswordHistoryRepository
             .getAllByUserId(user.id)
-            .any { passwordEncrypt.matches(passwordEdit.newPassword, it.password) }
+            .any { userPasswordEncoder.matches(passwordEdit.newPassword, it.password) }
         check(!usedPassword) { "이미 사용했던 비밀번호입니다." }
-        user.changePassword(passwordEdit.password, passwordEdit.newPassword, passwordEncrypt)
+        user.changePassword(passwordEdit.password, passwordEdit.newPassword, userPasswordEncoder)
         userPasswordHistoryRepository.save(UserPasswordHistory(user.id, user.password))
     }
 }

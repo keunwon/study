@@ -4,9 +4,9 @@ import com.github.keunwon.user.InmemoryUserPasswordHistoryRepository
 import com.github.keunwon.user.InmemoryUserRepository
 import com.github.keunwon.user.UserBuilder
 import com.github.keunwon.user.UserPasswordHistoryBuilder
-import com.github.keunwon.user.memeber.NoPasswordEncrypt
 import com.github.keunwon.user.memeber.Password
 import com.github.keunwon.user.memeber.UnIdentifiedUserException
+import com.github.keunwon.user.memeber.UserPasswordNoEncoder
 import io.kotest.assertions.assertSoftly
 import io.kotest.assertions.throwables.shouldThrowExactly
 import io.kotest.core.spec.style.BehaviorSpec
@@ -17,7 +17,7 @@ import java.time.LocalDateTime
 class UserEditServiceTest : BehaviorSpec({
     val userRepository = InmemoryUserRepository()
     val userPasswordHistoryRepository = InmemoryUserPasswordHistoryRepository()
-    val passwordEncrypt = NoPasswordEncrypt()
+    val passwordEncrypt = UserPasswordNoEncoder()
     val userEditService = UserEditService(userRepository, userPasswordHistoryRepository, passwordEncrypt)
 
     Given("비밀번호 이력이 존재하는 사용자가") {

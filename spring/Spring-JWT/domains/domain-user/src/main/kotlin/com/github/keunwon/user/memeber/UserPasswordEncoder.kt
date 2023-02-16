@@ -1,15 +1,13 @@
 package com.github.keunwon.user.memeber
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
-
-interface PasswordEncrypt {
+interface UserPasswordEncoder {
     fun encrypt(rawPassword: Password): Password
 
     fun matches(rawPassword: Password, encryptPassword: Password): Boolean
 }
 
-@ConditionalOnMissingBean
-class NoPasswordEncrypt : PasswordEncrypt {
+//@ConditionalOnMissingBean
+class UserPasswordNoEncoder : UserPasswordEncoder {
     override fun encrypt(rawPassword: Password): Password {
         return Password(rawPassword.value)
     }

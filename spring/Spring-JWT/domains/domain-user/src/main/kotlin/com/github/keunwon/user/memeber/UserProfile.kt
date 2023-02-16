@@ -9,8 +9,8 @@ data class UserProfile(
     val email: String,
 
     @Column(name = "name")
-    val name: String,
+    var name: String,
 
     @Column(name = "nickname")
-    val nickname: String,
+    var nickname: String,
 )

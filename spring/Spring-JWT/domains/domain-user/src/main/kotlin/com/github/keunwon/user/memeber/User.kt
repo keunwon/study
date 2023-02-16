@@ -42,13 +42,13 @@ class User(
 
     fun authenticate(
         rawPassword: Password,
-        passwordEncrypt: PasswordEncrypt,
+        userPasswordEncoder: UserPasswordEncoder,
         now: LocalDateTime,
     ) {
         accountPolicy.validateWith(now)
-        if (!passwordEncrypt.matches(rawPassword, this.password)) {
+        if (!userPasswordEncoder.matches(rawPassword, this.password)) {
             accountPolicy.authenticateFailed()
-            throw MissMatchUserPasswordException(profile.email, accountPolicy.failedPasswordCount)
+            throw NotMatchUserPasswordException(profile.email, accountPolicy.failedPasswordCount)
         }
         accountPolicy.authenticateSuccess()
     }
@@ -56,15 +56,15 @@ class User(
     fun changePassword(
         oldRawPassword: Password,
         newRawPassword: Password,
-        passwordEncrypt: PasswordEncrypt,
+        userPasswordEncoder: UserPasswordEncoder,
     ) {
         identify(oldRawPassword != newRawPassword) {
             "변경하려는 비밀번호와 현재 비밀번호와 동일합니다."
         }
-        if (!passwordEncrypt.matches(oldRawPassword, this.password)) {
-            throw MissMatchUserPasswordException(profile.email, accountPolicy.failedPasswordCount)
+        if (!userPasswordEncoder.matches(oldRawPassword, this.password)) {
+            throw NotMatchUserPasswordException(profile.email, accountPolicy.failedPasswordCount)
         }
-        password = passwordEncrypt.encrypt(newRawPassword)
+        password = userPasswordEncoder.encrypt(newRawPassword)
         accountPolicy.modifiedPasswordBy(LocalDateTime.now())
     }
 }
