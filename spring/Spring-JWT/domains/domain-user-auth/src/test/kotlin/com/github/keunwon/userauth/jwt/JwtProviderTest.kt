@@ -15,30 +15,32 @@ import java.time.LocalDateTime
 
 class JwtProviderTest : StringSpec({
     "accessToken 생성합니다." {
-        val jwtClaims = JwtClaims.accessToken(
+        val accessTokenClaims = AccessTokenClaims(
             sub = "test@test.com",
             id = 1L,
+            nickname = "닉네임",
             role = UserRole.MEMBER,
         )
 
-        val accessToken = jwtProviderFixture.createAccessToken(jwtClaims)
+        val accessToken = jwtProviderFixture.createAccessToken(accessTokenClaims)
         val claims = jwtProviderFixture.getJwsClaims(accessToken.value).body
 
         shouldNotThrowAny { jwtProviderFixture.validateToken(accessToken.value) }
-        claims.subject shouldBe jwtClaims.sub
-        claims.issuer shouldBe issuer
-        claims["id"].toString().toLong() shouldBe jwtClaims.id
-        claims["role"] as String shouldBe jwtClaims.role!!.name
+        claims.subject shouldBe accessTokenClaims.sub
+        claims["id"].toString().toLong() shouldBe accessTokenClaims.id
+        claims["nickname"].toString() shouldBe accessTokenClaims.nickname
+        claims["role"] as String shouldBe accessTokenClaims.role.name
     }
 
     "refreshToken 생성합니다." {
-        val jwtClaims = JwtClaims.refreshToken("test@test.com")
+        //val jwtClaims = JwtClaims.refreshToken("test@test.com")
+        val refreshTokenClaims = RefreshTokenClaims("test@test.com")
 
-        val refreshToken = jwtProviderFixture.createRefreshToken(jwtClaims)
+        val refreshToken = jwtProviderFixture.createRefreshToken(refreshTokenClaims)
         val claims = jwtProviderFixture.getJwsClaims(refreshToken.value).body
 
         shouldNotThrowAny { jwtProviderFixture.validateToken(refreshToken.value) }
-        claims.subject shouldBe jwtClaims.sub
+        claims.subject shouldBe refreshTokenClaims.sub
         claims.issuer shouldBe issuer
         claims["id"].shouldBeNull()
         claims["role"].shouldBeNull()
@@ -46,7 +48,10 @@ class JwtProviderTest : StringSpec({
 
     "loginToken 생성합니다." {
         val user = UserBuilder(id = 1L).build()
-        val (accessToken, refreshToken) = jwtProviderFixture.createLoginToken(JwtClaims.loginToken(user))
+        val (accessToken, refreshToken) = jwtProviderFixture.createLoginToken(
+            AccessTokenClaims(user),
+            RefreshTokenClaims(user.profile.email),
+        )
 
         shouldNotThrowAny {
             jwtProviderFixture.validateToken(accessToken.value)

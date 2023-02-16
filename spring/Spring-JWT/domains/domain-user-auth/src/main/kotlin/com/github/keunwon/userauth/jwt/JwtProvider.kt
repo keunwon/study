@@ -1,6 +1,6 @@
 package com.github.keunwon.userauth.jwt
 
-import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.convertValue
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.github.keunwon.core.enums.UserRole
@@ -18,22 +18,25 @@ import java.util.*
 
 @Component
 @EnableConfigurationProperties(JwtProperties::class)
-class JwtProvider(private val jwtProperties: JwtProperties) {
+class JwtProvider(
+    private val jwtProperties: JwtProperties,
+    private val objectMapper: ObjectMapper = jacksonObjectMapper(),
+) {
     private val key: Key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtProperties.secret))
 
-    private val objectMapper = jacksonObjectMapper()
-        .setSerializationInclusion(JsonInclude.Include.NON_NULL)
-
-    fun createLoginToken(claims: JwtClaims): LoginToken {
-        return LoginToken(createAccessToken(claims), createRefreshToken(claims))
+    fun createLoginToken(
+        accessTokenClaims: AccessTokenClaims,
+        refreshTokenClaims: RefreshTokenClaims,
+    ): LoginToken {
+        return LoginToken(createAccessToken(accessTokenClaims), createRefreshToken(refreshTokenClaims))
     }
 
-    fun createAccessToken(claims: JwtClaims): AccessToken {
+    fun createAccessToken(claims: AccessTokenClaims): AccessToken {
         val token = createTokenString(toMap(claims), jwtProperties.expirationAccessToken)
         return AccessToken(token, jwtProperties.expirationAccessToken)
     }
 
-    fun createRefreshToken(claims: JwtClaims): RefreshToken {
+    fun createRefreshToken(claims: RefreshTokenClaims): RefreshToken {
         val token = createTokenString(toMap(claims), jwtProperties.expirationRefreshToken)
         return RefreshToken(token, jwtProperties.expirationRefreshToken)
     }
@@ -49,6 +52,15 @@ class JwtProvider(private val jwtProperties: JwtProperties) {
 
     fun validateToken(token: String?) = getJwsClaims(token)
 
+    fun tokenConvertLoginUserDto(accessToken: String): LoginUserDto {
+        val claims = getJwsClaims(accessToken).body
+        return LoginUserDto(
+            email = claims.subject,
+            nickname = claims["nickname"].toString(),
+            role = UserRole.valueOf(claims["role"].toString()),
+        )
+    }
+
     fun getJwsClaims(token: String?): Jws<Claims> {
         return Jwts.parserBuilder()
             .setSigningKey(key)
@@ -59,14 +71,20 @@ class JwtProvider(private val jwtProperties: JwtProperties) {
     private fun <T : Any> toMap(value: T): Map<String, Any> = objectMapper.convertValue(value)
 }
 
-class JwtClaims private constructor(
+data class AccessTokenClaims(
     val sub: String,
-    val id: Long? = null,
-    val role: UserRole? = null,
+    val id: Long,
+    val nickname: String,
+    val role: UserRole,
 ) {
-    companion object {
-        fun loginToken(user: User) = JwtClaims(user.profile.email, user.id, user.role)
-        fun accessToken(sub: String, id: Long, role: UserRole) = JwtClaims(sub, id, role)
-        fun refreshToken(sub: String) = JwtClaims(sub)
-    }
+    constructor(user: User) : this(
+        user.profile.email,
+        user.id,
+        user.profile.nickname,
+        user.role,
+    )
 }
+
+data class RefreshTokenClaims(
+    val sub: String,
+)

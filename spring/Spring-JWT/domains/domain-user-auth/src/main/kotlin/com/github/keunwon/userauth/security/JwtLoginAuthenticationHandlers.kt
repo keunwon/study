@@ -14,7 +14,7 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
-class JwtLoginAuthenticationSuccessHandler(
+open class JwtLoginAuthenticationSuccessHandler(
     private val userTokenService: UserTokenService,
     private val objectMapper: ObjectMapper,
 ) : AuthenticationSuccessHandler {

@@ -17,7 +17,6 @@ dependencies {
     testApi("org.springframework.boot:spring-boot-starter-test")
     testApi("org.springframework.security:spring-security-test")
 
-    // module
     api(project(":core-jpa"))
     api(project(":domains:domain-user"))
     testApi(testFixtures(project(":domains:domain-user")))

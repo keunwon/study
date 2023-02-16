@@ -9,6 +9,7 @@ import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.filter.OncePerRequestFilter
 import javax.servlet.FilterChain
@@ -39,9 +40,12 @@ class JwtAuthorizationFilter(
     }
 
     private fun registerSecurityContext(token: String) {
-        val claims = jwtProvider.getJwsClaims(token).body
-        SecurityContextHolder.getContext().authentication = UsernamePasswordAuthenticationToken
-            .authenticated(claims, "", emptyList())
+        val loginUserDto = jwtProvider.tokenConvertLoginUserDto(token)
+        SecurityContextHolder.getContext().authentication = UsernamePasswordAuthenticationToken.authenticated(
+            loginUserDto,
+            "",
+            listOf(SimpleGrantedAuthority(loginUserDto.role.name)),
+        )
     }
 
     private fun HttpServletResponse.writeErrorDto(errorDto: ErrorDto) = apply {
