@@ -46,9 +46,9 @@ configure(kotlinProject) {
     }
 
     dependencies {
-        implementation("org.jetbrains.kotlin:kotlin-reflect")
-        implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-        implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+        api("org.jetbrains.kotlin:kotlin-reflect")
+        api("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+        api("com.fasterxml.jackson.module:jackson-module-kotlin")
 
         testImplementation("io.mockk:mockk:${property("mockkVersion")}")
         testImplementation("io.kotest:kotest-runner-junit5:${property("kotestVersion")}")
