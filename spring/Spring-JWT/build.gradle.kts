@@ -20,6 +20,7 @@ allprojects {
     repositories {
         mavenCentral()
     }
+    //java.sourceCompatibility = JavaVersion.VERSION_18
 }
 
 extra.apply {
@@ -29,7 +30,10 @@ extra.apply {
     set("restAssuredVersion", "5.3.0")
 }
 
-subprojects {
+// 폴더는 제외 (예: modules, domains, application)
+val projectMatch by extra { """^core|^\w{2,}(-\w{2,})+$""".toRegex() }
+val kotlinProject by extra { subprojects.filter { it.name.matches(projectMatch) } }
+configure(kotlinProject) {
     apply {
         plugin("org.springframework.boot")
         plugin("io.spring.dependency-management")
@@ -52,7 +56,7 @@ subprojects {
     }
 
     jacoco {
-        toolVersion = "0.8.7"
+        toolVersion = "0.8.8"
         //reportsDirectory = layout.buildDirectory.dir("")
     }
 
@@ -108,8 +112,7 @@ subprojects {
 }
 
 val applicationProject = subprojects.filter { it.name.startsWith("app-") }
-//val snippetsDir = file("build/generated-snippets2")
-val snippetsDir by extra { file("build/generated-snippets2") }
+val snippetsDir by extra { file("build/generated-snippets") }
 configure(applicationProject) {
     group = "documentation"
 
