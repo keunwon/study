@@ -26,7 +26,7 @@ class UserAuthenticationApiTest : RestDocsSupport() {
     private lateinit var mockMvc: MockMvc
 
     @BeforeEach
-    fun setup() {
+    fun setup2() {
         mockMvc = mockMvc(UserAuthenticationApi(userRegisterService))
     }
 

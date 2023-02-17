@@ -22,7 +22,6 @@ abstract class RestDocsSupport {
 
     @BeforeEach
     fun setup(restDocumentation: RestDocumentationContextProvider) {
-        println("setup2")
         this.restDocumentation = restDocumentation
     }
 

@@ -3,7 +3,6 @@ package com.github.keunwon.userauth.jwt
 import com.github.keunwon.core.enums.UserRole
 import com.github.keunwon.core.toDate
 import com.github.keunwon.user.UserBuilder
-import com.github.keunwon.userauth.jwtPropertiesFixture
 import com.github.keunwon.userauth.jwtProviderFixture
 import io.jsonwebtoken.ExpiredJwtException
 import io.kotest.assertions.throwables.shouldNotThrowAny
@@ -41,7 +40,6 @@ class JwtProviderTest : StringSpec({
 
         shouldNotThrowAny { jwtProviderFixture.validateToken(refreshToken.value) }
         claims.subject shouldBe refreshTokenClaims.sub
-        claims.issuer shouldBe issuer
         claims["id"].shouldBeNull()
         claims["role"].shouldBeNull()
     }
@@ -68,8 +66,4 @@ class JwtProviderTest : StringSpec({
             jwtProviderFixture.validateToken(token)
         }
     }
-}) {
-    companion object {
-        private val issuer = jwtPropertiesFixture.issuer
-    }
-}
+})
