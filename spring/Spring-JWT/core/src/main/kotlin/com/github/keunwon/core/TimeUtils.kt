@@ -10,3 +10,11 @@ fun Date.toLocalDateTime(): LocalDateTime {
 }
 
 fun LocalDateTime.toDate(): Date = Date.from(toInstant(ZoneOffset.UTC))
+
+fun LocalDateTime.isAfterOrEquals(dateTime: LocalDateTime): Boolean {
+    return isAfter(dateTime) || isEqual(dateTime)
+}
+
+fun LocalDateTime.isBeforeOrEquals(dateTime: LocalDateTime): Boolean {
+    return isBefore(dateTime) || isEqual(dateTime)
+}

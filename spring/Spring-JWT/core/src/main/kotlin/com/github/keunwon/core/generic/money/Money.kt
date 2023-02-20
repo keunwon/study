@@ -1,4 +1,4 @@
-package com.github.keunwon.core.generic
+package com.github.keunwon.core.generic.money
 
 import java.math.BigDecimal
 
@@ -22,7 +22,7 @@ class Money private constructor(val amount: BigDecimal) : Comparable<Money> {
 
         other as Money
 
-        if (amount != other.amount) return false
+        if (amount.toDouble() != other.amount.toDouble()) return false
 
         return true
     }
@@ -39,5 +39,9 @@ class Money private constructor(val amount: BigDecimal) : Comparable<Money> {
         fun wons(amount: Long) = Money(BigDecimal.valueOf(amount))
         fun wons(amount: Double) = Money(BigDecimal.valueOf(amount))
         fun wons(amount: BigDecimal) = Money(amount)
+
+        fun <T> sum(bags: Collection<T>, block: (T) -> Money): Money {
+            return bags.map { block(it) }.fold(ZERO) { acc, money -> acc + money }
+        }
     }
 }

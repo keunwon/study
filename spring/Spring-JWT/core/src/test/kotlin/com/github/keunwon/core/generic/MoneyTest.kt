@@ -1,5 +1,6 @@
 package com.github.keunwon.core.generic
 
+import com.github.keunwon.core.generic.money.Money
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.data.forAll
 import io.kotest.data.row
@@ -69,5 +70,13 @@ class MoneyTest : StringSpec({
         ).sorted()
 
         sorted.map { it.toString() } shouldBe listOf("0 원", "1 원", "3 원", "4 원", "5 원")
+    }
+
+    "Money 타입으로 변경 후, 총 합을 구한다" {
+        val list = listOf(10_000, 20_000, 30_000)
+
+        val sum = Money.sum(list) { Money.wons(it.toLong()) }
+
+        sum shouldBe Money.wons(60_000)
     }
 })
