@@ -1,9 +1,10 @@
 package com.github.keunwon.food.order.domain
 
-import com.github.keunwon.food.domain.shop.domain.Menu
-import com.github.keunwon.food.domain.shop.domain.MenuRepository
-import com.github.keunwon.food.domain.shop.domain.Shop
-import com.github.keunwon.food.domain.shop.domain.ShopRepository
+import com.github.keunwon.corejpa.getById
+import com.github.keunwon.food.shop.domain.Menu
+import com.github.keunwon.food.shop.domain.MenuRepository
+import com.github.keunwon.food.shop.domain.Shop
+import com.github.keunwon.food.shop.domain.ShopRepository
 import org.springframework.stereotype.Component
 
 @Component

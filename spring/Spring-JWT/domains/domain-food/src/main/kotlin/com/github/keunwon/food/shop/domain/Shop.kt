@@ -43,7 +43,7 @@ class Shop(
         this.commissionRate = commissionRate
     }
 
-    fun billCommissionFee(price: Money) {
-        commission += commissionRate.of(price)
+    fun calculateCommissionFee(price: Money): Money {
+        return commissionRate.of(price)
     }
 }

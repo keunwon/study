@@ -1,9 +1,8 @@
 package com.github.keunwon.food.order.service
 
-import com.github.keunwon.food.domain.order.domain.OrderDeliveredService
-import com.github.keunwon.food.domain.order.domain.OrderPayedService
-import com.github.keunwon.food.domain.order.domain.OrderRepository
-import com.github.keunwon.food.domain.order.domain.OrderValidator
+import com.github.keunwon.corejpa.getById
+import com.github.keunwon.food.order.domain.OrderRepository
+import com.github.keunwon.food.order.domain.OrderValidator
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -12,8 +11,6 @@ class OrderService(
     private val orderRepository: OrderRepository,
     private val orderValidator: OrderValidator,
     private val orderMapper: OrderMapper,
-    private val orderDeliveredService: OrderDeliveredService,
-    private val orderPayedService: OrderPayedService,
 ) {
     @Transactional
     fun place(cart: Cart) {
@@ -25,11 +22,13 @@ class OrderService(
 
     @Transactional
     fun payOrder(orderId: Long) {
-        orderPayedService.payOrder(orderId)
+        val order = orderRepository.getById(orderId).apply { delivered() }
+        orderRepository.save(order)
     }
 
     @Transactional
     fun deliverOrder(orderId: Long) {
-        orderDeliveredService.deliverOrder(orderId)
+        val order = orderRepository.getById(orderId).apply { delivered() }
+        orderRepository.save(order)
     }
 }

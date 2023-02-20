@@ -1,9 +1,9 @@
 package com.github.keunwon.food.order.service
 
-import com.github.keunwon.food.domain.order.domain.Order
-import com.github.keunwon.food.domain.order.domain.OrderLineItem
-import com.github.keunwon.food.domain.order.domain.OrderOption
-import com.github.keunwon.food.domain.order.domain.OrderOptionGroup
+import com.github.keunwon.food.order.domain.Order
+import com.github.keunwon.food.order.domain.OrderLineItem
+import com.github.keunwon.food.order.domain.OrderOption
+import com.github.keunwon.food.order.domain.OrderOptionGroup
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime
 

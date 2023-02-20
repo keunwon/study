@@ -1,7 +1,7 @@
 package com.github.keunwon.food.order.domain
 
 import com.github.keunwon.core.generic.money.Money
-import com.github.keunwon.corejpa.BaseEntity
+import com.github.keunwon.corejpa.BaseRootEntity
 import java.time.LocalDateTime
 import javax.persistence.CascadeType
 import javax.persistence.Column
@@ -33,7 +33,7 @@ class Order(
     var status: OrderStatus = OrderStatus.NONE,
 
     id: Long = 0L,
-) : BaseEntity(id) {
+) : BaseRootEntity<Order>(id) {
     val menuIds: List<Long>
         get() = orderLineItems.map { it.menuId }
 
@@ -48,10 +48,12 @@ class Order(
 
     fun payed() {
         status = OrderStatus.PAYED
+        registerEvent(OrderPayedEvent(this))
     }
 
     fun delivered() {
         status = OrderStatus.DELIVERED
+        registerEvent(OrderDeliveredEvent(this))
     }
 
     fun calculateTotalPrice(): Money {

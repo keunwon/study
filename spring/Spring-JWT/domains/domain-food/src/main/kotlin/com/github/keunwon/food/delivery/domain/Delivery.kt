@@ -15,18 +15,17 @@ class Delivery(
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
-    var status: com.github.keunwon.food.delivery.domain.DeliveryStatus,
+    var status: DeliveryStatus,
 
     id: Long = 0L,
 ) : BaseEntity(id) {
     fun complete() {
-        status = com.github.keunwon.food.delivery.domain.DeliveryStatus.DELIVERED
+        status = DeliveryStatus.DELIVERED
     }
 
     companion object {
-        fun started(orderId: Long): com.github.keunwon.food.delivery.domain.Delivery {
-            return com.github.keunwon.food.delivery.domain.Delivery(orderId,
-                com.github.keunwon.food.delivery.domain.DeliveryStatus.DELIVERING)
+        fun started(orderId: Long): Delivery {
+            return Delivery(orderId, DeliveryStatus.DELIVERING)
         }
     }
 }

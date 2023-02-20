@@ -1,7 +1,8 @@
 package com.github.keunwon.food.shop.service
 
-import com.github.keunwon.food.domain.shop.domain.MenuRepository
-import com.github.keunwon.food.domain.shop.domain.ShopRepository
+import com.github.keunwon.corejpa.getById
+import com.github.keunwon.food.shop.domain.MenuRepository
+import com.github.keunwon.food.shop.domain.ShopRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 

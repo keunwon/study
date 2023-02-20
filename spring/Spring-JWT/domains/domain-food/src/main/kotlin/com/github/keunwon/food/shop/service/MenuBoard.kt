@@ -1,8 +1,8 @@
 package com.github.keunwon.food.shop.service
 
 import com.github.keunwon.core.generic.money.Money
-import com.github.keunwon.food.domain.shop.domain.Menu
-import com.github.keunwon.food.domain.shop.domain.Shop
+import com.github.keunwon.food.shop.domain.Menu
+import com.github.keunwon.food.shop.domain.Shop
 
 data class MenuBoard(
     private val shopId: Long,

@@ -1,7 +1,7 @@
 package com.github.keunwon.food.order.domain
 
 import com.github.keunwon.core.generic.money.Money
-import com.github.keunwon.food.domain.shop.domain.Option
+import com.github.keunwon.food.shop.domain.Option
 import javax.persistence.Column
 import javax.persistence.Embeddable
 
