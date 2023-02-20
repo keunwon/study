@@ -49,10 +49,17 @@ configure(kotlinProject) {
         api("org.jetbrains.kotlin:kotlin-reflect")
         api("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
         api("com.fasterxml.jackson.module:jackson-module-kotlin")
+        api("org.springframework.boot:spring-boot-starter-log4j2")
 
         testImplementation("io.mockk:mockk:${property("mockkVersion")}")
         testImplementation("io.kotest:kotest-runner-junit5:${property("kotestVersion")}")
         testImplementation(kotlin("script-runtime"))
+
+        modules {
+            module("org.springframework.boot:spring-boot-starter-logging") {
+                replacedBy("org.springframework.boot:spring-boot-starter-log4j2")
+            }
+        }
     }
 
     jacoco {
