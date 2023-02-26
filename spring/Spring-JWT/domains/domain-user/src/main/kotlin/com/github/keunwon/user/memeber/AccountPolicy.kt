@@ -1,10 +1,8 @@
 package com.github.keunwon.user.memeber
 
-import com.github.keunwon.corejpa.convert.BooleanConverter
 import java.time.Duration
 import java.time.LocalDateTime
 import javax.persistence.Column
-import javax.persistence.Convert
 import javax.persistence.Embeddable
 
 /**
@@ -17,7 +15,6 @@ class AccountPolicy(
     var failedPasswordCount: Int = 0,
 
     @Column
-    @Convert(converter = BooleanConverter::class)
     var enabled: Boolean = true,
 
     @Column
