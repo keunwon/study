@@ -22,7 +22,8 @@ class SimpleErrorHandler {
     @ExceptionHandler(Exception::class)
     fun handleException(ex: Exception): ResponseEntity<ErrorDto> {
         log.error("> 관리자 확인이 필요합니다.", ex)
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+        return ResponseEntity
+            .status(HttpStatus.INTERNAL_SERVER_ERROR)
             .body(createErrorDto(HttpStatus.INTERNAL_SERVER_ERROR, ERROR_MESSAGE))
     }
 
@@ -56,7 +57,8 @@ class SimpleErrorHandler {
     fun handleMethodArgumentNotValidException(ex: MethodArgumentNotValidException): ResponseEntity<ErrorDto> {
         val errorMessages = ex.fieldErrors.map { "${it.field} ${it.defaultMessage}" }
         log.warn("> $errorMessages", ex)
-        return ResponseEntity.badRequest()
+        return ResponseEntity
+            .badRequest()
             .body(createErrorDto(HttpStatus.BAD_REQUEST, errorMessages.joinToString(",")))
     }
 
@@ -64,7 +66,8 @@ class SimpleErrorHandler {
     fun handleMissingServletRequestParameterException(ex: MissingServletRequestParameterException): ResponseEntity<ErrorDto> {
         log.warn("> 파라미터 값이 존재하지 않습니다. ", ex)
         val message = "${ex.message} 파라미터가 존재하지 않습니다."
-        return ResponseEntity.badRequest()
+        return ResponseEntity
+            .badRequest()
             .body(createErrorDto(HttpStatus.BAD_REQUEST, message))
     }
 
@@ -79,7 +82,8 @@ class SimpleErrorHandler {
             else -> "요청 파라미터가 유효하지 않습니다."
         }
         log.warn("> $errorMessage", ex)
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+        return ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
             .body(createErrorDto(HttpStatus.BAD_REQUEST, errorMessage))
     }
 
@@ -89,7 +93,8 @@ class SimpleErrorHandler {
     @ExceptionHandler(ServletException::class)
     fun handleServletException(ex: ServletException): ResponseEntity<ErrorDto> {
         log.error("> servlet exception 발생", ex)
-        return ResponseEntity.badRequest()
+        return ResponseEntity
+            .badRequest()
             .body(createErrorDto(HttpStatus.BAD_REQUEST, ex.message))
     }
 
@@ -100,7 +105,8 @@ class SimpleErrorHandler {
     fun handleNoHandlerFoundException(ex: NoHandlerFoundException, request: WebRequest): ResponseEntity<ErrorDto> {
         val errorMessage = "${ex.requestURL} 은 지원하지 않습니다."
         log.warn("> $errorMessage")
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+        return ResponseEntity
+            .status(HttpStatus.NOT_FOUND)
             .body(createErrorDto(HttpStatus.NOT_FOUND, errorMessage))
     }
 
@@ -111,7 +117,8 @@ class SimpleErrorHandler {
     fun handleHttpMediaTypeNotSupportedException(ex: HttpMediaTypeNotSupportedException): ResponseEntity<ErrorDto> {
         val message = "지원하지 않는 Content-Type 입니다."
         log.warn("> $message, Request Content-Type: ${ex.contentType}")
-        return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
+        return ResponseEntity
+            .status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
             .body(createErrorDto(HttpStatus.UNSUPPORTED_MEDIA_TYPE, message))
     }
 

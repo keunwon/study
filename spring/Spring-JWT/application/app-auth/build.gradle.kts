@@ -5,6 +5,5 @@ dependencies {
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
     implementation(project(":domains:domain-user-auth"))
-    testImplementation(project(":modules:restdocs-kotlin-dsl"))
     testImplementation(testFixtures(project(":domains:domain-user-auth")))
 }
