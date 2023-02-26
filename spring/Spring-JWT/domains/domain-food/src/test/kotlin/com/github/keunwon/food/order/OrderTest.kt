@@ -1,8 +1,9 @@
 package com.github.keunwon.food.order
 
-import com.github.keunwon.food.domain.order.domain.OrderStatus
-import com.github.keunwon.food.domain.shop.ShopBuilder
+import com.github.keunwon.food.order.domain.OrderStatus
+import com.github.keunwon.food.shop.ShopBuilder
 import io.kotest.core.spec.style.StringSpec
+import io.kotest.matchers.shouldBe
 
 class OrderTest : StringSpec({
     "주문 완료 상태에서 결재 완료 상태로 변경한다" {

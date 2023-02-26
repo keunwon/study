@@ -22,7 +22,7 @@ class Menu(
     val shopId: Long,
 
     @OneToMany(cascade = [CascadeType.ALL])
-    @JoinColumn
+    @JoinColumn(name = "menu_id")
     val optionGroupSpecs: MutableList<OptionGroupSpecification>,
 
     id: Long = 0L,

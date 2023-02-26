@@ -22,7 +22,7 @@ class OrderLineItem(
     val count: Int,
 
     @OneToMany(cascade = [CascadeType.ALL])
-    @JoinColumn
+    @JoinColumn(name = "order_line_item_id")
     val groups: MutableList<OrderOptionGroup>,
 
     id: Long = 0L,

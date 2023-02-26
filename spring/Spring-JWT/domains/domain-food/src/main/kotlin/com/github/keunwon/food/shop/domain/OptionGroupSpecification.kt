@@ -3,9 +3,13 @@ package com.github.keunwon.food.shop.domain
 import com.github.keunwon.corejpa.BaseEntity
 import javax.persistence.CascadeType
 import javax.persistence.Column
+import javax.persistence.Entity
 import javax.persistence.JoinColumn
 import javax.persistence.OneToMany
+import javax.persistence.Table
 
+@Entity
+@Table(name = "option_group_specs")
 class OptionGroupSpecification(
     @Column(name = "name")
     val name: String,
@@ -17,7 +21,7 @@ class OptionGroupSpecification(
     val basic: Boolean,
 
     @OneToMany(cascade = [CascadeType.ALL])
-    @JoinColumn
+    @JoinColumn(name = "option_group_spec_id")
     val optionSpecs: MutableList<OptionSpecification>,
 
     id: Long = 0L,

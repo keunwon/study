@@ -22,7 +22,7 @@ class Order(
     val shopId: Long,
 
     @OneToMany(cascade = [CascadeType.ALL])
-    @JoinColumn
+    @JoinColumn(name = "order_id")
     val orderLineItems: MutableList<OrderLineItem>,
 
     @Column(name = "ordered_time")

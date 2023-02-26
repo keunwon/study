@@ -2,12 +2,12 @@ package com.github.keunwon.food.shop
 
 import com.github.keunwon.core.generic.money.Money
 import com.github.keunwon.core.generic.money.Ratio
-import com.github.keunwon.food.domain.shop.domain.Menu
-import com.github.keunwon.food.domain.shop.domain.Option
-import com.github.keunwon.food.domain.shop.domain.OptionGroup
-import com.github.keunwon.food.domain.shop.domain.OptionGroupSpecification
-import com.github.keunwon.food.domain.shop.domain.OptionSpecification
-import com.github.keunwon.food.domain.shop.domain.Shop
+import com.github.keunwon.food.shop.domain.Menu
+import com.github.keunwon.food.shop.domain.Option
+import com.github.keunwon.food.shop.domain.OptionGroup
+import com.github.keunwon.food.shop.domain.OptionGroupSpecification
+import com.github.keunwon.food.shop.domain.OptionSpecification
+import com.github.keunwon.food.shop.domain.Shop
 
 data class MenuBuilder(
     val name: String = "삼겹살 1인 세트",

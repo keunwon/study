@@ -1,5 +1,6 @@
 package com.github.keunwon.food.order.service
 
+import com.github.keunwon.core.support.LogSupport
 import com.github.keunwon.corejpa.getById
 import com.github.keunwon.food.order.domain.OrderRepository
 import com.github.keunwon.food.order.domain.OrderValidator
@@ -13,7 +14,7 @@ class OrderService(
     private val orderMapper: OrderMapper,
 ) {
     @Transactional
-    fun place(cart: Cart) {
+    fun placeOrder(cart: Cart) {
         val order = orderMapper.mapFrom(cart).apply {
             place(orderValidator)
         }
@@ -22,7 +23,7 @@ class OrderService(
 
     @Transactional
     fun payOrder(orderId: Long) {
-        val order = orderRepository.getById(orderId).apply { delivered() }
+        val order = orderRepository.getById(orderId).apply { payed() }
         orderRepository.save(order)
     }
 
@@ -31,4 +32,6 @@ class OrderService(
         val order = orderRepository.getById(orderId).apply { delivered() }
         orderRepository.save(order)
     }
+
+    companion object : LogSupport
 }

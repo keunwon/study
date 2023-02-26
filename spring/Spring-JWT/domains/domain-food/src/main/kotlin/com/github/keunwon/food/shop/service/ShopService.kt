@@ -10,11 +10,18 @@ import org.springframework.transaction.annotation.Transactional
 class ShopService(
     private val shopRepository: ShopRepository,
     private val menuRepository: MenuRepository,
+    private val menuMapper: MenuMapper,
 ) {
     @Transactional(readOnly = true)
     fun getMenuBoard(shopId: Long): MenuBoard {
         val shop = shopRepository.getById(shopId)
         val menus = menuRepository.findByShopId(shop.id)
         return MenuBoard(shop, menus)
+    }
+
+    @Transactional
+    fun registryMenu(registration: MenuRegistration) {
+        val menu = menuMapper.mapFrom(registration)
+        menuRepository.save(menu)
     }
 }

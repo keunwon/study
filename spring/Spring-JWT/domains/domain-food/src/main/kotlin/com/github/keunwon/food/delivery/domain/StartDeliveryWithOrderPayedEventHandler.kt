@@ -15,7 +15,7 @@ class StartDeliveryWithOrderPayedEventHandler(
     @EventListener
     @Transactional
     fun handle(event: OrderPayedEvent) {
-        log.info("> 배달 시작")
+        log.info("> start 배달 시작")
         val delivery = Delivery.started(event.orderId)
         deliveryRepository.save(delivery)
     }

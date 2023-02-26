@@ -31,15 +31,14 @@ class MenuTest : StringSpec({
         val menu = MenuBuilder().build()
 
         shouldThrowExactly<IllegalArgumentException> {
-            menu.validateOrder(menuName = menu.name, listOf(
-                OptionGroupBuilder(
-                    options = listOf(
-                        OptionBuilder(
-                            name = "대 (600)g"
-                        ).build()
-                    )
-                ).build(),
-            ))
+            menu.validateOrder(
+                menu.name,
+                listOf(
+                    OptionGroupBuilder(options = listOf(
+                        OptionBuilder(name = "대 (600)g").build(),
+                    )).build(),
+                )
+            )
         }
     }
 
@@ -47,18 +46,11 @@ class MenuTest : StringSpec({
         val menu = MenuBuilder().build()
 
         shouldThrowExactly<IllegalArgumentException> {
-            menu.validateOrder(
-                menu.name,
-                listOf(
-                    OptionGroupBuilder(
-                        options = listOf(
-                            OptionBuilder(
-                                price = Money.wons(15_000)
-                            ).build(),
-                        )
-                    ).build(),
-                )
-            )
+            menu.validateOrder(menu.name, listOf(
+                OptionGroupBuilder(options = listOf(
+                    OptionBuilder(price = Money.wons(15_000)).build(),
+                )).build(),
+            ))
         }
     }
 })

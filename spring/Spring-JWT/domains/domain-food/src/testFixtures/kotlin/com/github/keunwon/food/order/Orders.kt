@@ -1,11 +1,11 @@
 package com.github.keunwon.food.order
 
 import com.github.keunwon.core.generic.money.Money
-import com.github.keunwon.food.domain.order.domain.Order
-import com.github.keunwon.food.domain.order.domain.OrderLineItem
-import com.github.keunwon.food.domain.order.domain.OrderOption
-import com.github.keunwon.food.domain.order.domain.OrderOptionGroup
-import com.github.keunwon.food.domain.order.domain.OrderStatus
+import com.github.keunwon.food.order.domain.Order
+import com.github.keunwon.food.order.domain.OrderLineItem
+import com.github.keunwon.food.order.domain.OrderOption
+import com.github.keunwon.food.order.domain.OrderOptionGroup
+import com.github.keunwon.food.order.domain.OrderStatus
 import java.time.LocalDateTime
 
 data class OrderBuilder(

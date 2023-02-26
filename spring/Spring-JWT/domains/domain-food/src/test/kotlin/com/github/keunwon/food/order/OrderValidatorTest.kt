@@ -1,11 +1,11 @@
 package com.github.keunwon.food.order
 
 import com.github.keunwon.core.generic.money.Money
-import com.github.keunwon.food.domain.order.domain.OrderValidator
-import com.github.keunwon.food.domain.shop.MenuBuilder
-import com.github.keunwon.food.domain.shop.OptionGroupSpecificationBuilder
-import com.github.keunwon.food.domain.shop.OptionSpecificationBuilder
-import com.github.keunwon.food.domain.shop.ShopBuilder
+import com.github.keunwon.food.order.domain.OrderValidator
+import com.github.keunwon.food.shop.MenuBuilder
+import com.github.keunwon.food.shop.OptionGroupSpecificationBuilder
+import com.github.keunwon.food.shop.OptionSpecificationBuilder
+import com.github.keunwon.food.shop.ShopBuilder
 import io.kotest.assertions.throwables.shouldThrowExactly
 import io.kotest.core.spec.style.StringSpec
 import io.mockk.junit5.MockKExtension
@@ -22,11 +22,7 @@ class OrderValidatorTest : StringSpec({
         ).build()
 
         shouldThrowExactly<IllegalArgumentException> {
-            orderValidator.validate(
-                OrderBuilder().build(),
-                shop,
-                emptyMap(),
-            )
+            orderValidator.validate(OrderBuilder().build(), shop, emptyMap())
         }
     }
 
@@ -36,11 +32,7 @@ class OrderValidatorTest : StringSpec({
         ).build()
 
         shouldThrowExactly<IllegalStateException> {
-            orderValidator.validate(
-                OrderBuilder().build(),
-                shop,
-                emptyMap(),
-            )
+            orderValidator.validate(OrderBuilder().build(), shop, emptyMap())
         }
     }
 
@@ -61,9 +53,7 @@ class OrderValidatorTest : StringSpec({
     "메뉴옵션 그룹이 다르면 오류가 발생한다" {
         val menu = MenuBuilder(
             optionGroupSpecs = mutableListOf(
-                OptionGroupSpecificationBuilder(
-                    name = "기본-2",
-                ).build(),
+                OptionGroupSpecificationBuilder(name = "기본-2").build(),
             ),
             id = 1L,
         ).build()
@@ -82,9 +72,7 @@ class OrderValidatorTest : StringSpec({
             optionGroupSpecs = mutableListOf(
                 OptionGroupSpecificationBuilder(
                     optionSpecs = mutableListOf(
-                        OptionSpecificationBuilder(
-                            name = "대 (250)g",
-                        ).build(),
+                        OptionSpecificationBuilder(name = "대 (250)g").build(),
                     ),
                 ).build(),
             ),
@@ -95,7 +83,7 @@ class OrderValidatorTest : StringSpec({
             orderValidator.validate(
                 OrderBuilder().build(),
                 ShopBuilder().build(),
-                mapOf(menu.id to menu)
+                mapOf(menu.id to menu),
             )
         }
     }

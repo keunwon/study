@@ -4,6 +4,9 @@ import com.github.keunwon.core.generic.money.Money
 import com.github.keunwon.core.generic.money.Ratio
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.inspectors.shouldForAll
+import io.kotest.matchers.booleans.shouldBeFalse
+import io.kotest.matchers.booleans.shouldBeTrue
+import io.kotest.matchers.shouldBe
 
 class ShopTest : StringSpec({
     "주문 금액이 최소금액보다 작으면 false 반환한다" {
@@ -43,7 +46,7 @@ class ShopTest : StringSpec({
             commissionRate = Ratio.valueOf(0.1),
         ).build()
 
-        shop.billCommissionFee(Money.wons(20_000))
+        shop.calculateCommissionFee(Money.wons(20_000))
 
         shop.commission shouldBe Money.wons(2_000)
     }
