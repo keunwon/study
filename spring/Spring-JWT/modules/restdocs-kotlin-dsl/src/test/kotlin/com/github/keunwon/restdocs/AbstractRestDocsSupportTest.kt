@@ -46,7 +46,7 @@ class RestDocsSupportTest : RestDocsSupport() {
         }.andExpect {
             status { isOk() }
             content {
-                contentType(MediaType.APPLICATION_JSON)
+                contentType(MediaType.APPLICATION_JSON_VALUE)
             }
             jsonPath("$.username", Matchers.notNullValue())
             jsonPath("$.password", Matchers.notNullValue())
