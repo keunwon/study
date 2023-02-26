@@ -1,7 +1,27 @@
 package com.github.keunwon.core.generic.money
 
+import com.fasterxml.jackson.core.JsonGenerator
+import com.fasterxml.jackson.core.JsonParser
+import com.fasterxml.jackson.databind.DeserializationContext
+import com.fasterxml.jackson.databind.JsonDeserializer
+import com.fasterxml.jackson.databind.JsonSerializer
+import com.fasterxml.jackson.databind.SerializerProvider
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import java.math.BigDecimal
 
+private class MoneyDeserializer : JsonDeserializer<Money>() {
+    override fun deserialize(p: JsonParser, ctxt: DeserializationContext): Money = Money.wons(p.decimalValue)
+}
+
+private class MoneySerializer : JsonSerializer<Money>() {
+    override fun serialize(value: Money, gen: JsonGenerator, serializers: SerializerProvider) {
+        gen.writeString(value.toString())
+    }
+}
+
+@JsonDeserialize(using = MoneyDeserializer::class)
+@JsonSerialize(using = MoneySerializer::class)
 class Money private constructor(val amount: BigDecimal) : Comparable<Money> {
     operator fun plus(amount: Money): Money = Money(this.amount.plus(amount.amount))
 
