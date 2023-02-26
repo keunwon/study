@@ -165,10 +165,12 @@ configure(applicationProject) {
     }
 
     dependencies {
-        implementation("org.springframework.boot:spring-boot-starter-validation")
-        implementation("org.springframework.restdocs:spring-restdocs-asciidoctor")
-        implementation("org.springframework.restdocs:spring-restdocs-mockmvc")
+        api("org.springframework.boot:spring-boot-starter-web")
+        api("org.springframework.boot:spring-boot-starter-validation")
+        api("org.springframework.restdocs:spring-restdocs-asciidoctor")
+        api("org.springframework.restdocs:spring-restdocs-mockmvc")
 
+        testImplementation(project(":modules:restdocs-kotlin-dsl"))
         runtimeOnly("com.h2database:h2")
     }
 }

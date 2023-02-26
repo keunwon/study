@@ -1,8 +1,10 @@
 rootProject.name = "jwt"
 include("application:app-auth")
-include("domains:domain-user")
+include("application:app-food")
 include("core")
-include("domains:domain-user-auth")
-include("modules:inmemory-jpa-repository")
 include("core-jpa")
+include("domains:domain-user")
+include("domains:domain-user-auth")
+include("domains:domain-food")
+include("modules:inmemory-jpa-repository")
 include("modules:restdocs-kotlin-dsl")
