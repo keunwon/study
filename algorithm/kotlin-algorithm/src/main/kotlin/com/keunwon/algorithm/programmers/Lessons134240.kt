@@ -6,6 +6,12 @@ package com.keunwon.algorithm.programmers
  **/
 class Lessons134240 {
     fun solution(food: IntArray): String {
-        return ""
+        val sb = StringBuilder()
+        for ((i, num) in food.withIndex()) {
+            if (i == 0) continue
+            val tmp = "$i".repeat(num / 2)
+            sb.append(tmp)
+        }
+        return sb.toString() + "0" + sb.toString().reversed()
     }
 }
