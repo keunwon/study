@@ -4,7 +4,7 @@ package com.keunwon.algorithm.programmers
  * Title: 신고 결과 받기
  * Level: 1
  **/
-class Lessons9233492334 {
+class Lessons92334 {
     fun solution(id_list: Array<String>, report: Array<String>, k: Int): IntArray {
         val userMap = id_list.associateWith { mutableSetOf<String>() }
         val reportMap = id_list.associateWith { 0 }.toMutableMap()

@@ -4,7 +4,7 @@ package com.keunwon.algorithm.programmers
  * Title:바탕화면 정리
  * Level: 1
  **/
-class Problem161990 {
+class Lessons161990 {
     fun solution(wallpaper: Array<String>): IntArray {
         var minY = Int.MAX_VALUE
         var maxY = Int.MIN_VALUE

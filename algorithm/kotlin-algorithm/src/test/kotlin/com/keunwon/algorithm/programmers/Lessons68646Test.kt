@@ -9,7 +9,7 @@ internal class Lessons68646Test : StringSpec({
     "case_01" {
         forAll(
             row(intArrayOf(9, -1, -5), 3),
-            row(intArrayOf(-16, 27, 65, -2, 58, -92, -71, -68, -61, -33), 6)
+            row(intArrayOf(-16, 27, 65, -2, 58, -92, -71, -68, -61, -33), 6),
         ) { a, result ->
             val actual = Lessons68646().solution(a)
             actual shouldBe result
