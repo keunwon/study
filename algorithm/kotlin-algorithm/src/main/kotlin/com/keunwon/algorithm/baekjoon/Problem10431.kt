@@ -4,10 +4,11 @@ package com.keunwon.algorithm.baekjoon
  * Title: 줄세우기
  * Level: 실버-5
  **/
+// todo
 class Problem10431 {
     fun solution(arr: IntArray): Int {
         var count = 0
-        
+
         return count * 19
     }
 }
