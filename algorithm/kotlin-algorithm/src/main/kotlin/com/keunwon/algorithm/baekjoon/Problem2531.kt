@@ -6,8 +6,31 @@ package com.keunwon.algorithm.baekjoon
  **/
 class Problem2531 {
     fun solution(d: Int, k: Int, c: Int, arr: IntArray): Int {
-        val visited = IntArray(d + 1)
-        return 0
+        val n = arr.size
+        val eats = IntArray(d + 1)
+        var count = 0
+
+        for (i in 0 until k) {
+            val num = arr[i]
+            if (eats[num] == 0) count++
+            eats[num]++
+        }
+
+        var max = count
+        for (i in 0 until n) {
+            if (max <= count) {
+                max = if (eats[c] == 0) count + 1 else count
+            }
+
+            val startNum = arr[i]
+            eats[startNum]--
+            if (eats[startNum] == 0) count--
+
+            val endNum = arr[(i + k) % n]
+            if (eats[endNum] == 0) count++
+            eats[endNum]++
+        }
+        return max
     }
 }
 

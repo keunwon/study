@@ -4,12 +4,15 @@ package com.keunwon.algorithm.baekjoon
  * Title: 줄세우기
  * Level: 실버-5
  **/
-// todo
 class Problem10431 {
     fun solution(arr: IntArray): Int {
         var count = 0
-
-        return count * 19
+        for (i in 1 until arr.size) {
+            for (j in i - 1 downTo 0) {
+                if (arr[i] < arr[j]) count++
+            }
+        }
+        return count
     }
 }
 
