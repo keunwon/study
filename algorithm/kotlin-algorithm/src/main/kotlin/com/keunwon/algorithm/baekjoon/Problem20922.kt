@@ -4,10 +4,24 @@ package com.keunwon.algorithm.baekjoon
  * Title: 겹치는 건 싫어
  * Level: 실버-1
  **/
-// todo 투-포인터
 class Problem20922 {
     fun solution(k: Int, numbers: IntArray): Int {
-        return 0
+        val dp = IntArray(200_001)
+        var left = 0
+        var right = 0
+        var max = 0
+
+        while (right < numbers.size) {
+            if (dp[numbers[right]] < k) {
+                max = max.coerceAtLeast(right - left + 1)
+                dp[numbers[right]]++
+                right++
+            } else {
+                dp[numbers[left]]--
+                left++
+            }
+        }
+        return max
     }
 }
 
