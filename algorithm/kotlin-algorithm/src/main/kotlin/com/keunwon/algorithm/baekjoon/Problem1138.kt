@@ -4,10 +4,13 @@ package com.keunwon.algorithm.baekjoon
  * Title: 한 줄로 서기
  * Level: 실버-2
  **/
-// todo
 class Problem1138 {
     fun solution(arr: IntArray): IntArray {
-        return intArrayOf()
+        val answer = mutableListOf<Int>()
+        for (i in arr.size downTo 1) {
+            answer.add(arr[i - 1], i)
+        }
+        return answer.toIntArray()
     }
 }
 
