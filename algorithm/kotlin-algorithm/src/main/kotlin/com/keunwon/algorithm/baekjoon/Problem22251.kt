@@ -1,18 +1,16 @@
 package com.keunwon.algorithm.baekjoon
 
 /**
- * Title: 고충 건물
- * Level: 골드-4
+ * Title: 빌런 호석
+ * Level: 골드-5
  **/
-class Problem1027 {
+class Problem22251 {
     fun solution(arr: IntArray): Int {
         return 0
     }
 }
 
 fun main() {
-    val n = readLine()!!.toInt()
     val arr = readLine()!!.split(" ").map { it.toInt() }.toIntArray()
-
-    Problem1027().solution(arr).also { println(it) }
+    Problem22251().solution(arr).also { println(it) }
 }
