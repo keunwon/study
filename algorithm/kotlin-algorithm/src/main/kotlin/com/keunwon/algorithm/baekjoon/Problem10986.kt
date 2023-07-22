@@ -4,6 +4,7 @@ package com.keunwon.algorithm.baekjoon
  * Title: 나머지 합
  * Level: 골드-3
  **/
+// todo
 class Problem10986 {
     fun solution(m: Int, arr: IntArray): Long {
         return 0L
