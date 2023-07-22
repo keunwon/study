@@ -7,7 +7,6 @@ package com.keunwon.algorithm.programmers
 // todo
 class Lessons181187 {
     fun solution(r1: Int, r2: Int): Long {
-        var answer = 0L
-        return answer
+        return 0L
     }
 }

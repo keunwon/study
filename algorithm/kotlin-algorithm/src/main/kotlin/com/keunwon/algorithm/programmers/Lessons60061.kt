@@ -14,9 +14,9 @@ class Lessons60061 {
     }
 
     companion object {
-        const val PILLAR = 0
-        const val BO = 1
-        const val DELETED = 0
-        const val CREATED = 1
+        private const val PILLAR = 0
+        private const val BO = 1
+        private const val DELETED = 0
+        private const val CREATED = 1
     }
 }
