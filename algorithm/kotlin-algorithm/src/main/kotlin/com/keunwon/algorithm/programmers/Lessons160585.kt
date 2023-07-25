@@ -4,6 +4,7 @@ package com.keunwon.algorithm.programmers
  * Title: 혼자서 하는 틱택토
  * Level: 2
  **/
+// todo
 class Lessons160585 {
     fun solution(board: Array<String>): Int {
         val oCount = board.sumOf { arr -> arr.count { it == 'O' } }
