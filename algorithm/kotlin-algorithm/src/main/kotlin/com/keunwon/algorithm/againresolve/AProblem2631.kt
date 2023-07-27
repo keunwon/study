@@ -1,5 +1,9 @@
 package com.keunwon.algorithm.againresolve
 
+/**
+ * Title: 1, 2, 3 더하기 3
+ * Level: 실버-3
+ **/
 class AProblem2631 {
     fun solution(arr: IntArray): Int {
         val dp = IntArray(arr.size) { 1 }
