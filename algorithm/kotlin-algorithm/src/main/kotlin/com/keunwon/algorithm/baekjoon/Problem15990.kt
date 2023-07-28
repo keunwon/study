@@ -1,6 +1,6 @@
-package com.keunwon.algorithm.againresolve
+package com.keunwon.algorithm.baekjoon
 
-class AProblem15990 {
+class Problem15990 {
     fun solution(): LongArray {
         val prefix = 1_000_000_009
         val dp = Array(100_001) { LongArray(4) }.apply {
@@ -20,7 +20,7 @@ class AProblem15990 {
 }
 
 fun main() {
-    val dp = AProblem15990().solution()
+    val dp = Problem15990().solution()
     val t = readLine()!!.toInt()
 
     repeat(t) {

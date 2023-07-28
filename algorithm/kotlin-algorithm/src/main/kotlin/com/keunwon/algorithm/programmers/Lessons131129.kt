@@ -6,9 +6,6 @@ package com.keunwon.algorithm.programmers
  **/
 // todo
 class Lessons131129 {
-    private lateinit var arr: Array<IntArray>
-    private val INF = 100_001
-
     fun solution(target: Int): IntArray {
         return intArrayOf()
     }
