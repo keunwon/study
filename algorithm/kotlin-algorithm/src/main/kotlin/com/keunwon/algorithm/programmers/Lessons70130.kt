@@ -7,7 +7,6 @@ package com.keunwon.algorithm.programmers
 // todo
 class Lessons70130 {
     fun solution(a: IntArray): Int {
-        var answer: Int = -1
-        return answer
+        return 0
     }
 }
