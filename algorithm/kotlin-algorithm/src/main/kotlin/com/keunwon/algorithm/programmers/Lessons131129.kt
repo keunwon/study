@@ -4,7 +4,6 @@ package com.keunwon.algorithm.programmers
  * Title: 카운트 다운
  * Level: 3
  **/
-// todo
 class Lessons131129 {
     private lateinit var dp: Array<IntArray>
 

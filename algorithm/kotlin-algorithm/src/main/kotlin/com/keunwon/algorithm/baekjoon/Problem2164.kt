@@ -8,12 +8,13 @@ import java.util.*
  **/
 class Problem2164 {
     fun solution(n: Int): Int {
-        val queue = LinkedList<Int>().apply { (1..n).forEach { offer(it) } }
-        while (queue.isNotEmpty() && queue.size > 1) {
+        val queue = LinkedList<Int>().apply { repeat(n) { add(it + 1) } }
+
+        while (queue.size > 1) {
             queue.poll()
             queue.offer(queue.poll())
         }
-        return queue.poll()
+        return queue.first
     }
 }
 

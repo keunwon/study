@@ -14,6 +14,7 @@ class Lessons67259 {
             this[0][0][1] = 0
             this[0][0][2] = 0
         }
+
         val queue = LinkedList<Position>().apply {
             offer(Position(0, 0, 1))
             offer(Position(0, 0, 2))
