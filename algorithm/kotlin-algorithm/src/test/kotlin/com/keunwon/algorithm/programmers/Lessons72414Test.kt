@@ -4,6 +4,18 @@ import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
 
 internal class Lessons72414Test : StringSpec({
+    "case" {
+        val playTime = "02:03:55"
+        val advTime = "00:14:15"
+        val logs = arrayOf(
+            "00:00:00-00:00:02",
+        )
+
+        val actual = Lessons72414().solution(playTime, advTime, logs)
+
+        actual shouldBe "01:30:59"
+    }
+
     "case_01" {
         val playTime = "02:03:55"
         val advTime = "00:14:15"
