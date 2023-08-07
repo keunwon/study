@@ -9,36 +9,36 @@ class Problem16916 {
         return if (kmp(p, s)) 1 else 0
     }
 
-    private fun kmp(word: String, findWord: String): Boolean {
-        val table = createTable(findWord)
+    private fun kmp(original: String, pattern: String): Boolean {
+        val table = createTable(pattern)
         var index = 0
-        var result = false
+        var answer = false
 
-        for (i in word.indices) {
-            while (index > 0 && word[i] != findWord[index]) {
+        for (i in original.indices) {
+            while (index > 0 && original[i] != pattern[index]) {
                 index = table[index - 1]
             }
 
-            if (word[i] == findWord[index]) {
-                if (index == findWord.lastIndex) {
-                    result = true
-                    index = table[index]
+            if (original[i] == pattern[index]) {
+                if (index == pattern.lastIndex) {
+                    table[index] = index
+                    answer = true
                 } else index++
             }
         }
-        return result
+        return answer
     }
 
-    private fun createTable(suffix: String): IntArray {
-        val table = IntArray(suffix.length)
+    private fun createTable(pattern: String): IntArray {
+        val table = IntArray(pattern.length)
         var index = 0
 
-        for (i in 1 until table.size) {
-            while (index > 0 && suffix[i] != suffix[index]) {
+        for (i in 1 until pattern.length) {
+            while (index > 0 && pattern[i] != pattern[index]) {
                 index = table[index - 1]
             }
 
-            if (suffix[i] == suffix[index]) {
+            if (pattern[i] == pattern[index]) {
                 index++
                 table[i] = index
             }
