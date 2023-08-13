@@ -4,7 +4,7 @@ package com.keunwon.algorithm.baekjoon
  * Title: 연산자 끼워넣기
  * Level: 실버-1
  **/
-class Problem4888 {
+class Problem14888 {
     private lateinit var operatorCount: IntArray
     private lateinit var numbers: IntArray
 
@@ -51,5 +51,5 @@ fun main() {
         .map { it.toInt() }
         .toIntArray()
 
-    Problem4888().solution(numbers, operatorCount).forEach(::println)
+    Problem14888().solution(numbers, operatorCount).forEach(::println)
 }

@@ -4,13 +4,9 @@ package com.keunwon.algorithm.baekjoon
  * Title: 외판원 순회2
  * Level: 실버-2
  **/
-class Problem10971(val n: Int, val arr: Array<IntArray>) {
-    fun solution(): Int {
+class Problem10971 {
+    fun solution(n: Int, arr: Array<IntArray>): Int {
         return 0
-    }
-
-    companion object {
-        private const val INF = 1e9.toInt()
     }
 }
 
@@ -22,5 +18,5 @@ fun main() {
             .toIntArray()
     }
 
-    Problem10971(n, arr).solution().also(::println)
+    Problem10971().solution(n, arr).also(::println)
 }
