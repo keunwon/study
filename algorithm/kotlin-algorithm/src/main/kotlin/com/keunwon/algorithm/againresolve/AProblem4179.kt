@@ -13,30 +13,29 @@ class AProblem4179 {
         var start: Node? = null
 
         for (i in map.indices) {
-            for (j in map[0].indices) {
-                when (map[i][j]) {
+            for ((j, type) in map[i].withIndex()) {
+                when (type) {
                     'J' -> {
                         if (finish(i, j)) return "1"
                         map[i][j] = '.'
-                        start = Node(i, j, 'J', 0)
+                        start = Node(i, j, type, 0)
                     }
-                    'F' -> queue.offer(Node(i, j, 'F', 0))
+                    'F' -> queue.offer(Node(i, j, type, 0))
                 }
             }
         }
-
-        return start?.let { node ->
+        return start!!.let { node ->
             queue.offer(node)
             visited[node.r][node.c] = true
             bfs(queue, visited)
-        } ?: ""
+        }
     }
 
     private fun bfs(queue: LinkedList<Node>, visited: Array<BooleanArray>): String {
         while (queue.isNotEmpty()) {
             val cur = queue.poll()
 
-            if (cur.type == 'J' && finish(cur.r, cur.c)) return "${cur.second + 1}"
+            if (cur.type == 'J' && finish(cur.r, cur.c)) return "${cur.time + 1}"
 
             for ((mr, mc) in moves) {
                 val nr = cur.r + mr
@@ -47,10 +46,10 @@ class AProblem4179 {
 
                 if (cur.type == 'F') {
                     map[nr][nc] = 'F'
-                    queue.offer(Node(nr, nc, cur.type, cur.second + 1))
+                    queue.offer(Node(nr, nc, cur.type, cur.time + 1))
                 } else if (cur.type == 'J' && !visited[nr][nc]) {
+                    queue.offer(Node(nr, nc, cur.type, cur.time + 1))
                     visited[nr][nc] = true
-                    queue.offer(Node(nr, nc, cur.type, cur.second + 1))
                 }
             }
         }
@@ -67,12 +66,16 @@ class AProblem4179 {
         return false
     }
 
-    private data class Node(val r: Int, val c: Int, val type: Char, val second: Int)
+    private data class Node(val r: Int, val c: Int, val type: Char, val time: Int)
 }
 
-fun main() {
-    val (r, c) = readLine()!!.split(" ").map { it.toInt() }
-    val map = Array(r) { readLine()!!.toCharArray() }
+fun main() = System.`in`.bufferedReader().use { br ->
+    System.out.bufferedWriter().use { bw ->
+        val (n, m) = br.readLine().split(" ").map { it.toInt() }
+        val map = Array(n) { br.readLine().toCharArray() }
 
-    AProblem4179().solution(map).also { println(it) }
+        AProblem4179().solution(map).also { bw.write(it) }
+        bw.flush()
+    }
 }
+
