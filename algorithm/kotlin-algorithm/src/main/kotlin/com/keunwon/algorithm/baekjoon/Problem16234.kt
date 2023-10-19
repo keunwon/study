@@ -63,7 +63,7 @@ class Problem16234(
         return diff in l..r
     }
 
-    data class Position(val r: Int, val c: Int)
+    private data class Position(val r: Int, val c: Int)
 
     companion object {
         private val moves = arrayOf(-1 to 0, 0 to 1, 1 to 0, 0 to -1)

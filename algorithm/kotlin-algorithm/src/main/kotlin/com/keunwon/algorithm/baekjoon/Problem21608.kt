@@ -6,6 +6,7 @@ import java.util.*
  * Title: 상어 초등학교
  * Level: 골드-5
  **/
+// todo
 class Problem21608 {
     fun solution(arr: IntArray): Pair<Int, Int> {
         return arr.minOf { it } to arr.maxOf { it }

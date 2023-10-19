@@ -31,7 +31,7 @@ class Problem4485 {
         return dp[arr.lastIndex][arr[0].lastIndex]
     }
 
-    data class Position(val r: Int, val c: Int, val distance: Int)
+    private data class Position(val r: Int, val c: Int, val distance: Int)
 
     companion object {
         private val moves = arrayOf(-1 to 0, 0 to 1, 1 to 0, 0 to -1)
