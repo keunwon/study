@@ -1,11 +1,23 @@
 package com.keunwon.algorithm.baekjoon
 
 import java.util.*
+import kotlin.math.min
 
-// todo
 class Problem1806 {
     fun solution(s: Int, arr: IntArray): Int {
-        return 0
+        val numbers = intArrayOf(*arr, 0)
+        var (left, right) = 0 to 0
+        var total = 0
+        var answer = Int.MAX_VALUE
+
+        while (right < numbers.size) {
+            if (total < s) total += numbers[right++]
+            else {
+                answer = min(answer, right - left)
+                total -= numbers[left++]
+            }
+        }
+        return if (answer == Int.MAX_VALUE) 0 else answer
     }
 }
 
