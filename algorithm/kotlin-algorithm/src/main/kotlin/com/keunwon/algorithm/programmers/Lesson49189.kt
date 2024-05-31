@@ -27,7 +27,7 @@ class Lesson49189 {
             }
         }
 
-        val max = dist.max()
+        val max = dist.maxOrNull() ?: 0
         return dist.count { it == max }
     }
 }

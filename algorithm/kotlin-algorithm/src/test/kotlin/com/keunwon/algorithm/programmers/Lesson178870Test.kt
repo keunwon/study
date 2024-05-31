@@ -30,4 +30,13 @@ class Lesson178870Test : StringSpec({
 
         actual shouldBe intArrayOf(0, 2)
     }
+
+    "case-4" {
+        val sequence = intArrayOf(2, 2, 2, 2, 6)
+        val k = 6
+
+        val actual = Lesson178870().solution(sequence, k)
+
+        actual shouldBe intArrayOf(4, 4)
+    }
 })
