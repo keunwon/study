@@ -1,8 +1,8 @@
 package com.keunwon.algorithm.programmers
 
 // todo
-class Lesson68646 {
-    fun solution(a: IntArray): Int {
+class Lesson258705 {
+    fun solution(n: Int, tops: IntArray): Int {
         return 0
     }
 }
