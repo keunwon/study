@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm") version "1.6.21"
+    kotlin("jvm") version "1.9.23"
 }
 
 group = "com.keunwon"
@@ -13,7 +13,7 @@ dependencies {
     implementation(kotlin("stdlib"))
 
     testImplementation("io.kotest:kotest-runner-junit5:5.5.5")
-    //testImplementation("io.kotest:kotest-property:5.5.5")
+    testImplementation("org.assertj:assertj-core:3.26.0")
 }
 
 tasks {
