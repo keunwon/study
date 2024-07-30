@@ -5,7 +5,7 @@ class Lesson72412 {
 
     fun solution(info: Array<String>, query: Array<String>): IntArray {
         info.forEach { combination(0, "", it.split(" ")) }
-        search.forEach { it.value.sort() }
+        search.values.forEach { it.sort() }
 
         return IntArray(query.size) {
             val (key, point) = query[it].replace(" and ", "").split(" ")

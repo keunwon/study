@@ -24,13 +24,16 @@ class Lesson92341 {
         }
 
         val (baseMinutes, baseFee, extraMinutes, extraFee) = fees
-        return parking.entries.sortedBy { it.key }.map { (_, time) ->
-            if (time <= baseMinutes) baseFee
-            else {
-                val n = ceil((time - baseMinutes).toDouble() / extraMinutes).toInt()
-                baseFee + (extraFee * n)
+        return parking.entries
+            .sortedBy { it.key }
+            .map { (_, time) ->
+                if (time <= baseMinutes) baseFee
+                else {
+                    val n = ceil((time - baseMinutes).toDouble() / extraMinutes).toInt()
+                    baseFee + (extraFee * n)
+                }
             }
-        }.toIntArray()
+            .toIntArray()
     }
 
     private fun String.toMinutes(): Int {

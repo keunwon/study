@@ -6,11 +6,10 @@ class Lesson42892 {
     fun solution(nodeinfo: Array<IntArray>): Array<IntArray> {
         val nodes = nodeinfo.mapIndexed { index, (x, y) -> Node(index + 1, x, y) }
             .sortedWith(compareBy({ -it.y }, { it.x }))
-        val root = nodes[0]
-
-        for (i in 1 until nodes.size) {
-            insert(root, nodes[i])
+        val root = nodes[0].apply {
+            (1 until nodes.size).forEach { insert(this, nodes[it]) }
         }
+
         preOrder(root)
         postOrder(root)
         return answer.map { it.toIntArray() }.toTypedArray()

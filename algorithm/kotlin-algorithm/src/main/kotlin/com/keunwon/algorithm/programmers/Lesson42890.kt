@@ -14,9 +14,7 @@ class Lesson42890 {
     private fun dfs(size: Int, visited: BooleanArray) {
         if (size == 0) {
             val ids = visited.indices.mapNotNull { if (visited[it]) it else null }
-            val countMap = relation.map { r -> ids.joinToString("") { r[it] } }
-                .groupingBy { it }
-                .eachCount()
+            val countMap = relation.groupingBy { r -> ids.joinToString("") { r[it] } }.eachCount()
 
             if (countMap.any { it.value > 1 }) return
 

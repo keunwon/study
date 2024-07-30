@@ -14,7 +14,7 @@ class Lesson72411 {
             val max = countMap.maxOfOrNull { it.value } ?: 0
 
             if (max > 1) {
-                countMap.forEach { (key, value) -> if (value == max) answer.add(key) }
+                answer.addAll(countMap.filter { it.value == max }.keys)
             }
             words.clear()
         }

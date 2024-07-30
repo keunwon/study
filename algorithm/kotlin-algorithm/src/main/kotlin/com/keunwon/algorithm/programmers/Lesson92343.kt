@@ -24,6 +24,7 @@ class Lesson92343 {
         if (info[cur] == 0) ++sCount else ++wCount
         if (sCount <= wCount) return
 
+        println("cur: $cur, list: ${nextNodes.joinToString(", ")}")
         answer = max(answer, sCount)
 
         val list = graph[cur].toMutableList().apply {
