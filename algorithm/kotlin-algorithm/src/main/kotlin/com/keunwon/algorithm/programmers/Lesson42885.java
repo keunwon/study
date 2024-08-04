@@ -11,11 +11,6 @@ public class Lesson42885 {
         var right = people.length - 1;
 
         while (left <= right) {
-            if (left == right && people[left] <= limit) {
-                ++answer;
-                break;
-            }
-
             if (people[left] + people[right] <= limit) {
                 ++left;
             }
