@@ -63,6 +63,8 @@ fun main() {
     )
     println(result1) // 9
 
+
+    "".indexOf("234")
     val result2 = Lesson().solution(intArrayOf(0, 1, 0), arrayOf(intArrayOf(0, 1), intArrayOf(1, 2)))
     println(result2) // -1
 }
