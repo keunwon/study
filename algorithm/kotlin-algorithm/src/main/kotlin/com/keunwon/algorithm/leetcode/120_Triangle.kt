@@ -8,10 +8,18 @@ class `120_Triangle` {
 
         for (i in 1 until dp.size) {
             for (j in 0..i) {
-                if (j == 0 || j == i) {
-                    dp[i][j] += dp[i - 1][j] + triangle[i][j]
-                } else {
-                    dp[i][j] = minOf(dp[i - 1][j - 1], dp[i - 1][j]) + triangle[i][j]
+                when (j) {
+                    0 -> {
+                        dp[i][j] = dp[i - 1][j] + triangle[i][j]
+                    }
+
+                    i -> {
+                        dp[i][j] = dp[i - 1][j - 1] + triangle[i][j]
+                    }
+
+                    else -> {
+                        dp[i][j] = minOf(dp[i - 1][j], dp[i - 1][j - 1]) + triangle[i][j]
+                    }
                 }
             }
         }
