@@ -97,3 +97,10 @@ fun ListNode?.printValues() {
     }
     println(sb.toString())
 }
+
+fun <T> List<List<T>>.printlnValues(transform: ((T) -> CharSequence)? = null) {
+    val str = joinToString(" ", "[", "]") {
+        it.joinToString(separator = ", ", prefix = "[", postfix = "]", transform = transform)
+    }
+    println(str)
+}
