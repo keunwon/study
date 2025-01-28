@@ -19,6 +19,7 @@ class Lesson72413 {
                 }
             }
         }
+
         return dist[s].withIndex().minOf { (index, d) -> d + dist[index][a] + dist[index][b] }
     }
 }

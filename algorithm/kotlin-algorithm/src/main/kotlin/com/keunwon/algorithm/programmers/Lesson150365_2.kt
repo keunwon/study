@@ -25,8 +25,11 @@ class Lesson150365_2 {
 
     private fun dfs(x: Int, y: Int, route: String) {
         if (result.isNotBlank()) return
-        if (k - route.length < manhattanDistance(x, y, r, c)) return
-        if ((k - route.length - manhattanDistance(x, y, r, c)) % 2 != 0) return
+
+        val ret = k - route.length
+        val diff = manhattanDistance(x, y, r, c)
+
+        if (ret < diff || ret % 2 != diff % 2) return
 
         if (route.length == k) {
             result = route
