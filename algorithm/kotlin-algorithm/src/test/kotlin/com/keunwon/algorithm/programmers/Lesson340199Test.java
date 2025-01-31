@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 class Lesson340199Test {
-
     @Test
     void case1() {
         var wallet = new int[]{30, 15};

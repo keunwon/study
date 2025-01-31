@@ -4,28 +4,25 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public class Lesson17686 {
     public String[] solution(String[] files) {
-        var fileNames = Arrays.stream(files).map(FileName::new).sorted().collect(Collectors.toList());
-        var answer = new String[fileNames.size()];
-
-        for (int i = 0; i < fileNames.size(); i++) {
-            answer[i] = fileNames.get(i).original;
-        }
-        return answer;
+        return Arrays.stream(files)
+                .map(Filename::new)
+                .sorted()
+                .map(Filename::getOriginal)
+                .toArray(String[]::new);
     }
 
-    private static class FileName implements Comparable<FileName> {
+    private static class Filename implements Comparable<Filename> {
         private static final Pattern NAME_PATTERN = Pattern.compile("(\\D+)(\\d+)([\\S\\s]*)");
 
-        String original;
-        String head;
-        Integer number;
-        String tail;
+        private final String original;
+        private final String head;
+        private final Integer number;
+        private final String tail;
 
-        FileName(String text) {
+        Filename(String text) {
             var matcher = NAME_PATTERN.matcher(text);
             if (!matcher.matches()) throw new IllegalArgumentException("text not support: " + text);
 
@@ -36,10 +33,14 @@ public class Lesson17686 {
         }
 
         @Override
-        public int compareTo(@NotNull FileName o) {
+        public int compareTo(@NotNull Filename o) {
             if (!head.equalsIgnoreCase(o.head)) return head.compareToIgnoreCase(o.head);
             else if (!number.equals(o.number)) return number.compareTo(o.number);
             else return 0;
+        }
+
+        public String getOriginal() {
+            return original;
         }
     }
 }
