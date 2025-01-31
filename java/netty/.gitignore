@@ -1,0 +1,9 @@
+.idea/*
+*.iml
+.classpath
+*.swp
+.project
+.settings/*
+lib/*
+/bin/
+/out
