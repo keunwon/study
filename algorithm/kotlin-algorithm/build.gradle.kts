@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm") version "1.9.23"
+    kotlin("jvm") version "2.1.0"
 }
 
 group = "com.keunwon"
@@ -11,16 +11,16 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib"))
-    implementation("io.github.openfeign:feign-jackson:13.3")
-    implementation("io.github.openfeign:feign-core:13.3")
-    //implementation("io.github.openfeign:feign-kotlin:13.3")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.17.2")
 
-    testImplementation("io.kotest:kotest-runner-junit5:5.5.5")
-    testImplementation("io.kotest:kotest-framework-datatest:5.5.5")
-    testImplementation("org.assertj:assertj-core:3.26.0")
-    testImplementation("org.junit.jupiter:junit-jupiter-params:5.11.0-M2")
+    implementation(libs.feign.jackson)
+    implementation(libs.feign.core)
+    implementation(libs.feign.kotlin)
+    implementation(libs.jackson.module.kotlin)
 
+    testImplementation(libs.kotest.runner.junit5)
+    testImplementation(libs.kotest.framework.datatest)
+    testImplementation(libs.assertj.core)
+    testImplementation(libs.junit.jupiter.params)
 }
 
 tasks {

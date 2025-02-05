@@ -14,11 +14,19 @@ public class Lesson12923 {
     private int max(int n) {
         if (n == 1) return 0;
 
+        var result = 1;
         for (var i = 2; i <= Math.sqrt(n); i++) {
-            if (n % i == 0L && n / i <= 10_000_000) {
-                return n / i;
+            if (n % i == 0L) {
+                var div = n / i;
+
+                if (div <= 10_000_000) {
+                    result = div;
+                    break;
+                } else {
+                    result = i;
+                }
             }
         }
-        return 1;
+        return result;
     }
 }
