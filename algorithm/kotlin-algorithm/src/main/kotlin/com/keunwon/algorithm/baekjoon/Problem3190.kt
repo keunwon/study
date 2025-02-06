@@ -9,6 +9,7 @@ import java.util.*
  * 이름: 뱀
  * 난이도: 골드-4
  * </p>
+ *
  * @see <a href="https://www.acmicpc.net/problem/3190"> 뱀 (골드-4)</a>
  **/
 class Problem3190 {

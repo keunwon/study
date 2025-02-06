@@ -7,6 +7,7 @@ import java.util.*
  * 이름: 구슬 탈출 2
  * 난이도: 골드-1
  * </p>
+ *
  * @see <a href="https://www.acmicpc.net/problem/13460">구슬 탈출 2 (골드-1)</a>
  **/
 class Problem13460 {

@@ -5,7 +5,8 @@ package com.keunwon.algorithm.baekjoon
  * 이름: 2048 (Easy)
  * 난이도: 골드-1
  * </p>
- * @see <a href="https://www.acmicpc.net/problem/12100">2048 (Easy) 골드-1</a>
+ *
+ * @see <a href="https://www.acmicpc.net/problem/12100">2048 (Easy) (골드-1)</a>
  **/
 class Problem12100 {
     private lateinit var board: Array<IntArray>
