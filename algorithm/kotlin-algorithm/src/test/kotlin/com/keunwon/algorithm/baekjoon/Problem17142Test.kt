@@ -149,4 +149,19 @@ class Problem17142Test : StringSpec({
 
         actual shouldBe 2
     }
+
+    "case-10" {
+        val n = 1
+        val board = arrayOf(
+            intArrayOf(1, 1, 1, 1, 1),
+            intArrayOf(1, 1, 1, 1, 1),
+            intArrayOf(1, 1, 1, 1, 1),
+            intArrayOf(0, 2, 0, 2, 0),
+            intArrayOf(1, 1, 1, 1, 1),
+        )
+
+        val actual = Problem17142().solution(n, board)
+
+        actual shouldBe 3
+    }
 })
