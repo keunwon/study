@@ -11,7 +11,7 @@ class Lesson87390Test : StringSpec({
 
         val actual = Lesson87390().solution(n, left, right)
 
-        actual shouldBe intArrayOf(3, 2, 2, 3)
+        actual shouldBe longArrayOf(3, 2, 2, 3)
     }
 
     "case-2" {
@@ -21,6 +21,6 @@ class Lesson87390Test : StringSpec({
 
         val actual = Lesson87390().solution(n, left, right)
 
-        actual shouldBe intArrayOf(4, 3, 3, 3, 4, 4, 4, 4)
+        actual shouldBe longArrayOf(4, 3, 3, 3, 4, 4, 4, 4)
     }
 })
