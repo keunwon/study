@@ -1,6 +1,5 @@
 package com.keunwon.algorithm.programmers
 
-// todo 다시풀기
 class Lesson258709 {
     private lateinit var dice: Array<IntArray>
 
