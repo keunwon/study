@@ -3,7 +3,6 @@ package com.keunwon.algorithm.programmers
 import java.util.*
 import kotlin.math.absoluteValue
 
-// todo 다시보기
 class Lesson76503 {
     private lateinit var graph: Array<MutableList<Int>>
     private lateinit var numbers: LongArray

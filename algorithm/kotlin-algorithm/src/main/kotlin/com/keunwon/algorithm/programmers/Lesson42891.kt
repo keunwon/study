@@ -1,6 +1,5 @@
 package com.keunwon.algorithm.programmers
 
-// todo 다시 풀어보기
 class Lesson42891 {
     fun solution(food_times: IntArray, k: Long): Int {
         val foods = food_times.mapIndexed { index, food -> Food(index + 1, food.toLong()) }

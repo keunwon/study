@@ -3,7 +3,6 @@ package com.keunwon.algorithm.programmers
 import java.util.*
 import kotlin.math.abs
 
-// todo 다시 풀어보기
 class Lesson62050 {
     private lateinit var land: Array<IntArray>
     private lateinit var groupingLand: Array<IntArray>

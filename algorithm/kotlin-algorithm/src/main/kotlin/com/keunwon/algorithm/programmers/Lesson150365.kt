@@ -2,7 +2,6 @@ package com.keunwon.algorithm.programmers
 
 import java.util.*
 
-// todo 메모리 사용량이 높음
 class Lesson150365 {
     fun solution(n: Int, m: Int, x: Int, y: Int, r: Int, c: Int, k: Int): String {
         val queue = LinkedList<Node>().apply { offer(Node(x, y, "")) }
