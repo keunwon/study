@@ -59,7 +59,6 @@ class Problem14499 {
                         dices[1] = dices[6]
                         dices[6] = dices[5]
                         dices[5] = tmp
-
                     }
                 }
 
