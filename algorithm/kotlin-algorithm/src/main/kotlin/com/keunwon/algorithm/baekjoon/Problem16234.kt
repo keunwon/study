@@ -2,7 +2,7 @@ package com.keunwon.algorithm.baekjoon
 
 import java.io.BufferedReader
 import java.io.InputStreamReader
-import java.util.*
+import java.util.LinkedList
 import kotlin.math.abs
 
 /**
