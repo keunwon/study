@@ -8,10 +8,24 @@ package com.keunwon.algorithm.baekjoon
  *
  * @see <a href="https://www.acmicpc.net/problem/17615">볼 모으기 (실버-1)</a>
  **/
-// todo
 class Problem17615 {
     fun solution(str: String): Int {
-        return 0
+        val redCount = str.count { it == 'R' }
+        val blueCount = str.count { it == 'B' }
+
+        return (redCount - sameCount(str, 'R'))
+            .coerceAtMost(blueCount - sameCount(str, 'B'))
+            .coerceAtMost(redCount - sameCount(str.reversed(), 'R'))
+            .coerceAtMost(blueCount - sameCount(str.reversed(), 'B'))
+    }
+
+    private fun sameCount(str: String, type: Char): Int {
+        var count = 0
+        for (c in str) {
+            if (c != type) break
+            ++count
+        }
+        return count
     }
 }
 
