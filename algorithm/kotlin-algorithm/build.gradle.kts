@@ -1,26 +1,30 @@
 plugins {
-    kotlin("jvm") version "2.1.0"
+    alias(libs.plugins.kotlin.jvm)
 }
 
-group = "com.keunwon"
-version = "1.0-SNAPSHOT"
+allprojects {
+    group = "com.keunwon"
+    version = "1.0-SNAPSHOT"
 
-repositories {
-    mavenCentral()
-}
+    repositories {
+        mavenCentral()
+    }
 
-dependencies {
-    implementation(kotlin("stdlib"))
+    apply(plugin = "kotlin")
 
-    implementation(libs.feign.jackson)
-    implementation(libs.feign.core)
-    implementation(libs.feign.kotlin)
-    implementation(libs.jackson.module.kotlin)
+    dependencies {
+        implementation(kotlin("stdlib"))
 
-    testImplementation(libs.kotest.runner.junit5)
-    testImplementation(libs.kotest.framework.datatest)
-    testImplementation(libs.assertj.core)
-    testImplementation(libs.junit.jupiter.params)
+        implementation(rootProject.libs.feign.jackson)
+        implementation(rootProject.libs.feign.core)
+        implementation(rootProject.libs.feign.kotlin)
+        implementation(rootProject.libs.jackson.module.kotlin)
+
+        testImplementation(rootProject.libs.kotest.runner.junit5)
+        testImplementation(rootProject.libs.kotest.framework.datatest)
+        testImplementation(rootProject.libs.assertj.core)
+        testImplementation(rootProject.libs.junit.jupiter.params)
+    }
 }
 
 tasks {
