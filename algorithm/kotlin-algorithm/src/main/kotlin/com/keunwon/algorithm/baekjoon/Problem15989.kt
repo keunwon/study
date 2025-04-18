@@ -8,6 +8,7 @@ package com.keunwon.algorithm.baekjoon
  *
  * @see <a href="https://www.acmicpc.net/problem/15989">1, 2, 3 더하기 4 (골드-5)</a>
  **/
+// todo
 class Problem15989 {
     fun solution(numbers: IntArray): IntArray {
         return intArrayOf()

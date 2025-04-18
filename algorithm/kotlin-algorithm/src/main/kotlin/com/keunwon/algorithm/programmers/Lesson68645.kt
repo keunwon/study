@@ -2,7 +2,7 @@ package com.keunwon.algorithm.programmers
 
 class Lesson68645 {
     fun solution(n: Int): IntArray {
-        val map = Array(n) { IntArray(n) }
+        val map = Array(n) { IntArray(it + 1) }
         var (r, c) = -1 to 0
         var num = 1
 
@@ -19,6 +19,13 @@ class Lesson68645 {
                 map[r][c] = num++
             }
         }
-        return map.flatMap { arr -> arr.filterNot { it == 0 } }.toIntArray()
+
+        val result = ArrayList<Int>(num)
+        for (i in map.indices) {
+            for (n in map[i]) {
+                result.add(n)
+            }
+        }
+        return result.toIntArray()
     }
 }

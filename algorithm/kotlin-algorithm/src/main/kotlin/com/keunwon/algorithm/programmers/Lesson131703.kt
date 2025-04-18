@@ -21,18 +21,13 @@ class Lesson131703 {
             var flag = true
 
             for (i in beginning[0].indices) {
-                val count = beginning.indices.count { j -> beginning[j][i] == target[j][i] }
-                val n = when (count) {
-                    beginning.size -> 0
-                    0 -> 1
-                    else -> -1
-                }
-
-                if (n == -1) {
+                val count = beginning.indices.count { beginning[it][i] == target[it][i] }
+                if (count == 0) {
+                    total++
+                } else if (count != beginning.size) {
                     flag = false
                     break
                 }
-                total += n
             }
             if (flag) answer = min(answer, total)
             return

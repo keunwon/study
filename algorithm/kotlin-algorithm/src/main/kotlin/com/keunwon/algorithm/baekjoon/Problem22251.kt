@@ -23,7 +23,33 @@ class Problem22251 {
     )
 
     fun solution(n: Int, k: Int, p: Int, x: Int): Int {
-        return 0
+        val target = IntArray(k).apply {
+            "$x".reversed().forEachIndexed { index, c -> this[lastIndex - index] = c - '0' }
+        }
+        var result = 0
+
+        for (floor in 1..n) {
+            if (floor == x) continue
+
+            val next = IntArray(k).apply {
+                "$floor".reversed().forEachIndexed { index, c -> this[lastIndex - index] = c - '0' }
+            }
+            var count = 0
+
+            for (i in 0 until k) {
+                val a = target[i]
+                val b = next[i]
+
+                for (j in lights[0].indices) {
+                    if (lights[a][j] != lights[b][j]) ++count
+                    if (count > p) break
+                }
+                if (count > p) break
+            }
+
+            if (count <= p) ++result
+        }
+        return result
     }
 }
 

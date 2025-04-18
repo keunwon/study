@@ -1,4 +1,8 @@
-package com.keunwon.algorithm.kakao
+package com.keunwon.algorithm.kakao.gamematch
+
+import com.keunwon.algorithm.kakao.AuthApi
+import com.keunwon.algorithm.kakao.AuthKeyRequest
+import com.keunwon.algorithm.kakao.createApi
 
 class GameMatchProvider(
     private val gameMatchApi: GameMatchApi,

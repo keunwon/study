@@ -1,4 +1,4 @@
-package com.keunwon.algorithm.kakao
+package com.keunwon.algorithm.kakao.gamematch
 
 import feign.RequestLine
 
