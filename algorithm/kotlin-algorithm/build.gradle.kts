@@ -4,12 +4,14 @@ plugins {
 
 allprojects {
     group = "com.keunwon"
-    version = "1.0-SNAPSHOT"
+    version = "1.0.0"
 
     repositories {
         mavenCentral()
     }
+}
 
+subprojects {
     apply(plugin = "kotlin")
 
     dependencies {
@@ -24,11 +26,5 @@ allprojects {
         testImplementation(rootProject.libs.kotest.framework.datatest)
         testImplementation(rootProject.libs.assertj.core)
         testImplementation(rootProject.libs.junit.jupiter.params)
-    }
-}
-
-tasks {
-    test {
-        useJUnitPlatform()
     }
 }
