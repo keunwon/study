@@ -18,10 +18,12 @@ class `43_Multiply_Strings` {
             carry = sum / 10
         }
 
-        return arr.joinToString("").let {
-            if (it.isNotBlank() && it[0] == '0') it.drop(1)
-            else if (it.isBlank()) "0"
-            else it
+        return buildString(arr.size) {
+            for (n in arr) {
+                if (isEmpty() && n == 0) continue
+                append(n)
+            }
+            ifBlank { "0" }.toString()
         }
     }
 }
