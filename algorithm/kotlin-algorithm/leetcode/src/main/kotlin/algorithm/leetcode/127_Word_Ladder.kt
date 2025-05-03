@@ -4,26 +4,27 @@ import java.util.LinkedList
 
 class `127_Word_Ladder` {
     fun ladderLength(beginWord: String, endWord: String, wordList: List<String>): Int {
-        val queue = LinkedList<Node>().apply { offer(Node(beginWord, 1)) }
-        val wordSet = wordList.toMutableSet()
+        val q = LinkedList<Node>().apply { offer(Node(beginWord, 1)) }
+        val set = wordList.toMutableSet()
 
-        while (queue.isNotEmpty()) {
-            val cur = queue.poll()
-
+        while (q.isNotEmpty()) {
+            val cur = q.poll()
             if (cur.word == endWord) return cur.count
 
-            for (i in cur.word.indices) {
-                val arr = cur.word.toCharArray()
-
+            val arr = cur.word.toCharArray()
+            for (i in arr.indices) {
+                val tmp = arr[i]
                 for (c in 'a'..'z') {
+                    if (tmp == c) continue
+
                     arr[i] = c
                     val key = arr.concatToString()
-
-                    if (wordSet.contains(key)) {
-                        queue.offer(Node(key, cur.count + 1))
-                        wordSet.remove(key)
+                    if (set.contains(key)) {
+                        q.offer(Node(key, cur.count + 1))
+                        set.remove(key)
                     }
                 }
+                arr[i] = tmp
             }
         }
         return 0
