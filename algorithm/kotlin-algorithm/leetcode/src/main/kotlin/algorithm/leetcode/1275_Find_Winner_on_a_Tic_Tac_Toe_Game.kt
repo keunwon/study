@@ -14,9 +14,9 @@ class `1275_Find_Winner_on_a_Tic_Tac_Toe_Game` {
         val bWin = isWin(map, 'O')
 
         return when {
-            (aWin && bWin) || (!aWin && !bWin) -> "Draw"
             aWin -> "A"
-            else -> "B"
+            bWin -> "B"
+            else -> if (map.size * map[0].size == moves.size) "Draw" else "Pending"
         }
     }
 

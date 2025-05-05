@@ -4,11 +4,7 @@ import kotlin.math.abs
 
 class `3110_Score_of_a_String` {
     fun scoreOfString(s: String): Int {
-        var result = 0
-        for (i in 0 until s.lastIndex) {
-            result += abs(s[i] - s[i + 1])
-        }
-        return result
+        return (0 until s.lastIndex).sumOf { index -> abs(s[index] - s[index + 1]) }
     }
 }
 
