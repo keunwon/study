@@ -11,6 +11,9 @@ class `373_Find_K_Pairs_with_Smallest_Sums` {
         var kk = k
         val result = mutableListOf<List<Int>>()
 
+        val a = "3"
+        a.lastIndex
+
         while (q.isNotEmpty() && kk-- > 0) {
             val cur = q.poll()
             val nextIdx = cur[2] + 1

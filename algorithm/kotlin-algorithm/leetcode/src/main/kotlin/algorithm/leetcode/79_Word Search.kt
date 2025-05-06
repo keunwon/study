@@ -11,32 +11,27 @@ class `79_Word Search` {
         this.visited = Array(board.size) { BooleanArray(board[0].size) }
 
         for (i in board.indices) {
-            for (j in board[0].indices) {
-                if (dfs(0, i, j, "")) return true
+            for ((j, type) in board[i].withIndex()) {
+                if (type == word[0] && dfs(0, i, j)) return true
             }
         }
         return false
     }
 
-    private fun dfs(depth: Int, r: Int, c: Int, key: String): Boolean {
-        if (key.length == word.length) return key == word
+    private fun dfs(depth: Int, r: Int, c: Int): Boolean {
+        if (depth == word.length) return true
 
         if (r !in visited.indices || c !in visited[0].indices) return false
         if (visited[r][c] || board[r][c] != word[depth]) return false
 
 
         visited[r][c] = true
-
-        val nextKey = "$key${board[r][c]}"
-        val result = dfs(depth + 1, r - 1, c, nextKey) ||
-                dfs(depth + 1, r, c + 1, nextKey) ||
-                dfs(depth + 1, r + 1, c, nextKey) ||
-                dfs(depth + 1, r, c - 1, nextKey)
-
-        if (result) return true
+        val result = dfs(depth + 1, r - 1, c) ||
+                dfs(depth + 1, r, c + 1) ||
+                dfs(depth + 1, r + 1, c) ||
+                dfs(depth + 1, r, c - 1)
         visited[r][c] = false
-
-        return false
+        return result
     }
 }
 

@@ -1,22 +1,33 @@
 package algorithm.leetcode
 
 class `0_LeetCode` {
-    fun wordPattern(pattern: String, s: String): Boolean {
-        val words = s.split(" ")
-        if (pattern.length != words.size) return false
+    private lateinit var board: Array<CharArray>
+    private lateinit var word: String
+    private lateinit var visited: Array<BooleanArray>
 
-        val map = mutableMapOf<Char, String>()
-        for ((i, c) in pattern.withIndex()) {
-            val word = words[i]
-            if (!map.containsKey(c) && !map.containsValue(word)) {
-                map[c] = word
-            }
-            if (map[c] != word) return false
-        }
+    fun exist(board: Array<CharArray>, word: String): Boolean {
+        this.board = board
+        this.word = word
+        this.visited = Array(board.size) { BooleanArray(board[0].size) }
+
         return true
+    }
+
+    private fun dfs(depth: Int, r: Int, c: Int): Boolean {
+        if (depth == word.length) return true
+
+        if (r !in board.indices || c !in board[0].indices) return false
+        if (visited[r][c] || word[depth] != board[r][c]) return false
+
+        visited[r][c] = true
+        val valid = dfs(depth + 1, r - 1, c) ||
+                dfs(depth + 1, r, c + 1) ||
+                dfs(depth + 1, r + 1, c) ||
+                dfs(depth + 1, r, c - 1)
+        visited[r][c] = false
+        return valid
     }
 }
 
 fun main() {
-    `0_LeetCode`().wordPattern("aaa", "aa aa aa aa").also { println(it) }
 }
