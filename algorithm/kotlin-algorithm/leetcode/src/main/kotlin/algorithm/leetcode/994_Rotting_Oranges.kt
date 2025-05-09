@@ -34,7 +34,7 @@ class `994_Rotting_Oranges` {
                     }
                 }
             }
-            if (queue.size > 0) ++time
+            if (queue.isNotEmpty()) ++time
         }
 
         return if (freshCount == 0) time else -1
