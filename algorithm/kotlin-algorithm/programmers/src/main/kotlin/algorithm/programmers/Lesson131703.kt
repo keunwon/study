@@ -1,47 +1,48 @@
 package algorithm.programmers
 
-import kotlin.math.min
-
 class Lesson131703 {
-    private lateinit var beginning: Array<IntArray>
-    private lateinit var target: Array<IntArray>
-
-    private var answer = Int.MAX_VALUE
-
     fun solution(beginning: Array<IntArray>, target: Array<IntArray>): Int {
-        this.beginning = beginning
-        this.target = target
-        dfs(0, 0)
-        return if (answer == Int.MAX_VALUE) -1 else answer
+        val result = dfs(beginning, target, 0, 0)
+        return if (result == INF) -1 else result
     }
 
-    private fun dfs(count: Int, row: Int) {
+    private fun dfs(
+        beginning: Array<IntArray>,
+        target: Array<IntArray>,
+        row: Int,
+        turnCount: Int,
+    ): Int {
         if (row == beginning.size) {
-            var total = count
-            var flag = true
-
+            var total = turnCount
             for (i in beginning[0].indices) {
-                val count = beginning.indices.count { beginning[it][i] == target[it][i] }
-                if (count == 0) {
-                    total++
-                } else if (count != beginning.size) {
-                    flag = false
-                    break
+                val same = beginning.indices.count { beginning[it][i] == target[it][i] }
+                if (same == 0) {
+                    ++total
+                } else if (same != beginning.size) {
+                    return 1e9.toInt()
                 }
             }
-            if (flag) answer = min(answer, total)
-            return
+            return total
         }
 
-        turn(row)
-        dfs(count + 1, row + 1)
-        turn(row)
-        dfs(count, row + 1)
+        var result = INF
+
+        turn(beginning, row)
+        result = result.coerceAtMost(dfs(beginning, target, row + 1, turnCount + 1))
+
+        turn(beginning, row)
+        result = result.coerceAtMost(dfs(beginning, target, row + 1, turnCount))
+
+        return result
     }
 
-    private fun turn(row: Int) {
-        for ((i, num) in beginning[row].withIndex()) {
-            beginning[row][i] = 1 xor num
+    private fun turn(board: Array<IntArray>, row: Int) {
+        for ((i, n) in board[row].withIndex()) {
+            board[row][i] = n xor 1
         }
+    }
+
+    companion object {
+        private const val INF = 1e9.toInt()
     }
 }

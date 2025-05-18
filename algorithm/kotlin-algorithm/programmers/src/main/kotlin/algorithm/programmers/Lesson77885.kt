@@ -1,5 +1,6 @@
 package algorithm.programmers
 
+// todo 시프트 연산자로 풀어보자
 class Lesson77885 {
     fun solution(numbers: LongArray): LongArray {
         return numbers.map { n ->

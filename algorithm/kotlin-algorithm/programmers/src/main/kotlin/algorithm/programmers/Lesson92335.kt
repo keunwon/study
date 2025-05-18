@@ -5,11 +5,12 @@ import kotlin.math.sqrt
 class Lesson92335 {
     fun solution(n: Int, k: Int): Int {
         val arr = n.toString(k).split("0").filter { it.isNotBlank() }
-        return arr.count { isPrime(it.toLong()) }
+        return arr.count { it.toLong().isPrime() }
     }
 
-    private fun isPrime(n: Long): Boolean {
-        if (n < 2) return false
-        return (2..sqrt(n.toDouble()).toInt()).none { n % it == 0L }
+    private inline fun Long.isPrime(): Boolean {
+        if (this < 2) return false
+        val end = sqrt(this.toDouble()).toInt()
+        return (2..end).none { this % it == 0L }
     }
 }

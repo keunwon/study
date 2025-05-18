@@ -1,6 +1,6 @@
 package algorithm.programmers
 
-import java.util.*
+import java.util.Stack
 
 class Lesson176962 {
     fun solution(plans: Array<Array<String>>): Array<String> {

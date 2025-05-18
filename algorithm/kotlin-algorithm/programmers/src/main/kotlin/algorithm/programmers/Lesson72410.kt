@@ -1,15 +1,28 @@
 package algorithm.programmers
 
+import java.util.Stack
+
 class Lesson72410 {
-    fun solution(new_id: String): String {
-        return new_id.lowercase()
-            .replace("""[^a-z0-9-_.]""".toRegex(), "")
-            .replace("""\.{2,}""".toRegex(), ".")
-            .replace("""^\.""", "")
-            .replace("""\.$""", "")
-            .let { it.ifBlank { "a" } }
-            .take(15)
-            .replace("""\.$""", "")
-            .let { if (it.length >= 2) it + "${it.last()}".repeat(3 - it.length) else it }
+    fun solution(board: Array<IntArray>, moves: IntArray): Int {
+        val stack = Stack<Int>()
+        var result = 0
+
+        for (m in moves) {
+            for (i in board.indices) {
+                val type = board[i][m - 1]
+                if (type != 0) {
+                    board[i][m - 1] = 0
+                    if (stack.isNotEmpty() && stack.peek() == type) {
+                        stack.pop()
+                        result += 2
+                    } else {
+                        stack.push(type)
+                    }
+                    break
+                }
+            }
+        }
+
+        return result
     }
 }

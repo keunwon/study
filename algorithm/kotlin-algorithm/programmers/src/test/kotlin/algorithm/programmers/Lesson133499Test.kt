@@ -15,4 +15,10 @@ class Lesson133499Test : StringSpec({
         val actual = Lesson133499().solution(babbling)
         actual shouldBe 2
     }
+
+    "case-3" {
+        val babbling = arrayOf("yayae")
+        val actual = Lesson133499().solution(babbling)
+        actual shouldBe 0
+    }
 })

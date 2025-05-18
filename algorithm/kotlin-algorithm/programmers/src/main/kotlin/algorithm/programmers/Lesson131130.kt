@@ -1,30 +1,28 @@
 package algorithm.programmers
 
-import java.util.*
+import java.util.PriorityQueue
 
 class Lesson131130 {
-    private lateinit var cards: IntArray
-    private lateinit var visited: BooleanArray
-
-    private val queue = PriorityQueue<Int>(compareByDescending { it })
-
     fun solution(cards: IntArray): Int {
-        this.cards = intArrayOf(0, *cards)
-        this.visited = BooleanArray(this.cards.size)
+        val q = PriorityQueue<Int>(compareByDescending { it })
+        val visited = BooleanArray(cards.size)
 
-        for (i in 1..cards.size) {
-            if (!visited[i]) dfs(0, i)
+        for (i in cards.indices) {
+            if (!visited[i]) q.offer(dfs(cards, visited, i, 0))
         }
-        return if (queue.size < 2) 0 else queue.poll() * queue.poll()
+
+        return if (q.size > 1) q.poll() * q.poll() else 0
     }
 
-    private fun dfs(count: Int, cur: Int) {
-        if (visited[cur]) {
-            queue.offer(count)
-            return
-        }
+    private fun dfs(
+        cards: IntArray,
+        visited: BooleanArray,
+        cur: Int,
+        depth: Int,
+    ): Int {
+        if (visited[cur]) return depth
 
         visited[cur] = true
-        dfs(count + 1, cards[cur])
+        return dfs(cards, visited, cards[cur] - 1, depth + 1)
     }
 }

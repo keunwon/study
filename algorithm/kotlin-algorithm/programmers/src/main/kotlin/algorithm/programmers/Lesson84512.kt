@@ -6,6 +6,7 @@ class Lesson84512 {
 
     fun solution(word: String): Int {
         dfs(0, "", alphabets.size)
+        println(answer.size)
         return answer.indexOf(word)
     }
 

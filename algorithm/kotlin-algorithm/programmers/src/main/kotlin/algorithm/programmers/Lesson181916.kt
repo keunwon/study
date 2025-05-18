@@ -6,8 +6,7 @@ class Lesson181916 {
     fun solution(a: Int, b: Int, c: Int, d: Int): Int {
         val list = listOf(a, b, c, d)
             .groupingBy { it }
-            .eachCount()
-            .entries
+            .eachCount().entries
             .sortedByDescending { it.value }
 
         return when (list.size) {
@@ -28,12 +27,9 @@ class Lesson181916 {
             }
 
             3 -> {
-                val (p, q, r) = list
-                if (p.value == 2 && q.value == 1 && r.value == 1) {
-                    q.key * r.key
-                } else {
-                    -1
-                }
+                val q = list[1]
+                val r = list[2]
+                q.key * r.key
             }
 
             else -> list.minOf { it.key }
