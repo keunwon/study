@@ -1,6 +1,6 @@
 package algorithm.programmers
 
-import java.util.*
+import java.util.LinkedList
 import kotlin.math.absoluteValue
 
 class Lesson76503 {

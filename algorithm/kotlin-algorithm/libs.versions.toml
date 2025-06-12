@@ -19,3 +19,4 @@ kotest-framework-datatest = { module = "io.kotest:kotest-framework-datatest", ve
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+detekt = { id = "io.gitlab.arturbosch.detekt", version = "1.23.8" }

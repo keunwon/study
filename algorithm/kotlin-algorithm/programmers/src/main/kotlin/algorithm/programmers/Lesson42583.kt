@@ -1,25 +1,29 @@
 package algorithm.programmers
 
-import java.util.*
+import java.util.LinkedList
 
 class Lesson42583 {
     fun solution(bridge_length: Int, weight: Int, truck_weights: IntArray): Int {
-        val bridgeQueue = LinkedList<Long>().apply { repeat(bridge_length) { offer(0L) } }
-        val waiteQueue = LinkedList(truck_weights.map { it.toLong() })
-        var answer = 0
+        val bq = LinkedList<Int>().apply { repeat(bridge_length) { offer(0) } }
+        val wq = LinkedList(truck_weights.toList())
+        var sum = 0L
+        var result = 0
 
-        while (bridgeQueue.isNotEmpty()) {
-            bridgeQueue.poll()
-            ++answer
+        while (bq.isNotEmpty()) {
+            sum -= bq.poll()
+            ++result
 
-            if (waiteQueue.isEmpty()) continue
+            if (wq.isEmpty()) continue
 
-            if (bridgeQueue.sum() + waiteQueue.peek() <= weight) {
-                bridgeQueue.offer(waiteQueue.poll())
+            if (sum + wq.peek() <= weight) {
+                val w = wq.poll()
+                sum += w
+                bq.offer(w)
             } else {
-                bridgeQueue.offer(0)
+                bq.offer(0)
             }
         }
-        return answer
+
+        return result
     }
 }

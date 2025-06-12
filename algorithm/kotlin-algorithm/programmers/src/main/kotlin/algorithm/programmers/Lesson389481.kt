@@ -1,7 +1,5 @@
 package algorithm.programmers
 
-import kotlin.text.iterator
-
 /**
  * <p>
  * 이름: 봉인된 주문
@@ -12,33 +10,30 @@ import kotlin.text.iterator
  **/
 class Lesson389481 {
     fun solution(n: Long, bans: Array<String>): String {
-        val bases = bans.map { convertStringToBase26(it) }.sorted()
+        val banBase26 = bans.map { it.toBase26() }.sorted()
         var target = n
 
-        for (base in bases) {
-            if (target >= base) ++target else break
+        for (base26 in banBase26) {
+            if (base26 > target) break
+            ++target
         }
-        return convertToBase26(target)
+
+        return target.toStringBase26()
     }
 
-    private fun convertToBase26(num: Long): String {
-        var number = num
-        val result = StringBuilder()
+    private fun Long.toStringBase26(): String {
+        var target = this
+        val sb = StringBuilder()
 
-        while (number-- > 0) {
-            val c = 'a' + (number % 26).toInt()
-            result.append(c)
-            number /= 26
+        while (target > 0) {
+            val letter = 'a' + (--target % 26).toInt()
+            sb.append(letter)
+            target /= 26
         }
-        return result.reverse().toString()
+
+        return sb.reverse().toString()
     }
 
-    private fun convertStringToBase26(input: String): Long {
-        var result = 0L
-        for (c in input) {
-            val value = c - 'a' + 1
-            result = result * 26 + value
-        }
-        return result
-    }
+    private fun String.toBase26(): Long =
+        fold(0L) { acc, c -> acc * 26 + (c - 'a') + 1 }
 }

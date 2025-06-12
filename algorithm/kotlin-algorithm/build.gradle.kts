@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.detekt)
 }
 
 allprojects {
@@ -13,6 +14,7 @@ allprojects {
 
 subprojects {
     apply(plugin = "kotlin")
+    apply(plugin = "io.gitlab.arturbosch.detekt")
 
     dependencies {
         implementation(kotlin("stdlib"))

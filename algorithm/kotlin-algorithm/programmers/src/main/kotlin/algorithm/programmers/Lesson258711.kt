@@ -1,7 +1,5 @@
 package algorithm.programmers
 
-import kotlin.collections.iterator
-
 class Lesson258711 {
     fun solution(edges: Array<IntArray>): IntArray {
         val inDegree = mutableMapOf<Int, Int>()

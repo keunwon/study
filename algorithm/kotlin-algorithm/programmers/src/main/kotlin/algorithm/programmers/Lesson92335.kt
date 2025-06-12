@@ -8,7 +8,7 @@ class Lesson92335 {
         return arr.count { it.toLong().isPrime() }
     }
 
-    private inline fun Long.isPrime(): Boolean {
+    private fun Long.isPrime(): Boolean {
         if (this < 2) return false
         val end = sqrt(this.toDouble()).toInt()
         return (2..end).none { this % it == 0L }
