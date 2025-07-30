@@ -1,4 +1,4 @@
-package com.system.batch.chatper1
+package com.system.batch.chapter1
 
 import org.slf4j.LoggerFactory
 import org.springframework.batch.core.StepContribution

@@ -1,4 +1,4 @@
-package com.system.batch.chatper1
+package com.system.batch.chapter1
 
 import com.system.batch.log
 import org.springframework.batch.core.ExitStatus

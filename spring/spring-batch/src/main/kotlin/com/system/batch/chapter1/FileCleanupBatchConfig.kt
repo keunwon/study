@@ -1,4 +1,4 @@
-package com.system.batch.chatper1
+package com.system.batch.chapter1
 
 import org.springframework.batch.core.Job
 import org.springframework.batch.core.Step
