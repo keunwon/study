@@ -9,10 +9,7 @@ class Lesson42839 {
         for (i in numbers.indices) {
             permutation(i + 1, "", numbers, BooleanArray(numbers.length))
         }
-        return answer.count {
-            println("$it, ${isPrime(it)}")
-            isPrime(it)
-        }
+        return answer.count { isPrime(it) }
     }
 
     private fun permutation(size: Int, cur: String, numbers: String, visited: BooleanArray) {

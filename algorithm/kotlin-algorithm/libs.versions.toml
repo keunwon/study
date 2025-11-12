@@ -1,5 +1,5 @@
 [versions]
-kotlin = "2.1.0"
+kotlin = "2.2.21"
 feign = "13.3"
 kotest = "5.9.1"
 

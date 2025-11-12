@@ -1,6 +1,6 @@
 package algorithm.programmers
 
-import java.util.*
+import java.util.PriorityQueue
 
 class Lesson12978 {
     fun solution(N: Int, road: Array<IntArray>, k: Int): Int {

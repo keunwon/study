@@ -1,32 +1,28 @@
 package algorithm.programmers
 
-import java.util.*
-
 class Lesson67258 {
     fun solution(gems: Array<String>): IntArray {
-        val gemType = gems.toSet()
+        val types = gems.toSet()
         val quantities = mutableMapOf<String, Int>()
-        val queue = LinkedList<String>()
+        var startIndex = 0
+        val result = intArrayOf(0, gems.lastIndex)
 
-        var sIndex = 0
-        var tmpIndex = 0
-        var size = gems.size
-
-        for (gem in gems) {
+        for ((i, gem) in gems.withIndex()) {
             quantities[gem] = quantities.getOrDefault(gem, 0) + 1
-            queue.offer(gem)
 
-            while (queue.isNotEmpty() && quantities.getValue(queue.peek()) > 1) {
-                val cur = queue.poll()
-                quantities[cur] = quantities.getValue(cur) - 1
-                tmpIndex++
+            while (startIndex < gems.size && quantities.getValue(gems[startIndex]) > 1) {
+                quantities[gems[startIndex]] = quantities.getValue(gems[startIndex]) - 1
+                ++startIndex
             }
 
-            if (gemType.size == quantities.size && size > queue.size) {
-                sIndex = tmpIndex
-                size = queue.size
+            if (types.size == quantities.size) {
+                if (result[1] - result[0] > i - startIndex) {
+                    result[0] = startIndex
+                    result[1] = i
+                }
             }
         }
-        return intArrayOf(sIndex + 1, sIndex + size)
+
+        return IntArray(2) { result[it] + 1 }
     }
 }
