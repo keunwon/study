@@ -1,61 +1,66 @@
 package algorithm.programmers;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-
 public class Lesson250136_2 {
-    private final int[][] moves = new int[][]{{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
-
     public int solution(int[][] land) {
-        var groupLand = new int[land.length][land[0].length];
-        var visited = new boolean[land.length][land[0].length];
-        var map = new HashMap<Integer, Integer>();
-        var id = 1;
+        var n = land.length;
+        var m = land[0].length;
 
-        for (var i = 0; i < land.length; i++) {
-            for (var j = 0; j < land[i].length; j++) {
-                if (land[i][j] == 0 || visited[i][j]) continue;
+        var totalOils = new int[m];
+        var dr = new int[]{-1, 1, 0, 0};
+        var dc = new int[]{0, 0, -1, 1};
 
-                var q = new LinkedList<int[]>();
-                var area = 0;
+        var qLength = n * m;
+        var qr = new int[qLength];
+        var qc = new int[qLength];
 
-                visited[i][j] = true;
-                q.offer(new int[]{i, j});
+        for (var i = 0; i < n; i++) {
+            for (var j = 0; j < m; j++) {
+                if (land[i][j] == 1) {
+                    var size = 0;
+                    var minCol = j;
+                    var maxCol = j;
 
-                while (!q.isEmpty()) {
-                    var cur = q.poll();
+                    var head = 0;
+                    var tail = 0;
+                    qr[tail] = i;
+                    qc[tail] = j;
+                    ++tail;
 
-                    ++area;
-                    groupLand[cur[0]][cur[1]] = id;
+                    land[i][j] = 0;
 
-                    for (var move : moves) {
-                        var nr = cur[0] + move[0];
-                        var nc = cur[1] + move[1];
+                    while (head < tail) {
+                        var r = qr[head];
+                        var c = qc[head];
+                        ++head;
+                        ++size;
 
-                        if (nr < 0 || nc < 0 || nr >= land.length || nc >= land[0].length) continue;
-                        if (land[nr][nc] == 0 || visited[nr][nc]) continue;
+                        if (c < minCol) minCol = c;
+                        if (c > maxCol) maxCol = c;
 
-                        visited[nr][nc] = true;
-                        q.offer(new int[]{nr, nc});
+                        for (var dir = 0; dir < 4; dir++) {
+                            var nr = r + dr[dir];
+                            var nc = c + dc[dir];
+
+                            if (0 <= nr && 0 <= nc && nr < n && nc < m && land[nr][nc] == 1) {
+                                land[nr][nc] = 0;
+                                qr[tail] = nr;
+                                qc[tail] = nc;
+                                ++tail;
+                            }
+                        }
+                    }
+
+                    for (var col = minCol; col <= maxCol; ++col) {
+                        totalOils[col] += size;
                     }
                 }
-
-                map.put(id++, area);
             }
         }
 
-        var result = 0;
-        for (var i = 0; i < groupLand[0].length; i++) {
-            var set = new HashSet<Integer>();
-
-            for (var j = 0; j < groupLand.length; j++) {
-                if (groupLand[j][i] != 0) set.add(groupLand[j][i]);
-            }
-
-            var sum = set.stream().mapToInt(map::get).sum();
-            result = Math.max(result, sum);
+        var maxOil = 0;
+        for (var oil : totalOils) {
+            if (oil > maxOil) maxOil = oil;
         }
-        return result;
+        return maxOil;
     }
 }
