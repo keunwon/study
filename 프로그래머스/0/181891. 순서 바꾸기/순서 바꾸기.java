@@ -3,8 +3,9 @@ class Solution {
         var m = num_list.length;
         var res = new int[m];
 
-        System.arraycopy(num_list, n, res, 0, m - n);
-        System.arraycopy(num_list, 0, res, m - n, n);
+        for (var i = 0; i < m; i++) {
+            res[i] = num_list[(i + n) % m];
+        }
         return res;
     }
 }
