@@ -1,6 +1,6 @@
 class Solution {
     public String solution(String my_string, int m, int c) {
-        var n = (my_string.length() - c + m) / m;
+        var n = (my_string.length() - c) / m + 1;
         var arr = new char[n];
         var mIdx = c - 1;
         
