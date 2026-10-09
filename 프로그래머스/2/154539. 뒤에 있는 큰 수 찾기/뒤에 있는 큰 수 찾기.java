@@ -1,20 +1,21 @@
 import java.util.Arrays;
-import java.util.ArrayDeque;
 
 class Solution {
     public int[] solution(int[] numbers) {
         var n = numbers.length;
         var res = new int[n];
-        var stk = new ArrayDeque<Integer>();
-        
-        Arrays.fill(res, -1);
+        var stk = new int[n];
+        var top = -1;
 
+        Arrays.fill(res, -1);
+        
         for (var i = 0; i < n; i++) {
-            while (!stk.isEmpty() && numbers[i] > numbers[stk.getLast()]) {
-                var j = stk.removeLast();
-                res[j] = numbers[i];
+            var num = numbers[i];
+            while (top > -1 && num > numbers[stk[top]]) {
+                var j = stk[top--];
+                res[j] = num;
             }
-            stk.addLast(i);
+            stk[++top] = i;
         }
         return res;
     }
