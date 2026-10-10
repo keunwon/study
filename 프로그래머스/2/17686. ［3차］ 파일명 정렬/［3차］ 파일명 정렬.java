@@ -1,38 +1,43 @@
 import java.util.Arrays;
+import java.util.regex.Pattern;
 
 class Solution {
     public String[] solution(String[] files) {
-        Arrays.sort(files, (o1, o2) -> {
-            var node1 = new Node(o1.toLowerCase());
-            var node2 = new Node(o2.toLowerCase());
-
-            var headCompare = node1.head.compareTo(node2.head);
-            if (headCompare != 0) {
-                return headCompare;
-            }
-            return Integer.compare(node1.number, node2.number);
-        });
-        
-        return files;
+        return Arrays.stream(files)
+                .map(Filename::new)
+                .sorted()
+                .map(Filename::getOrigin)
+                .toArray(String[]::new);
     }
 
-    private static class Node {
+    private static class Filename implements Comparable<Filename> {
+        private static final Pattern NAME_PATTERN = Pattern.compile("(\\D+)(\\d+)");
+
+        String origin;
         String head;
-        int number;
+        Integer number;
 
-        public Node(String str) {
-            var idx = 0;
-
-            while (idx < str.length() && !Character.isDigit(str.charAt(idx))) {
-                ++idx;
+        public Filename(String origin) {
+            var matcher = NAME_PATTERN.matcher(origin.toLowerCase());
+            if (matcher.find()) {
+                this.origin = origin;
+                this.head = matcher.group(1);
+                this.number = Integer.parseInt(matcher.group(2));
             }
-            this.head = str.substring(0, idx);
+        }
 
-            var sIdx = idx;
-            while (idx < str.length() && Character.isDigit(str.charAt(idx))) {
-                ++idx;
+        public String getOrigin() {
+            return origin;
+        }
+
+        @Override
+        public int compareTo(Filename o) {
+            if (!head.equals(o.head)) {
+                return head.compareTo(o.head);
+            } else if (!number.equals(o.number)) {
+                return number.compareTo(o.number);
             }
-            this.number = Integer.parseInt(str.substring(sIdx, idx));
+            return 0;
         }
     }
 }
