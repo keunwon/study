@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 
 class Solution {
@@ -7,14 +9,13 @@ class Solution {
             count.put(t, count.getOrDefault(t, 0) + 1);
         }
 
-        var list = count.values().stream().sorted().toList();
-        var res = 0;
+        var list = new ArrayList<>(count.values());
+        list.sort(Comparator.reverseOrder());
 
-        for (var i = list.size() - 1; i >= 0; i--) {
-            ++res;
+        for (var i = 0; i < list.size(); i++) {
             k -= list.get(i);
-            if (k <= 0) break;
+            if (k <= 0) return i + 1;
         }
-        return res;
+        return list.size();
     }
 }
