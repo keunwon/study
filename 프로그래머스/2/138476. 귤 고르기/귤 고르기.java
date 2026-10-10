@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 class Solution {
     public int solution(int k, int[] tangerine) {
-        var count = new HashMap<Integer, Integer>(tangerine.length, 1f);
+        var count = new HashMap<Integer, Integer>(tangerine.length * 2);
         for (var t : tangerine) {
             count.put(t, count.getOrDefault(t, 0) + 1);
         }
