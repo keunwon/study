@@ -9,8 +9,10 @@ class Solution {
         }
         
         var res = new char[t];
+        var sbIdx = p - 1;
         for (var i = 0; i < t; i++) {
-            res[i] = sb.charAt((i * m) + p - 1);
+            res[i] = sb.charAt(sbIdx);
+            sbIdx += m;
         }
         return new String(res);
     }
