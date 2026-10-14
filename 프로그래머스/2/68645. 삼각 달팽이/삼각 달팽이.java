@@ -4,15 +4,7 @@ class Solution {
         var c = 0;
         var x = 0;
 
-        var size = 0;
-        var floor = new int[n + 1];
-
-        for (var i = 1; i <= n; i++) {
-            size += i;
-            floor[i] += i + floor[i - 1];
-        }
-
-        var res = new int[size];
+        var res = new int[(n * (n + 1)) / 2];
         for (var i = 0; i < n; i++) {
             for (var j = i; j < n; j++) {
                 switch (i % 3) {
@@ -23,7 +15,9 @@ class Solution {
                         --c;
                     }
                 }
-                res[floor[r] + c] = ++x;
+
+                var idx = r * (r + 1) / 2 + c;
+                res[idx] = ++x;
             }
         }
         return res;
