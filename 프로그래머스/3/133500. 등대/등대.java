@@ -28,7 +28,7 @@ class Solution {
 
     private void dfs(List<List<Integer>> graph, boolean[] visited, int cur, int prev) {
         for (var next : graph.get(cur)) {
-            if (next == prev) continue;
+            if (next == prev || visited[next]) continue;
 
             dfs(graph, visited, next, cur);
             if (!visited[next] && !visited[cur]) {
