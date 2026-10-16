@@ -19,13 +19,16 @@ class Solution {
     }
 
     private static String replaceSheet(String sheet) {
-        return sheet.replace("C#", "c")
-                .replace("D#", "d")
-                .replace("E#", "e")
-                .replace("F#", "f")
-                .replace("G#", "g")
-                .replace("A#", "a")
-                .replace("B#", "b");
+        var sb = new StringBuilder(sheet.length());
+        for (var i = 0; i < sheet.length(); i++) {
+            var c = sheet.charAt(i);
+            if (c == '#') {
+                sb.setCharAt(sb.length() - 1, Character.toLowerCase(sheet.charAt(i - 1)));
+            } else {
+                sb.append(c);
+            }
+        }
+        return sb.toString();
     }
 
     private static class Music {
