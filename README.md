@@ -23,3 +23,15 @@
   3. 🖥️ [kafka 완전 정복](https://github.com/keunwon/study/tree/master/etc/3_kafka_%EC%99%84%EC%A0%84_%EC%A0%95%EB%B3%B5)
   4. 📖 [가상 면접 사례로 배우는 대규모 시스템 설계 기초](https://github.com/keunwon/study/tree/master/etc/4_%EA%B0%80%EC%83%81_%EB%A9%B4%EC%A0%91_%EC%82%AC%EB%A1%80%EB%A1%9C_%EB%B0%B0%EC%9A%B0%EB%8A%94_%EB%8C%80%EA%B7%9C%EB%AA%A8_%EC%8B%9C%EC%8A%A4%ED%85%9C_%EC%84%A4%EA%B3%84_%EA%B8%B0%EC%B4%88)
   5. 📖 [NGINX COOK BOOK](https://github.com/keunwon/study/tree/master/etc/5_NGINX_COOK_BOOK)
+
+<!---LeetCode Topics Start-->
+# LeetCode Topics
+## Array
+|  |
+| ------- |
+| [0027-remove-element](https://github.com/keunwon/study/tree/master/0027-remove-element) |
+## Two Pointers
+|  |
+| ------- |
+| [0027-remove-element](https://github.com/keunwon/study/tree/master/0027-remove-element) |
+<!---LeetCode Topics End-->
