@@ -1,8 +1,8 @@
-import java.util.Stack;
+import java.util.ArrayDeque;
 
 class Solution {
     public String solution(int n, int k, String[] cmd) {
-        var undo = new Stack<Integer>();
+        var undo = new ArrayDeque<Integer>(n);
         --n;
 
         for (var str : cmd) {
@@ -33,7 +33,7 @@ class Solution {
             }
         }
 
-        var sb = new StringBuilder();
+        var sb = new StringBuilder(n + 1 + undo.size());
         sb.repeat("O", n + 1);
         while (!undo.isEmpty()) {
             sb.insert(undo.pop(), "X");
