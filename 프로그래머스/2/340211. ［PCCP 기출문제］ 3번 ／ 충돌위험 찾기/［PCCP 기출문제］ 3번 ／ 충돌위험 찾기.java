@@ -1,6 +1,6 @@
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 public class Solution {
     public int solution(int[][] points, int[][] routes) {
@@ -11,11 +11,11 @@ public class Solution {
             pointMap.put(i + 1, new Node(point[0], point[1]));
         }
 
-        var history = new ArrayList<List<Node>>(routes.length);
+        var history = new ArrayList<ArrayDeque<Node>>(routes.length);
         var maxSize = 0;
 
         for (var route : routes) {
-            var list = new ArrayList<Node>();
+            var list = new ArrayDeque<Node>();
             list.add(pointMap.get(route[0]));
 
             for (var i = 1; i < route.length; i++) {
@@ -38,7 +38,7 @@ public class Solution {
                 }
             }
 
-            history.add(list);
+            history.addLast(list);
             maxSize = Math.max(maxSize, list.size());
         }
 
@@ -46,7 +46,7 @@ public class Solution {
         for (var i = 0; i < maxSize; i++) {
             var count = new int[10001];
 
-            for (List<Node> nodes : history) {
+            for (var nodes : history) {
                 if (!nodes.isEmpty()) {
                     var node = nodes.removeFirst();
                     var idx = (node.r - 1) * 100 + node.c;
